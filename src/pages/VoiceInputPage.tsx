@@ -17,8 +17,8 @@ interface VoiceInputPageProps {
 }
 
 export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
-  const { transcript, state, setTranscript } = useVoiceStore()
-  const { isRecording, startRecording } = useSpeechRecognition()
+  const { transcript, state, setTranscript, reset: resetVoice } = useVoiceStore()
+  const { isRecording, startRecording, stopRecording } = useSpeechRecognition()
   const { parseTranscript, submitSpend } = useSpendSubmit()
   
   const [showConfirm, setShowConfirm] = useState(false)
@@ -30,6 +30,12 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
   // Activar escucha automáticamente al entrar
   useEffect(() => {
     startRecording()
+
+    // Cleanup: detener reconocimiento al salir
+    return () => {
+      stopRecording()
+      resetVoice()
+    }
   }, [])
 
   // Auto-parse cuando termina de grabar (solo la primera vez)
@@ -64,8 +70,13 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
   const handleConfirm = async () => {
     if (!parsedSpend) return
     
+    // Detener reconocimiento antes de guardar
+    stopRecording()
+    
     const saved = await submitSpend(parsedSpend)
     if (saved) {
+      // Reset completo del estado de voz
+      resetVoice()
       onClose() // Volver al dashboard
     }
   }
@@ -102,6 +113,9 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
   }
 
   const handleCancel = () => {
+    // Detener reconocimiento y limpiar estado
+    stopRecording()
+    resetVoice()
     setShowConfirm(false)
     setParsedSpend(null)
     setIsEditing(false)
