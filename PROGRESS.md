@@ -120,6 +120,19 @@
 
 ---
 
+### Fase 7: Dashboard ✅
+- [x] Implementar `BudgetBar` con colores dinámicos (<70%, 70-89%, >90%)
+- [x] Implementar `RecentSpends` (últimos 4-5 gastos con formato relativo)
+- [x] Implementar `FoxyAvatar` placeholder CSS animado (4 estados)
+- [x] Implementar página `Dashboard` integrando componentes
+- [x] Sincronizar con Foxy avatar según estado del budget
+- [x] Configurar React Router para navegación
+- [x] FAB (Floating Action Button) para registrar gastos
+- [x] Modal de VoiceRecorder en Dashboard
+- [x] Estadísticas adicionales (promedio diario, días restantes)
+
+---
+
 ## 🚧 En Progreso
 
 *Nada actualmente*
@@ -127,12 +140,6 @@
 ---
 
 ## 📋 Pendiente
-
-### Fase 7: Dashboard
-- [ ] Implementar `BudgetBar` con colores dinámicos (<70%, 70-89%, >90%)
-- [ ] Implementar `RecentSpends` (últimos 4-5 gastos)
-- [ ] Implementar página `Dashboard` integrando componentes
-- [ ] Sincronizar con Foxy avatar según estado del budget
 
 ### Fase 8: Gestión de Gastos
 - [ ] Implementar `SpendCard` y `SpendList`
@@ -201,6 +208,14 @@
 - Integración con Supabase funcionando
 - UI accesible y con buen contraste
 
+### Hito 3: Dashboard Funcional ✅ (Oct 2024)
+- **Pantalla principal completada**
+- Visualización de presupuesto con colores dinámicos
+- Lista de gastos recientes con formato relativo
+- Foxy avatar animado con estados
+- Navegación con React Router
+- Integración completa del flujo de voz desde dashboard
+
 ---
 
 ## 📊 Métricas Actuales
@@ -208,8 +223,10 @@
 - **Tests**: 12/12 pasando (100%)
 - **Cobertura**: ~80% en dominio y casos de uso
 - **Bundle size**: ~250 KB (sin optimizar aún)
-- **Componentes creados**: 15+
+- **Componentes creados**: 20+
+- **Páginas**: 1 (Dashboard)
 - **Flujo de voz**: ✅ Funcional end-to-end
+- **Navegación**: ✅ React Router configurado
 
 ---
 
@@ -250,4 +267,4 @@ Todos los colores, espaciados, y tipografía vienen de `DESIGN-TOKENS.json`, gar
 ---
 
 **Última actualización**: Octubre 2024  
-**Próximo hito**: Dashboard y gestión de gastos
+**Próximo hito**: Gestión completa de gastos (Fase 8)
