@@ -10,7 +10,7 @@ import { useSpendStore } from '@/stores/useSpendStore'
 import { BudgetBar, RecentSpends } from '@/components/dashboard'
 import { FoxyAvatar } from '@/components/foxy'
 import { VoiceInputPage } from './VoiceInputPage'
-import { Button } from '@/components/ui'
+import { ManualInputPage } from './ManualInputPage'
 
 // TODO: obtener el límite mensual de settings cuando implementemos esa funcionalidad
 const MONTHLY_LIMIT_CENTS = 100000 // 1000€ por defecto
@@ -45,6 +45,11 @@ export function Dashboard() {
   // Si está en modo voz, mostrar pantalla completa de voz
   if (showVoiceInput) {
     return <VoiceInputPage onClose={() => setShowVoiceInput(false)} />
+  }
+
+  // Si está en modo manual, mostrar pantalla de entrada manual
+  if (showManualInput) {
+    return <ManualInputPage onClose={() => setShowManualInput(false)} />
   }
 
   return (
@@ -92,27 +97,36 @@ export function Dashboard() {
           </div>
         </section>
 
-        {/* Foxy Avatar - Clickeable para activar voz */}
-        <section className="mb-8 flex flex-col items-center gap-4">
+        {/* Foxy Avatar - PROTAGONISTA para activar voz */}
+        <section className="mb-8 flex flex-col items-center gap-3">
+          {/* Botón de voz GRANDE y prominente */}
           <button
             onClick={() => setShowVoiceInput(true)}
-            className="focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-cyan rounded-full transition-transform hover:scale-105 active:scale-95"
+            className="relative focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-cyan rounded-full transition-transform hover:scale-105 active:scale-95"
             aria-label="Registrar gasto por voz"
           >
+            {/* Ring animado para llamar la atención */}
+            <div className="absolute inset-0 rounded-full bg-brand-cyan/20 animate-pulse-ring" />
             <FoxyAvatar state={foxyState} size="lg" />
           </button>
-          <p className="text-center text-sm text-muted-light dark:text-muted-dark">
-            Toca a Foxy para registrar por voz
-          </p>
           
-          {/* Botón para añadir gasto manual - justo debajo de Foxy */}
-          <Button
-            variant="ghost"
+          {/* Call to action claro */}
+          <div className="text-center">
+            <p className="text-lg font-medium text-text-light dark:text-text-dark mb-1">
+              Toca a Foxy para registrar por voz
+            </p>
+            <p className="text-xs text-muted-light dark:text-muted-dark">
+              Es la forma más rápida
+            </p>
+          </div>
+          
+          {/* Botón manual DISCRETO (solo texto, sin botón visible) */}
+          <button
             onClick={() => setShowManualInput(true)}
-            className="text-sm"
+            className="text-xs text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark transition-colors underline decoration-dashed"
           >
-            ✏️ O escribe el gasto manualmente
-          </Button>
+            ✏️ O escribe manualmente
+          </button>
         </section>
 
         {/* Recent Spends */}
