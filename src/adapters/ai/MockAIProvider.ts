@@ -41,6 +41,25 @@ export class MockAIProvider implements IAIProvider {
     // Patrones comunes:
     // "5 euros", "€5", "5€", "5,50", "5.50", "5 con 50"
     
+    // NUEVO: Convertir números escritos en palabras a dígitos
+    const wordToNumber: Record<string, number> = {
+      'cero': 0, 'un': 1, 'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 
+      'cinco': 5, 'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10,
+      'once': 11, 'doce': 12, 'trece': 13, 'catorce': 14, 'quince': 15,
+      'dieciséis': 16, 'diecisiete': 17, 'dieciocho': 18, 'diecinueve': 19,
+      'veinte': 20, 'treinta': 30, 'cuarenta': 40, 'cincuenta': 50,
+      'sesenta': 60, 'setenta': 70, 'ochenta': 80, 'noventa': 90, 'cien': 100
+    }
+
+    // Buscar números escritos en palabras antes de "euro"
+    for (const [word, num] of Object.entries(wordToNumber)) {
+      const wordPattern = new RegExp(`\\b${word}\\b\\s*(euros?|€)`, 'i')
+      if (wordPattern.test(lowerText)) {
+        console.log(`[MockAI] Detectado número en palabras: "${word}" = ${num}`)
+        return num
+      }
+    }
+    
     // Patrón: "X con Y" (ej: "5 con 50")
     const conMatch = lowerText.match(/(\d+)\s*con\s*(\d+)/)
     if (conMatch) {
@@ -65,8 +84,9 @@ export class MockAIProvider implements IAIProvider {
       return parseFloat(simpleMatch[1])
     }
 
-    // Default si no se encuentra nada
-    return 5.0
+    // Default si no se encuentra nada - BAJADO a 0 para que sea obvio que hay un error
+    console.warn('[MockAI] No se pudo extraer cantidad del texto:', text)
+    return 0
   }
 
   private extractCategory(text: string): string {
@@ -75,13 +95,13 @@ export class MockAIProvider implements IAIProvider {
     // Keywords por categoría
     const categoryKeywords: Record<string, string[]> = {
       'Café': ['café', 'coffee', 'starbucks', 'cafeteria'],
-      'Comida fuera': ['comida', 'comer', 'restaurante', 'almuerzo', 'cena', 'burger', 'pizza'],
+      'Comida fuera': ['comida', 'comer', 'restaurante', 'almuerzo', 'cena', 'burger', 'pizza', 'telepizza', 'dominos', 'mcdonalds', 'burguer king'],
       'Supermercado': ['supermercado', 'mercadona', 'carrefour', 'compra'],
       'Transporte': ['parking', 'gasolina', 'taxi', 'uber', 'metro', 'bus', 'tren'],
       'Ocio': ['cine', 'concierto', 'fiesta', 'bar', 'copas'],
       'Hogar': ['ikea', 'muebles', 'decoración'],
       'Salud': ['farmacia', 'medicina', 'doctor', 'hospital'],
-      'Compras': ['ropa', 'zapatos', 'zara', 'mango', 'tienda'],
+      'Compras': ['ropa', 'zapatos', 'zara', 'mango', 'tienda', 'h&m', 'primark'],
     }
 
     for (const [category, keywords] of Object.entries(categoryKeywords)) {
@@ -105,9 +125,14 @@ export class MockAIProvider implements IAIProvider {
       'el corte inglés',
       'mcdonalds',
       'burger king',
+      'telepizza',
+      'dominos',
+      'pizza hut',
       'ikea',
       'zara',
       'mango',
+      'h&m',
+      'primark',
     ]
 
     for (const merchant of merchants) {

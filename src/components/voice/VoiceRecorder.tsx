@@ -57,9 +57,9 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
         return
       }
 
-      // Auto-confirm si confidence >= 0.8
-      if (parsed.confidence >= 0.8) {
-        console.log('[VoiceRecorder] Auto-confirming (confidence >= 0.8)')
+      // Auto-confirm si confidence >= 0.95 (muy restrictivo para evitar errores)
+      if (parsed.confidence >= 0.95) {
+        console.log('[VoiceRecorder] Auto-confirming (confidence >= 0.95)')
         const spend = await submitSpend(parsed)
         if (spend) {
           setLastSavedSpendId(spend.id)

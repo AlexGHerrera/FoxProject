@@ -173,7 +173,7 @@ export function ToastContainer({
 
   return (
     <div
-      className={`fixed z-50 flex flex-col gap-2 ${positionStyles[position]} max-w-md w-full pointer-events-none`}
+      className={`fixed z-[100] flex flex-col gap-2 ${positionStyles[position]} max-w-md w-full pointer-events-none`}
     >
       {toasts.map((toast) => (
         <div key={toast.id} className="pointer-events-auto">

@@ -5,6 +5,7 @@
  */
 
 import { ReactNode, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { Button } from './Button'
 
 export interface ModalProps {
@@ -63,7 +64,7 @@ export function Modal({
     lg: 'max-w-2xl',
   }
 
-  return (
+  const modalContent = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={handleBackdropClick}
@@ -118,6 +119,9 @@ export function Modal({
       </div>
     </div>
   )
+  
+  // Renderizar el modal usando Portal para que escape del contexto padre
+  return createPortal(modalContent, document.body)
 }
 
 // Helper component for common cancel/confirm pattern

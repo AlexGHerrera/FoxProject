@@ -45,8 +45,8 @@ export function Dashboard() {
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark transition-colors duration-200">
       {/* Modal de Voice Recorder */}
       {showVoiceRecorder && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 max-w-lg w-full shadow-xl">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+          <div className="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 max-w-lg w-full shadow-xl relative z-40">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-text-light dark:text-text-dark">
                 Registrar Gasto
