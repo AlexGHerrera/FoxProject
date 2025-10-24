@@ -9,14 +9,15 @@ import { useBudgetProgress } from '@/hooks/useBudgetProgress'
 import { useSpendStore } from '@/stores/useSpendStore'
 import { BudgetBar, RecentSpends } from '@/components/dashboard'
 import { FoxyAvatar } from '@/components/foxy'
-import { VoiceRecorder } from '@/components/voice'
+import { VoiceInputPage } from './VoiceInputPage'
 import { Button } from '@/components/ui'
 
 // TODO: obtener el límite mensual de settings cuando implementemos esa funcionalidad
 const MONTHLY_LIMIT_CENTS = 100000 // 1000€ por defecto
 
 export function Dashboard() {
-  const [showVoiceRecorder, setShowVoiceRecorder] = useState(false)
+  const [showVoiceInput, setShowVoiceInput] = useState(false)
+  const [showManualInput, setShowManualInput] = useState(false)
   
   // Cargar gastos al montar
   useLoadSpends()
@@ -41,28 +42,13 @@ export function Dashboard() {
     )
   }
 
+  // Si está en modo voz, mostrar pantalla completa de voz
+  if (showVoiceInput) {
+    return <VoiceInputPage onClose={() => setShowVoiceInput(false)} />
+  }
+
   return (
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark transition-colors duration-200">
-      {/* Modal de Voice Recorder */}
-      {showVoiceRecorder && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
-          <div className="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 max-w-lg w-full shadow-xl relative z-40">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-text-light dark:text-text-dark">
-                Registrar Gasto
-              </h2>
-              <Button
-                variant="ghost"
-                onClick={() => setShowVoiceRecorder(false)}
-                aria-label="Cerrar"
-              >
-                ✕
-              </Button>
-            </div>
-            <VoiceRecorder onClose={() => setShowVoiceRecorder(false)} />
-          </div>
-        </div>
-      )}
 
       {/* Contenido principal */}
       <div className="max-w-4xl mx-auto px-4 py-6 pb-24">
@@ -106,9 +92,18 @@ export function Dashboard() {
           </div>
         </section>
 
-        {/* Foxy Avatar */}
-        <section className="mb-8 flex justify-center">
-          <FoxyAvatar state={foxyState} size="lg" />
+        {/* Foxy Avatar - Clickeable para activar voz */}
+        <section className="mb-8 flex flex-col items-center">
+          <button
+            onClick={() => setShowVoiceInput(true)}
+            className="focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-cyan rounded-full transition-transform hover:scale-105 active:scale-95"
+            aria-label="Registrar gasto por voz"
+          >
+            <FoxyAvatar state={foxyState} size="lg" />
+          </button>
+          <p className="text-center text-sm text-muted-light dark:text-muted-dark mt-2">
+            Toca a Foxy para registrar por voz
+          </p>
         </section>
 
         {/* Recent Spends */}
@@ -122,18 +117,18 @@ export function Dashboard() {
             }}
           />
         </section>
-      </div>
 
-      {/* Floating Action Button (Mic) */}
-      <button
-        onClick={() => setShowVoiceRecorder(true)}
-        className="fixed bottom-6 right-6 w-16 h-16 sm:w-18 sm:h-18 bg-gradient-to-br from-brand-cyan-neon to-brand-cyan rounded-full shadow-mic flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-cyan/50"
-        aria-label="Registrar gasto por voz"
-      >
-        <span className="text-3xl" aria-hidden="true">
-          🎤
-        </span>
-      </button>
+        {/* Botón para añadir gasto manual */}
+        <section className="mt-6 flex justify-center">
+          <Button
+            variant="secondary"
+            onClick={() => setShowManualInput(true)}
+            className="w-full max-w-sm"
+          >
+            ✏️ Añadir gasto manualmente
+          </Button>
+        </section>
+      </div>
     </div>
   )
 }
