@@ -179,18 +179,18 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
           </Button>
           <Button
             variant="secondary"
-            onClick={handleEdit}
+            onClick={handleRetry}
             className="w-full text-base py-3"
           >
-            ✏️ Editar
+            🔄 Reintentar por voz
           </Button>
           <div className="grid grid-cols-2 gap-3">
             <Button
               variant="secondary"
-              onClick={handleRetry}
+              onClick={handleEdit}
               className="w-full text-sm py-3"
             >
-              🔄 Reintentar
+              ✏️ Editar
             </Button>
             <Button
               variant="ghost"
