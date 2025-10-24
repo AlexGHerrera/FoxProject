@@ -1,0 +1,16 @@
+FOXY — Imagenes generadas (origen → etiqueta):
+
+- A_2D_digital_illustration_displays_the_main_dashbo.png  ->  01_dashboard_dark_neon_mobile_desktop.png
+- A_set_of_four_2D_digital_illustrations_features_an.png  ->  02_foxy_v1_expressions_cartoon.png
+- A_set_of_digital_illustrations_features_an_anthrop.png  ->  03_foxy_v3_humanoid_states.png
+- A_2D_digital_illustration_features_a_finance_track.png  ->  04_dashboard_both_dark_neon.png
+- A_2D_digital_illustration_displays_a_budgeting_app.png  ->  05_dashboard_light_dark_compare.png
+- A_2D_digital_image_displays_a_interface_for_a_pers.png  ->  06_dashboard_white_mobile_desktop.png
+- A_2D_digital_illustration_displays_a_voice_input_s.png  ->  07_voice_input_v1.png
+- A_pair_of_digital_mockup_images_displays_user_inte.png  ->  08_voice_input_v2_wide.png
+- A_pair_of_digital_images_displays_a_personal_finan.png  ->  09_confirm_v1.png
+- A_2D_digital_illustration_displays_user_interface_.png  ->  10_confirm_v2_wide.png
+- A_digital_screenshot_showcases_a_finance_tracking_.png  ->  11_expenses_v1.png
+- A_pair_of_digital_mockups_display_a_"Mis_gastos"_(.png  ->  12_expenses_v2_wide.png
+- A_side-by-side_digital_illustration_displays_filte.png  ->  13_filters_mobile_desktop.png
+- A_2D_digital_illustration_displays_an_extended_pan.png  ->  14_extended_panoramic.png
