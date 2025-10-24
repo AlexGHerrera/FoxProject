@@ -6,51 +6,40 @@
 
 ## 🎉 Estado Actual
 
-**✅ COMPLETADO: Flujo de voz funcional end-to-end**
+**✅ COMPLETADO: Dashboard y flujo de voz completo (Fase 7)**
 
-- Usuario puede hablar y registrar gastos
-- Reconocimiento de voz con Web Speech API
-- Parsing con MockAIProvider (o DeepSeek si hay API key)
-- Guardado en Supabase
-- Toast de éxito con botón "Deshacer"
-- UI accesible con buen contraste
+- ✅ Dashboard con BudgetBar y RecentSpends
+- ✅ Foxy Avatar clickeable (voice-first)
+- ✅ Entrada manual como alternativa
+- ✅ VoiceInputPage completa con confirmación
+- ✅ Reconocimiento de voz con Web Speech API
+- ✅ Parsing con MockAIProvider (o DeepSeek si hay API key)
+- ✅ Guardado en Supabase
+- ✅ UI accesible y mobile-friendly
+- ✅ React Router configurado
+
+**⚠️ PROBLEMA CONOCIDO: Safari micrófono**
+- El indicador de micrófono en Safari puede quedar visible (bug del navegador)
+- NO afecta privacidad ni funcionalidad
+- Documentado en `SAFARI-MIC-ISSUE.md`
+- Banner informativo implementado
 
 ---
 
 ## 🚀 Próximos Pasos Recomendados
 
-### Opción A: Dashboard (Fase 7) - **RECOMENDADO**
+### ~~Opción A: Dashboard (Fase 7)~~ - **✅ COMPLETADO**
 
-El siguiente paso lógico es mostrar los gastos registrados y el progreso del presupuesto.
-
-#### Tareas:
-1. **Implementar `BudgetBar` component** (`src/components/dashboard/BudgetBar.tsx`)
-   - Mostrar progreso del presupuesto mensual
-   - Colores dinámicos:
-     - Verde: < 70% del límite
-     - Amarillo: 70-89%
-     - Rojo: >= 90%
-   - Usar `useBudgetProgress` hook (ya implementado)
-
-2. **Implementar `RecentSpends` component** (`src/components/dashboard/RecentSpends.tsx`)
-   - Mostrar últimos 4-5 gastos
-   - Card compacto con: importe, categoría, merchant, timestamp
-   - Link a vista completa de gastos
-
-3. **Implementar `Dashboard` page** (`src/pages/Dashboard.tsx`)
-   - Integrar `BudgetBar` + `RecentSpends`
-   - Botón flotante para "Agregar gasto por voz"
-   - Placeholder para Foxy avatar (CSS animado)
-
-4. **Routing con React Router**
-   - Configurar rutas: `/`, `/spends`, `/settings`
-   - Layout con navegación bottom
-
-#### Estimación: 4-6 horas
+El dashboard ya está implementado con todas sus funcionalidades:
+- BudgetBar con colores dinámicos
+- RecentSpends con últimos gastos
+- Foxy Avatar clickeable (voice-first)
+- Entrada manual como alternativa
+- React Router configurado
 
 ---
 
-### Opción B: Gestión de Gastos (Fase 8)
+### Opción A: Gestión de Gastos (Fase 8) - **SIGUIENTE RECOMENDADO**
 
 Implementar lista completa de gastos con filtros y búsqueda.
 

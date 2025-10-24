@@ -260,8 +260,10 @@ Todos los componentes UI base usan los tokens:
 | Navegador | Soporte |
 |-----------|---------|
 | Chrome/Edge | ✅ Excelente |
-| Safari iOS | ✅ Bueno (requiere interacción) |
+| Safari macOS/iOS | ⚠️ Funcional con bug cosmético* |
 | Firefox | ⚠️ Limitado |
+
+**\*Bug conocido de Safari**: El indicador de micrófono en la barra del navegador puede permanecer visible incluso después de cerrar el reconocimiento. Este es un **bug cosmético de WebKit** — el micrófono está realmente cerrado y no está grabando. Ver `SAFARI-MIC-ISSUE.md` para más detalles.
 
 ### Fallback
 
@@ -269,6 +271,30 @@ Si la Web Speech API no está disponible o el usuario deniega permisos:
 - Se muestra un input manual optimizado ("Tecleo rápido")
 - Mismo flujo de parsing con IA
 - UX consistente
+
+### Problemas Conocidos
+
+#### Safari: Indicador de micrófono persistente
+
+**Descripción**: En Safari (macOS e iOS), el indicador rojo de micrófono en la barra del navegador puede quedar visible después de confirmar o cancelar un gasto.
+
+**Estado**: 
+- ✅ El micrófono está **realmente cerrado** (privacidad protegida)
+- ❌ Safari no actualiza el indicador visual (bug del navegador)
+- 📝 Todas las soluciones documentadas implementadas sin éxito
+- 🐛 Bug reportado a WebKit/Apple
+
+**Impacto**:
+- **Privacidad**: Ninguno (el mic no graba)
+- **Funcionalidad**: Ninguno (todo funciona correctamente)
+- **UX**: Puede confundir al usuario
+
+**Soluciones temporales para usuarios**:
+1. Recargar la pestaña (⌘+R)
+2. Usar entrada manual (sin micrófono)
+3. Usar Chrome/Edge en macOS
+
+**Detalles técnicos**: Ver `SAFARI-MIC-ISSUE.md`
 
 ---
 
