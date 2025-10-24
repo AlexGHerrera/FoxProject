@@ -67,6 +67,24 @@ export default {
         'xl': '24px',
         '2xl': '32px',
       },
+      animation: {
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'bounce-slow': 'bounce 2s infinite',
+        'pulse-ring': 'pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+      keyframes: {
+        'pulse-ring': {
+          '0%': {
+            boxShadow: '0 0 0 0 rgba(0, 229, 255, 0.7)',
+          },
+          '70%': {
+            boxShadow: '0 0 0 30px rgba(0, 229, 255, 0)',
+          },
+          '100%': {
+            boxShadow: '0 0 0 0 rgba(0, 229, 255, 0)',
+          },
+        },
+      },
     },
   },
   plugins: [],
