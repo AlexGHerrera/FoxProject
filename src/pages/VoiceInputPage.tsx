@@ -24,14 +24,23 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
   
   const [showConfirm, setShowConfirm] = useState(false)
   const [parsedSpend, setParsedSpend] = useState<ParsedSpend | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [originalTranscript, setOriginalTranscript] = useState('')
+  const [hasAutoParsed, setHasAutoParsed] = useState(false)
 
   // Activar escucha automáticamente al entrar
   useEffect(() => {
     startRecording()
   }, [])
 
-  // NO auto-parse - el usuario debe poder editar tranquilamente
-  // Se procesa solo cuando el usuario hace clic en "Procesar" o "Continuar"
+  // Auto-parse cuando termina de grabar (solo la primera vez)
+  useEffect(() => {
+    if (state === 'processing' && transcript && transcript.length > 3 && !hasAutoParsed) {
+      setOriginalTranscript(transcript) // Guardar el texto original
+      setHasAutoParsed(true)
+      handleParse()
+    }
+  }, [state, transcript, hasAutoParsed])
 
   const handleParse = async () => {
     if (!transcript || transcript.length < 3) {
@@ -62,20 +71,85 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
     }
   }
 
+  const handleEdit = () => {
+    // Restaurar el texto original al entrar en modo edición
+    setTranscript(originalTranscript)
+    setIsEditing(true)
+  }
+
+  const handleSaveEdit = async () => {
+    // Guardar el nuevo texto como "original" para futuras ediciones
+    setOriginalTranscript(transcript)
+    setIsEditing(false)
+    // Re-procesar con el texto editado
+    await handleParse()
+  }
+
+  const handleCancelEdit = () => {
+    // Restaurar el texto original si cancela la edición
+    setTranscript(originalTranscript)
+    setIsEditing(false)
+  }
+
   const handleRetry = () => {
     setShowConfirm(false)
     setParsedSpend(null)
-    // Reset voice state para poder grabar de nuevo
+    setIsEditing(false)
+    setHasAutoParsed(false)
+    setOriginalTranscript('')
+    setTranscript('')
+    // Reset para grabar de nuevo
+    startRecording()
   }
 
   const handleCancel = () => {
     setShowConfirm(false)
     setParsedSpend(null)
+    setIsEditing(false)
     onClose()
   }
 
-  // Pantalla de confirmación
+  // Pantalla de confirmación o edición
   if (showConfirm && parsedSpend) {
+    if (isEditing) {
+      // Modo edición del gasto reconocido
+      return (
+        <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center justify-center p-6">
+          <h1 className="text-2xl font-bold text-text-light dark:text-text-dark mb-6 text-center">
+            Edita el texto reconocido
+          </h1>
+
+          <div className="w-full max-w-md space-y-4 mb-8">
+            <textarea
+              value={transcript}
+              onChange={handleTranscriptChange}
+              className="w-full p-4 rounded-lg border-2 border-brand-cyan dark:border-brand-cyan-dark bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark text-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand-cyan"
+              rows={4}
+              placeholder="Ej: 5 euros de café en Starbucks"
+            />
+          </div>
+
+          <div className="w-full max-w-md space-y-3">
+            <Button
+              variant="primary"
+              onClick={handleSaveEdit}
+              className="w-full text-lg py-4"
+            >
+              Volver a procesar
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={handleCancelEdit}
+              className="w-full"
+            >
+              Cancelar edición
+            </Button>
+          </div>
+        </div>
+      )
+    }
+
+    // Pantalla de confirmación normal
     return (
       <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center justify-center p-6">
         {/* Título */}
@@ -103,7 +177,14 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
           >
             Confirmar
           </Button>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
+            <Button
+              variant="secondary"
+              onClick={handleEdit}
+              className="w-full"
+            >
+              Editar
+            </Button>
             <Button
               variant="secondary"
               onClick={handleRetry}
@@ -129,34 +210,14 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center justify-center p-6">
       {/* Título */}
       <h1 className="text-3xl font-bold text-text-light dark:text-text-dark mb-2">
-        {state === 'listening' ? 'Estoy escuchando...' : 'Revisa el texto'}
+        {state === 'listening' ? 'Estoy escuchando...' : 'Esperando...'}
       </h1>
 
-      {/* Transcripción - Siempre Editable */}
+      {/* Transcripción solo para mostrar */}
       {transcript && (
-        <div className="w-full max-w-md mb-8">
-          <div className="space-y-3">
-            <label className="block text-sm font-medium text-muted-light dark:text-muted-dark text-center">
-              Revisa o edita el texto reconocido:
-            </label>
-            <textarea
-              value={transcript}
-              onChange={handleTranscriptChange}
-              className="w-full p-4 rounded-lg border-2 border-brand-cyan dark:border-brand-cyan-dark bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark text-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand-cyan"
-              rows={3}
-              placeholder="Escribe el gasto aquí..."
-              disabled={state === 'processing'}
-            />
-            <Button
-              variant="primary"
-              onClick={handleParse}
-              className="w-full text-lg py-3"
-              disabled={!transcript || transcript.length < 3 || state === 'processing'}
-            >
-              {state === 'processing' ? 'Procesando...' : 'Continuar →'}
-            </Button>
-          </div>
-        </div>
+        <p className="text-lg text-muted-light dark:text-muted-dark mb-8 text-center max-w-md">
+          {transcript}
+        </p>
       )}
 
       {/* Foxy Avatar con auriculares cuando está escuchando */}

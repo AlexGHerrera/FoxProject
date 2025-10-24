@@ -54,6 +54,15 @@ export const useUIStore = create<UIState>((set) => ({
 
   showError: (message, duration = 5000) => {
     set((state) => {
+      // Evitar duplicados: si ya existe un error con el mismo mensaje, no agregarlo
+      const isDuplicate = state.toasts.some(
+        (t) => t.type === 'error' && t.message === message
+      )
+      
+      if (isDuplicate) {
+        return state // No agregar duplicado
+      }
+      
       const id = `toast-${Date.now()}-${toastIdCounter++}`
       return {
         toasts: [...state.toasts, { id, type: 'error', message, duration }],
