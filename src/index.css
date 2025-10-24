@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Variables for theme support */
+:root {
+  --bg: #F9FAFB;
+  --surface: #FFFFFF;
+  --text: #111827;
+  --muted: #6B7280;
+  --brand-cyan: #00B8D9;
+  --brand-cyan-neon: #00E5FF;
+  --brand-orange: #FF9D00;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --divider: #E5E7EB;
+  --card: #FFFFFF;
+  --chip-bg: #EEF2FF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0F111A;
+    --surface: #12141F;
+    --text: #F3F4F6;
+    --muted: #94A3B8;
+    --brand-cyan: #00D3FF;
+    --brand-cyan-neon: #35FFFF;
+    --brand-orange: #FFB84C;
+    --success: #34D399;
+    --warning: #F59E0B;
+    --danger: #F87171;
+    --divider: #1F2430;
+    --card: #141826;
+    --chip-bg: #1B2030;
+  }
+}
+
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible styles */
+*:focus-visible {
+  outline: 2px solid var(--brand-cyan);
+  outline-offset: 2px;
+}
+
+/* Utilities */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

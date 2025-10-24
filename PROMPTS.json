@@ -1,0 +1,155 @@
+{
+  "parseSpend": {
+    "system": "Eres un parser financiero para español (España). Devuelves SIEMPRE JSON válido sin texto extra.",
+    "instruction": "Extrae {amount_eur}, {category}, {merchant}, {note}, {confidence} de la frase del usuario.\n- Admite formatos: '10,55', '10.55', '10 con 55', '€10', '10 euros'.\n- Si hay varias cantidades, elige la más probable como IMPORTE.\n- Categoriza en una de: ['Café','Comida fuera','Supermercado','Transporte','Ocio','Hogar','Salud','Compras','Otros'].\n- {merchant} opcional (marca/tienda), {note} opcional.\n- {confidence} en 0..1 (≥0.8 auto‑confirm).\nResponde SOLO con JSON.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "amount_eur": {
+          "type": "number"
+        },
+        "category": {
+          "type": "string"
+        },
+        "merchant": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "amount_eur",
+        "category",
+        "confidence"
+      ]
+    },
+    "examples": [
+      {
+        "input": "Café 1 con 80 en el bar de abajo",
+        "output": {
+          "amount_eur": 1.8,
+          "category": "Café",
+          "merchant": "bar de abajo",
+          "note": "",
+          "confidence": 0.93
+        }
+      },
+      {
+        "input": "Camiseta 10 euros el corte inglés",
+        "output": {
+          "amount_eur": 10.0,
+          "category": "Compras",
+          "merchant": "El Corte Inglés",
+          "note": "",
+          "confidence": 0.9
+        }
+      },
+      {
+        "input": "Taxi 6€",
+        "output": {
+          "amount_eur": 6.0,
+          "category": "Transporte",
+          "merchant": "Taxi",
+          "note": "",
+          "confidence": 0.95
+        }
+      },
+      {
+        "input": "Super 35,70",
+        "output": {
+          "amount_eur": 35.7,
+          "category": "Supermercado",
+          "merchant": "",
+          "note": "",
+          "confidence": 0.88
+        }
+      },
+      {
+        "input": "10 con 50 céntimos de coca cola",
+        "output": {
+          "amount_eur": 10.5,
+          "category": "Café",
+          "merchant": "",
+          "note": "coca cola",
+          "confidence": 0.85
+        }
+      },
+      {
+        "input": "una coca cola",
+        "output": {
+          "amount_eur": 0.0,
+          "category": "Café",
+          "merchant": "",
+          "note": "coca cola - sin importe detectado",
+          "confidence": 0.3
+        }
+      },
+      {
+        "input": "parking 2 horas 3€",
+        "output": {
+          "amount_eur": 3.0,
+          "category": "Transporte",
+          "merchant": "Parking",
+          "note": "2 horas",
+          "confidence": 0.91
+        }
+      }
+    ]
+  },
+  "fallbackParser": {
+    "system": "Eres un parser básico. Si no encuentras importe claro, devuelve confidence < 0.5.",
+    "instruction": "Intenta extraer lo que puedas. Si falta el importe o es ambiguo, marca confidence muy bajo (0.2-0.4) para que el usuario confirme manualmente."
+  },
+  "merchantNormalizer": {
+    "rules": [
+      {"pattern": "corte ingles|el corte|corteingles", "normalized": "El Corte Inglés"},
+      {"pattern": "mercadona", "normalized": "Mercadona"},
+      {"pattern": "carrefour", "normalized": "Carrefour"},
+      {"pattern": "lidl", "normalized": "Lidl"},
+      {"pattern": "dia|supermercados dia", "normalized": "DIA"}
+    ]
+  },
+  "microMessages": {
+    "ok": [
+      "¡Listo! {category} {amount} € guardado.",
+      "He registrado {amount} € en {category}.",
+      "Anotado ✅ {category}: {amount} €."
+    ],
+    "warn": [
+      "Vas alto en {category} este mes. ¿Revisamos mañana?",
+      "Casi alcanzas el límite. Quedan {remaining} €."
+    ],
+    "error": [
+      "No he entendido el importe. ¿Puedes repetir?",
+      "Parece ruido. Si quieres, tecleo rápido."
+    ],
+    "undoToast": "Gasto guardado. Deshacer (5s)"
+  },
+  "insightsMonthly": {
+    "system": "Eres un analista financiero amable. Resumes en 3 frases claras.",
+    "instruction": "Con totales por categoría y cambios vs mes pasado, genera 3 insights prácticos y breves en español, sin regañar.",
+    "example_input": {
+      "Supermercado": {
+        "total": 180,
+        "delta_pct": -5
+      },
+      "Ocio": {
+        "total": 120,
+        "delta_pct": 18
+      },
+      "Café": {
+        "total": 36,
+        "delta_pct": 20
+      }
+    },
+    "example_output": [
+      "Has reducido Supermercado un 5 %. Bien ahí.",
+      "Ocio sube un 18 %. Si lo limitas a 90 €, cumples tu objetivo.",
+      "Café crece un 20 %. Cambiar a cápsulas te ahorraría ~8 €/mes."
+    ]
+  }
+}
