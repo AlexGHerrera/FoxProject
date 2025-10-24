@@ -6,7 +6,7 @@
 
 import { useMemo } from 'react'
 import { useSpendStore } from '../stores/useSpendStore'
-import { calculateBudgetProgress, getRemainingBudget } from '../domain/rules/budgetCalculator'
+import { calculateBudgetStatus } from '../domain/rules/budgetCalculator'
 
 interface BudgetProgress {
   spent: number // céntimos
@@ -38,22 +38,15 @@ export function useBudgetProgress(monthlyLimitCents: number): BudgetProgress {
     const monthEnd = new Date(year, month + 1, 0, 23, 59, 59)
 
     const monthSpends = spends.filter((spend) => {
-      const spendDate = new Date(spend.ts)
+      const spendDate = spend.timestamp
       return spendDate >= monthStart && spendDate <= monthEnd
     })
 
     // Calcular totales
-    const totalSpent = monthSpends.reduce((acc, s) => acc + s.amount_cents, 0)
-    const progress = calculateBudgetProgress(totalSpent, monthlyLimitCents)
-    const remaining = getRemainingBudget(totalSpent, monthlyLimitCents)
-
-    // Status según porcentaje
-    let status: BudgetProgress['status'] = 'ok'
-    if (progress >= 90) {
-      status = 'alert'
-    } else if (progress >= 70) {
-      status = 'warning'
-    }
+    const totalSpent = monthSpends.reduce((acc, s) => acc + s.amountCents, 0)
+    const budgetStatus = calculateBudgetStatus(totalSpent, monthlyLimitCents)
+    const progress = budgetStatus.percentageUsed * 100 // convertir a porcentaje 0-100
+    const remaining = budgetStatus.remainingCents
 
     // Promedios
     const averageDaily = currentDay > 0 ? totalSpent / currentDay : 0
@@ -64,7 +57,7 @@ export function useBudgetProgress(monthlyLimitCents: number): BudgetProgress {
       limit: monthlyLimitCents,
       percentage: progress,
       remaining,
-      status,
+      status: budgetStatus.status,
       daysLeft,
       daysInMonth,
       averageDaily,
