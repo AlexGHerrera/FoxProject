@@ -15,7 +15,11 @@ import { TranscriptDisplay } from './TranscriptDisplay'
 import { ConfirmModal } from './ConfirmModal'
 import type { ParsedSpend } from '../../adapters/ai/IAIProvider'
 
-export function VoiceRecorder() {
+interface VoiceRecorderProps {
+  onClose?: () => void
+}
+
+export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
   const { transcript, state } = useVoiceStore()
   const { isRecording } = useSpeechRecognition()
   const { parseTranscript, submitSpend, parsedSpend } = useSpendSubmit()
@@ -80,6 +84,11 @@ export function VoiceRecorder() {
     }
     setShowConfirmModal(false)
     setPendingSpend(null)
+    
+    // Cerrar el modal principal si está disponible
+    if (onClose) {
+      setTimeout(() => onClose(), 500) // Pequeño delay para que se vea el toast
+    }
   }
 
   const handleCancel = () => {
