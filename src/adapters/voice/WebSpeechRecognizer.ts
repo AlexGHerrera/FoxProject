@@ -167,17 +167,33 @@ export class WebSpeechRecognizer implements IVoiceRecognizer {
   stop(): void {
     if (this.recognition) {
       try {
-        // Safari: usar abort() y asegurar cleanup
-        // Chrome: abort() también funciona bien
-        this.recognition.abort()
+        const recog = this.recognition
         
-        // Safari: esperar un tick antes de limpiar para que procese el abort
+        // Safari: limpiar TODOS los event handlers antes de abortar
+        if (this.isSafari) {
+          recog.onresult = null
+          recog.onerror = null
+          recog.onend = null
+          ;(recog as any).onaudioend = null
+          ;(recog as any).onaudiostart = null
+          ;(recog as any).onsoundstart = null
+          ;(recog as any).onsoundend = null
+          ;(recog as any).onspeechstart = null
+          ;(recog as any).onspeechend = null
+        }
+        
+        // abort() cierra el micrófono inmediatamente
+        recog.abort()
+        
+        // Limpiar la instancia
+        this.recognition = null
+        
+        // Safari: forzar garbage collection después de un momento
         if (this.isSafari) {
           setTimeout(() => {
-            this.recognition = null
-          }, 50)
-        } else {
-          this.recognition = null
+            // Nada más que hacer, solo dar tiempo al navegador
+            console.log('[WebSpeechRecognizer] Safari: cleanup complete')
+          }, 100)
         }
         
         console.log('[WebSpeechRecognizer] Stopped and aborted', this.isSafari ? '(Safari)' : '')

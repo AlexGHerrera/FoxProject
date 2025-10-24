@@ -8,6 +8,9 @@ import { useEffect, useRef, useCallback } from 'react'
 import { useVoiceStore } from '../stores/useVoiceStore'
 import { WebSpeechRecognizer } from '../adapters/voice/WebSpeechRecognizer'
 
+// Instancia global para evitar múltiples reconocedores (crítico en Safari)
+let globalRecognizer: WebSpeechRecognizer | null = null
+
 export function useSpeechRecognition() {
   const recognizerRef = useRef<WebSpeechRecognizer | null>(null)
   const {
@@ -20,25 +23,32 @@ export function useSpeechRecognition() {
     setError,
   } = useVoiceStore()
 
-  // Initialize recognizer
+  // Initialize recognizer - usar instancia global en Safari
   useEffect(() => {
-    if (!recognizerRef.current) {
-      recognizerRef.current = new WebSpeechRecognizer('es-ES')
+    // Safari: reutilizar instancia global si existe
+    if (!globalRecognizer) {
+      globalRecognizer = new WebSpeechRecognizer('es-ES')
+      console.log('[useSpeechRecognition] Created global recognizer')
     }
+    recognizerRef.current = globalRecognizer
 
     return () => {
       // Cleanup: asegurar que el mic se cierre al desmontar
       if (recognizerRef.current) {
         recognizerRef.current.stop()
-        recognizerRef.current = null
+        console.log('[useSpeechRecognition] Cleanup on unmount')
       }
     }
   }, [])
 
   const startRecording = useCallback(async () => {
     // Recrear recognizer si fue destruido
-    if (!recognizerRef.current) {
-      recognizerRef.current = new WebSpeechRecognizer('es-ES')
+    if (!recognizerRef.current && !globalRecognizer) {
+      globalRecognizer = new WebSpeechRecognizer('es-ES')
+      recognizerRef.current = globalRecognizer
+      console.log('[useSpeechRecognition] Recreated global recognizer')
+    } else if (!recognizerRef.current) {
+      recognizerRef.current = globalRecognizer
     }
 
     try {
