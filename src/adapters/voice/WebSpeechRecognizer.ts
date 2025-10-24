@@ -64,6 +64,7 @@ export class WebSpeechRecognizer implements IVoiceRecognizer {
   private resultCallback: ((result: VoiceRecognitionResult) => void) | null = null
   private errorCallback: ((error: Error) => void) | null = null
   private endCallback: (() => void) | null = null
+  private isSafari: boolean = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 
   isAvailable(): boolean {
     return !!(window.SpeechRecognition || window.webkitSpeechRecognition)
@@ -131,12 +132,28 @@ export class WebSpeechRecognizer implements IVoiceRecognizer {
       }
 
       this.recognition.onend = () => {
+        // Safari: limpiar instancia cuando termina para liberar el mic
+        if (this.isSafari) {
+          console.log('[WebSpeechRecognizer] Safari: cleaning up on end')
+          this.recognition = null
+        }
         this.endCallback?.()
+      }
+
+      // Safari: también escuchar audioend para asegurar cleanup
+      if (this.isSafari) {
+        (this.recognition as any).onaudioend = () => {
+          console.log('[WebSpeechRecognizer] Safari: audio ended, cleaning up')
+          if (this.recognition) {
+            this.recognition.abort()
+            this.recognition = null
+          }
+        }
       }
 
       // Iniciar
       this.recognition.start()
-      console.log('[WebSpeechRecognizer] Started')
+      console.log('[WebSpeechRecognizer] Started', this.isSafari ? '(Safari mode)' : '')
     } catch (error) {
       const recognitionError = new VoiceRecognitionError(
         'Failed to start speech recognition',
@@ -150,13 +167,24 @@ export class WebSpeechRecognizer implements IVoiceRecognizer {
   stop(): void {
     if (this.recognition) {
       try {
-        // abort() cierra el micrófono inmediatamente
-        // stop() espera a que termine de procesar
+        // Safari: usar abort() y asegurar cleanup
+        // Chrome: abort() también funciona bien
         this.recognition.abort()
-        this.recognition = null
-        console.log('[WebSpeechRecognizer] Stopped and aborted')
+        
+        // Safari: esperar un tick antes de limpiar para que procese el abort
+        if (this.isSafari) {
+          setTimeout(() => {
+            this.recognition = null
+          }, 50)
+        } else {
+          this.recognition = null
+        }
+        
+        console.log('[WebSpeechRecognizer] Stopped and aborted', this.isSafari ? '(Safari)' : '')
       } catch (error) {
         console.error('[WebSpeechRecognizer] Error stopping:', error)
+        // Forzar cleanup aunque haya error
+        this.recognition = null
       }
     }
   }
