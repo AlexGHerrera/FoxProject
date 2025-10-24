@@ -175,29 +175,29 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
             onClick={handleConfirm}
             className="w-full text-lg py-4"
           >
-            Confirmar
+            ✓ Confirmar
           </Button>
-          <div className="grid grid-cols-3 gap-3">
-            <Button
-              variant="secondary"
-              onClick={handleEdit}
-              className="w-full"
-            >
-              Editar
-            </Button>
+          <Button
+            variant="secondary"
+            onClick={handleEdit}
+            className="w-full text-base py-3"
+          >
+            ✏️ Editar
+          </Button>
+          <div className="grid grid-cols-2 gap-3">
             <Button
               variant="secondary"
               onClick={handleRetry}
-              className="w-full"
+              className="w-full text-sm py-3"
             >
-              Reintentar
+              🔄 Reintentar
             </Button>
             <Button
               variant="ghost"
               onClick={handleCancel}
-              className="w-full"
+              className="w-full text-sm py-3"
             >
-              Cancelar
+              ✕ Cancelar
             </Button>
           </div>
         </div>
