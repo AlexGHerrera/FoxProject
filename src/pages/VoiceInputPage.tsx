@@ -10,7 +10,6 @@ import { useSpeechRecognition } from '@/hooks/useSpeechRecognition'
 import { useSpendSubmit } from '@/hooks/useSpendSubmit'
 import { FoxyAvatar } from '@/components/foxy'
 import { Button } from '@/components/ui'
-import { MicButton } from '@/components/voice'
 import type { ParsedSpend } from '@/adapters/ai/IAIProvider'
 
 interface VoiceInputPageProps {
@@ -228,28 +227,17 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
         />
       </div>
 
-      {/* Botón de micrófono */}
-      <div className="mb-8">
-        <MicButton />
-      </div>
-
-      {/* Botón detener grabación (solo visible cuando está grabando) */}
-      {isRecording && (
-        <Button
-          variant="secondary"
-          onClick={() => {
-            // El MicButton maneja el stop
-          }}
-          className="w-full max-w-md"
-        >
-          Detener grabación
-        </Button>
+      {/* Hint si está escuchando */}
+      {state === 'listening' && (
+        <p className="text-sm text-muted-light dark:text-muted-dark mb-8 text-center">
+          Habla de forma natural...
+        </p>
       )}
 
       {/* Botón cancelar */}
       <button
         onClick={onClose}
-        className="mt-4 text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark transition-colors"
+        className="mt-4 text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark transition-colors underline decoration-dashed"
       >
         Cancelar
       </button>
