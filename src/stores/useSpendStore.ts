@@ -87,8 +87,8 @@ export const useSpendStore = create<SpendStore>((set, get) => ({
     
     return spends.filter((spend) => {
       // Date range filter
-      if (filters.startDate && spend.ts < filters.startDate) return false
-      if (filters.endDate && spend.ts > filters.endDate) return false
+      if (filters.startDate && spend.timestamp.toISOString() < filters.startDate) return false
+      if (filters.endDate && spend.timestamp.toISOString() > filters.endDate) return false
       
       // Category filter
       if (filters.categories.length > 0 && !filters.categories.includes(spend.category)) {
@@ -109,7 +109,7 @@ export const useSpendStore = create<SpendStore>((set, get) => ({
 
   getTotalAmount: () => {
     const filtered = get().getFilteredSpends()
-    return filtered.reduce((acc, spend) => acc + spend.amount_cents, 0)
+    return filtered.reduce((acc, spend) => acc + spend.amountCents, 0)
   },
 }))
 
