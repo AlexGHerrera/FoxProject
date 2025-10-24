@@ -27,14 +27,19 @@ export function useSpeechRecognition() {
     }
 
     return () => {
+      // Cleanup: asegurar que el mic se cierre al desmontar
       if (recognizerRef.current) {
         recognizerRef.current.stop()
+        recognizerRef.current = null
       }
     }
   }, [])
 
   const startRecording = useCallback(async () => {
-    if (!recognizerRef.current) return
+    // Recrear recognizer si fue destruido
+    if (!recognizerRef.current) {
+      recognizerRef.current = new WebSpeechRecognizer('es-ES')
+    }
 
     try {
       setState('listening')

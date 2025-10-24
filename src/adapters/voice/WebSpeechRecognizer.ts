@@ -149,8 +149,15 @@ export class WebSpeechRecognizer implements IVoiceRecognizer {
 
   stop(): void {
     if (this.recognition) {
-      this.recognition.stop()
-      console.log('[WebSpeechRecognizer] Stopped')
+      try {
+        // abort() cierra el micrófono inmediatamente
+        // stop() espera a que termine de procesar
+        this.recognition.abort()
+        this.recognition = null
+        console.log('[WebSpeechRecognizer] Stopped and aborted')
+      } catch (error) {
+        console.error('[WebSpeechRecognizer] Error stopping:', error)
+      }
     }
   }
 
