@@ -24,19 +24,14 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
   
   const [showConfirm, setShowConfirm] = useState(false)
   const [parsedSpend, setParsedSpend] = useState<ParsedSpend | null>(null)
-  const [isEditingTranscript, setIsEditingTranscript] = useState(false)
 
   // Activar escucha automáticamente al entrar
   useEffect(() => {
     startRecording()
   }, [])
 
-  // Auto-parse cuando termina de grabar
-  useEffect(() => {
-    if (state === 'processing' && transcript && transcript.length > 3) {
-      handleParse()
-    }
-  }, [state, transcript])
+  // NO auto-parse - el usuario debe poder editar tranquilamente
+  // Se procesa solo cuando el usuario hace clic en "Procesar" o "Continuar"
 
   const handleParse = async () => {
     if (!transcript || transcript.length < 3) {
@@ -56,11 +51,6 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
 
   const handleTranscriptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTranscript(e.target.value)
-  }
-
-  const handleProcessManually = () => {
-    setIsEditingTranscript(false)
-    handleParse()
   }
 
   const handleConfirm = async () => {
@@ -139,51 +129,33 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center justify-center p-6">
       {/* Título */}
       <h1 className="text-3xl font-bold text-text-light dark:text-text-dark mb-2">
-        {state === 'listening' ? 'Estoy escuchando...' : isEditingTranscript ? 'Edita el texto' : 'Toca el micrófono'}
+        {state === 'listening' ? 'Estoy escuchando...' : 'Revisa el texto'}
       </h1>
 
-      {/* Transcripción - Editable */}
+      {/* Transcripción - Siempre Editable */}
       {transcript && (
         <div className="w-full max-w-md mb-8">
-          {isEditingTranscript ? (
-            <div className="space-y-3">
-              <textarea
-                value={transcript}
-                onChange={handleTranscriptChange}
-                className="w-full p-4 rounded-lg border-2 border-brand-cyan dark:border-brand-cyan-dark bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark text-lg resize-none focus:outline-none"
-                rows={3}
-                placeholder="Escribe el gasto aquí..."
-              />
-              <div className="flex gap-2">
-                <Button
-                  variant="primary"
-                  onClick={handleProcessManually}
-                  className="flex-1"
-                >
-                  Procesar
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => setIsEditingTranscript(false)}
-                  className="flex-1"
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <p className="text-lg text-muted-light dark:text-muted-dark text-center">
-                {transcript}
-              </p>
-              <button
-                onClick={() => setIsEditingTranscript(true)}
-                className="text-sm text-brand-cyan dark:text-brand-cyan-dark hover:underline w-full text-center"
-              >
-                ✏️ Editar transcripción
-              </button>
-            </div>
-          )}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-muted-light dark:text-muted-dark text-center">
+              Revisa o edita el texto reconocido:
+            </label>
+            <textarea
+              value={transcript}
+              onChange={handleTranscriptChange}
+              className="w-full p-4 rounded-lg border-2 border-brand-cyan dark:border-brand-cyan-dark bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark text-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand-cyan"
+              rows={3}
+              placeholder="Escribe el gasto aquí..."
+              disabled={state === 'processing'}
+            />
+            <Button
+              variant="primary"
+              onClick={handleParse}
+              className="w-full text-lg py-3"
+              disabled={!transcript || transcript.length < 3 || state === 'processing'}
+            >
+              {state === 'processing' ? 'Procesando...' : 'Continuar →'}
+            </Button>
+          </div>
         </div>
       )}
 
