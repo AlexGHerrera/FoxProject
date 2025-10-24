@@ -6,8 +6,21 @@
 
 import { useVoiceStore } from '../../stores/useVoiceStore'
 
-export function TranscriptDisplay() {
-  const { transcript, state } = useVoiceStore()
+interface TranscriptDisplayProps {
+  onTranscriptChange?: (newTranscript: string) => void
+  editable?: boolean
+}
+
+export function TranscriptDisplay({ onTranscriptChange, editable = false }: TranscriptDisplayProps) {
+  const { transcript, state, setTranscript } = useVoiceStore()
+  
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value
+    setTranscript(newValue)
+    if (onTranscriptChange) {
+      onTranscriptChange(newValue)
+    }
+  }
 
   const getPlaceholder = () => {
     switch (state) {
@@ -26,11 +39,13 @@ export function TranscriptDisplay() {
     }
   }
 
+  const isInteractive = state === 'idle' || state === 'listening'
+
   return (
     <div className="w-full max-w-md mx-auto">
       <div
         className={`
-          min-h-[100px] p-4 rounded-lg
+          min-h-[100px] rounded-lg
           bg-surface-light dark:bg-surface-dark
           border-2 transition-all duration-200
           ${
@@ -46,12 +61,20 @@ export function TranscriptDisplay() {
           }
         `}
       >
-        {transcript ? (
-          <p className="text-lg text-text-light dark:text-text-dark">
+        {editable && isInteractive ? (
+          <textarea
+            value={transcript}
+            onChange={handleChange}
+            placeholder={getPlaceholder()}
+            className="w-full min-h-[100px] p-4 text-lg bg-transparent text-text-light dark:text-text-dark placeholder:text-muted-light dark:placeholder:text-muted-dark resize-none focus:outline-none"
+            disabled={state === 'processing'}
+          />
+        ) : transcript ? (
+          <p className="text-lg text-text-light dark:text-text-dark p-4">
             {transcript}
           </p>
         ) : (
-          <p className="text-muted-light dark:text-muted-dark italic">
+          <p className="text-muted-light dark:text-muted-dark italic p-4">
             {getPlaceholder()}
           </p>
         )}

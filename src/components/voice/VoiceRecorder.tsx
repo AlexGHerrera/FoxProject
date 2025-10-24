@@ -23,11 +23,9 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
   const { transcript, state } = useVoiceStore()
   const { isRecording } = useSpeechRecognition()
   const { parseTranscript, submitSpend, parsedSpend } = useSpendSubmit()
-  const { addToast, removeToast } = useUIStore()
   
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [pendingSpend, setPendingSpend] = useState<ParsedSpend | null>(null)
-  const [lastSavedSpendId, setLastSavedSpendId] = useState<string | null>(null)
   
   const isUsingMock = !env.deepseek?.apiKey || env.deepseek.apiKey.length === 0
 
@@ -61,13 +59,13 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
       if (parsed.confidence >= 0.95) {
         console.log('[VoiceRecorder] Auto-confirming (confidence >= 0.95)')
         const spend = await submitSpend(parsed)
-        if (spend) {
-          setLastSavedSpendId(spend.id)
-          showUndoToast(spend.id)
+        // Cerrar modal inmediatamente después de guardar
+        if (spend && onClose) {
+          onClose()
         }
       } else {
         // Mostrar modal de confirmación
-        console.log('[VoiceRecorder] Showing confirm modal (confidence < 0.8)')
+        console.log('[VoiceRecorder] Showing confirm modal (confidence < 0.95)')
         setPendingSpend(parsed)
         setShowConfirmModal(true)
       }
@@ -78,45 +76,18 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
 
   const handleConfirm = async (spend: ParsedSpend) => {
     const savedSpend = await submitSpend(spend)
-    if (savedSpend) {
-      setLastSavedSpendId(savedSpend.id)
-      showUndoToast(savedSpend.id)
-    }
     setShowConfirmModal(false)
     setPendingSpend(null)
     
-    // Cerrar el modal principal si está disponible
-    if (onClose) {
-      setTimeout(() => onClose(), 500) // Pequeño delay para que se vea el toast
+    // Cerrar el modal principal inmediatamente
+    if (onClose && savedSpend) {
+      onClose()
     }
   }
 
   const handleCancel = () => {
     setShowConfirmModal(false)
     setPendingSpend(null)
-  }
-
-  const showUndoToast = (spendId: string) => {
-    addToast({
-      type: 'success',
-      message: 'Gasto guardado correctamente',
-      duration: 5000,
-      action: {
-        label: 'Deshacer',
-        onClick: () => handleUndo(spendId),
-      },
-    })
-  }
-
-  const handleUndo = async (spendId: string) => {
-    // TODO: Implementar lógica de deshacer (deleteSpend)
-    console.log('[VoiceRecorder] Undo spend:', spendId)
-    // Por ahora, solo mostrar feedback
-    addToast({
-      type: 'info',
-      message: 'Gasto eliminado',
-      duration: 3000,
-    })
   }
 
   return (
@@ -132,8 +103,8 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
         </div>
       )}
 
-      {/* Transcript Display */}
-      <TranscriptDisplay />
+      {/* Transcript Display - Editable */}
+      <TranscriptDisplay editable={true} />
 
       {/* Mic Button (centered) */}
       <div className="flex justify-center pt-4">
