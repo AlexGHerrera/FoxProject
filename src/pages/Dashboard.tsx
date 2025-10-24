@@ -93,7 +93,7 @@ export function Dashboard() {
         </section>
 
         {/* Foxy Avatar - Clickeable para activar voz */}
-        <section className="mb-8 flex flex-col items-center">
+        <section className="mb-8 flex flex-col items-center gap-4">
           <button
             onClick={() => setShowVoiceInput(true)}
             className="focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-cyan rounded-full transition-transform hover:scale-105 active:scale-95"
@@ -101,9 +101,18 @@ export function Dashboard() {
           >
             <FoxyAvatar state={foxyState} size="lg" />
           </button>
-          <p className="text-center text-sm text-muted-light dark:text-muted-dark mt-2">
+          <p className="text-center text-sm text-muted-light dark:text-muted-dark">
             Toca a Foxy para registrar por voz
           </p>
+          
+          {/* Botón para añadir gasto manual - justo debajo de Foxy */}
+          <Button
+            variant="ghost"
+            onClick={() => setShowManualInput(true)}
+            className="text-sm"
+          >
+            ✏️ O escribe el gasto manualmente
+          </Button>
         </section>
 
         {/* Recent Spends */}
@@ -116,17 +125,6 @@ export function Dashboard() {
               console.log('Ver todos los gastos')
             }}
           />
-        </section>
-
-        {/* Botón para añadir gasto manual */}
-        <section className="mt-6 flex justify-center">
-          <Button
-            variant="secondary"
-            onClick={() => setShowManualInput(true)}
-            className="w-full max-w-sm"
-          >
-            ✏️ Añadir gasto manualmente
-          </Button>
         </section>
       </div>
     </div>
