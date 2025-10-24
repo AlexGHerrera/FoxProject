@@ -43,6 +43,10 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
     if (state === 'processing' && transcript && transcript.length > 3 && !hasAutoParsed) {
       setOriginalTranscript(transcript) // Guardar el texto original
       setHasAutoParsed(true)
+      
+      // Safari: detener ANTES de parsear para liberar el mic
+      stopRecording()
+      
       handleParse()
     }
   }, [state, transcript, hasAutoParsed])

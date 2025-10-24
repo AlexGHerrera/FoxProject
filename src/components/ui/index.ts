@@ -11,3 +11,5 @@ export type { ModalProps } from './Modal'
 export { ToastItem, ToastContainer } from './Toast'
 export type { Toast, ToastType, ToastPosition, ToastProps, ToastContainerProps } from './Toast'
 
+export { SafariBanner } from './SafariBanner'
+

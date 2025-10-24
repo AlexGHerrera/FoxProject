@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useTheme } from './hooks/useTheme'
 import { useUIStore } from './stores/useUIStore'
-import { ToastContainer } from './components/ui'
+import { ToastContainer, SafariBanner } from './components/ui'
 import { Dashboard } from './pages'
 import './App.css'
 
@@ -13,6 +13,9 @@ function App() {
     <BrowserRouter>
       {/* Toast Container Global */}
       <ToastContainer toasts={toasts} onDismiss={removeToast} position="top-right" />
+      
+      {/* Safari Banner - Aviso sobre indicador de micrófono */}
+      <SafariBanner />
 
       {/* Routes */}
       <Routes>
