@@ -1,238 +1,217 @@
-# 🚀 Próximos Pasos - Foxy MVP
+# 🦊 Foxy - Próximos Pasos
 
-> Guía rápida de qué hacer ahora para continuar el desarrollo
-
----
-
-## ✅ Lo que Ya Está Hecho
-
-Hemos completado la **base sólida** del proyecto:
-
-1. **Setup completo** del proyecto (Vite + React + TS + Tailwind)
-2. **Arquitectura hexagonal** implementada
-3. **Capa de dominio** (modelos + reglas de negocio)
-4. **Casos de uso** (parseSpend, saveSpend, calculateBudget, exportSpends)
-5. **Adapters** (DeepSeek, Supabase, Web Speech API, IndexedDB)
-6. **Tests unitarios** básicos (12 tests pasando ✓)
-7. **Configuración** completa (Tailwind, TypeScript, Vitest)
-8. **Documentación** (README, AGENTS, PROGRESS)
-
-**Estado**: ✅ No hay errores de TypeScript, todos los tests pasan
+> Guía paso a paso para continuar el desarrollo tras completar el flujo de voz
 
 ---
 
-## 🎯 Paso 1: Configurar Supabase (BLOQUEANTE)
+## 🎉 Estado Actual
 
-**Sin esto, la app no puede funcionar**
+**✅ COMPLETADO: Flujo de voz funcional end-to-end**
 
-### 1.1 Crear Proyecto
-
-1. Ve a [https://supabase.com](https://supabase.com)
-2. Crea una cuenta o inicia sesión
-3. Haz clic en "New Project"
-4. Elige:
-   - **Organization**: personal o crea una nueva
-   - **Name**: `foxy-app` (o el que prefieras)
-   - **Database Password**: genera uno seguro y **guárdalo**
-   - **Region**: elige la más cercana (Europe West recomendada)
-   - **Pricing Plan**: Free (suficiente para MVP)
-
-5. Espera ~2 minutos a que se cree el proyecto
-
-### 1.2 Ejecutar Schema
-
-1. En el dashboard de Supabase, ve a **SQL Editor** (menú lateral)
-2. Haz clic en **New Query**
-3. Abre el archivo `SCHEMA.sql` del proyecto
-4. **Copia todo su contenido**
-5. Pégalo en el editor de Supabase
-6. Haz clic en **Run** (abajo a la derecha)
-7. Deberías ver: "Success. No rows returned"
-
-Esto crea:
-- 4 tablas: `spends`, `settings`, `training_examples`, `api_usage`
-- Índices optimizados
-- RLS policies (seguridad automática)
-
-### 1.3 Obtener Credenciales
-
-1. Ve a **Settings** (ruedita en menú lateral) → **API**
-2. Copia estos valores:
-   - **Project URL**: `https://xxxxx.supabase.co`
-   - **anon public key**: `eyJhbGciOi...` (clave larga)
-
-### 1.4 Configurar .env.local
-
-1. En la raíz del proyecto `foxy-app/`, crea un archivo `.env.local`
-2. Pega esto (reemplazando con tus valores reales):
-
-```env
-VITE_APP_ENV=dev
-VITE_APP_URL=http://localhost:5173
-VITE_SUPABASE_URL=https://xxxxx.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
-```
-
-3. Guarda el archivo
-
-### 1.5 Probar Conexión
-
-```bash
-# En la carpeta foxy-app/
-npm run dev
-```
-
-Abre [http://localhost:5173](http://localhost:5173) en el navegador.
-
-Si ves la página de Vite sin errores en la consola → ✅ Supabase conectado
+- Usuario puede hablar y registrar gastos
+- Reconocimiento de voz con Web Speech API
+- Parsing con MockAIProvider (o DeepSeek si hay API key)
+- Guardado en Supabase
+- Toast de éxito con botón "Deshacer"
+- UI accesible con buen contraste
 
 ---
 
-## 🎯 Paso 2: Obtener API Key de DeepSeek (Opcional)
+## 🚀 Próximos Pasos Recomendados
 
-**Solo necesario si quieres probar el parsing de IA**
+### Opción A: Dashboard (Fase 7) - **RECOMENDADO**
 
-1. Ve a [https://platform.deepseek.com](https://platform.deepseek.com)
-2. Crea una cuenta
-3. Ve a **API Keys** → **Create New Key**
-4. Copia la key (`sk-...`)
-5. En Supabase, ve a **Edge Functions** → **Secrets**
-6. Añade secret:
-   - Name: `DEEPSEEK_API_KEY`
-   - Value: `sk-...`
+El siguiente paso lógico es mostrar los gastos registrados y el progreso del presupuesto.
 
-**Nota**: Por ahora, como no hemos creado la Edge Function, puedes usar DeepSeek directamente desde el frontend (menos seguro pero ok para dev). En producción, se usa desde Supabase Edge Function.
+#### Tareas:
+1. **Implementar `BudgetBar` component** (`src/components/dashboard/BudgetBar.tsx`)
+   - Mostrar progreso del presupuesto mensual
+   - Colores dinámicos:
+     - Verde: < 70% del límite
+     - Amarillo: 70-89%
+     - Rojo: >= 90%
+   - Usar `useBudgetProgress` hook (ya implementado)
 
----
+2. **Implementar `RecentSpends` component** (`src/components/dashboard/RecentSpends.tsx`)
+   - Mostrar últimos 4-5 gastos
+   - Card compacto con: importe, categoría, merchant, timestamp
+   - Link a vista completa de gastos
 
-## 🎯 Paso 3: Continuar con el Desarrollo
+3. **Implementar `Dashboard` page** (`src/pages/Dashboard.tsx`)
+   - Integrar `BudgetBar` + `RecentSpends`
+   - Botón flotante para "Agregar gasto por voz"
+   - Placeholder para Foxy avatar (CSS animado)
 
-### Opción A: Con Agente IA (Recomendado)
+4. **Routing con React Router**
+   - Configurar rutas: `/`, `/spends`, `/settings`
+   - Layout con navegación bottom
 
-```
-Prompt sugerido:
-"Continúa implementando el proyecto Foxy siguiendo el plan en PROGRESS.md.
-Empieza por la Fase 6: crear los stores Zustand (useVoiceStore, useSpendStore, useUIStore).
-Luego implementa los hooks custom.
-Sigue estrictamente la arquitectura hexagonal definida en AGENTS.md."
-```
-
-### Opción B: Manual
-
-1. Lee `AGENTS.md` para entender arquitectura y convenciones
-2. Lee `PROGRESS.md` para ver qué falta (sección "🚧 Pendiente")
-3. Empieza por **Fase 6: Estado y Hooks**:
-   - Crear `src/stores/useVoiceStore.ts`
-   - Crear `src/stores/useSpendStore.ts`
-   - Crear `src/stores/useUIStore.ts`
-   - Crear `src/hooks/useSpeechRecognition.ts`
-   - etc.
-
-4. Luego **Fase 7: Componentes UI Base**:
-   - `src/components/ui/Button.tsx`
-   - `src/components/ui/Modal.tsx`
-   - `src/components/ui/Toast.tsx`
-
-5. Después **Fase 8: Flujo de Voz (CORE del MVP)**
+#### Estimación: 4-6 horas
 
 ---
 
-## 🔍 Verificar que Todo Funciona
+### Opción B: Gestión de Gastos (Fase 8)
 
-```bash
-cd foxy-app
+Implementar lista completa de gastos con filtros y búsqueda.
 
-# Type checking (debe pasar sin errores)
-npm run type-check
+#### Tareas:
+1. **`SpendCard` component**
+   - Mostrar gasto individual
+   - Acciones: editar, eliminar
+   - Swipe gestures (opcional)
 
-# Tests (debe mostrar 12 tests pasando)
-npm run test -- --run
+2. **`SpendList` component**
+   - Lista paginada de gastos
+   - Infinite scroll
+   - Estados: loading, empty, error
 
-# Linter (debe pasar)
-npm run lint
+3. **Filtros**
+   - Rango de fechas (date picker)
+   - Categorías (chips multi-select)
+   - Método de pago
+   - Persistir en URL query params
 
-# Servidor de desarrollo
-npm run dev
-```
+4. **Búsqueda**
+   - Por merchant o nota
+   - Debounced input
+   - Highlight de resultados
+
+#### Estimación: 6-8 horas
+
+---
+
+### Opción C: Onboarding (Fase 9)
+
+Wizard de bienvenida para nuevos usuarios.
+
+#### Tareas:
+1. **Paso 1: Permiso de micrófono**
+   - Solicitar permiso
+   - Manejo de denegación
+   - Explicación de por qué se necesita
+
+2. **Paso 2: Configurar límite mensual**
+   - Input de importe
+   - Validaciones
+   - Sugerencias (ej: "La mayoría usa 500-1500€")
+
+3. **Paso 3: Prueba de voz**
+   - Ejemplo: "5 euros de café en Starbucks"
+   - Feedback visual
+   - Confirmar que funciona
+
+4. **Guardar en Supabase**
+   - Insertar en `settings`
+   - Marcar onboarding como completado
+
+#### Estimación: 4-5 horas
+
+---
+
+## 🔧 Tareas Técnicas Pendientes
+
+### Seguridad (Alta Prioridad)
+- [ ] **Implementar Supabase Auth**
+  - Login/Signup con email + password
+  - Integrar con `useAuthStore`
+  - Reemplazar UUID fijo por `auth.uid()`
+- [ ] **Re-habilitar RLS**
+  - Ejecutar: `ALTER TABLE public.spends ENABLE ROW LEVEL SECURITY;`
+  - Verificar políticas funcionan correctamente
+
+### Performance
+- [ ] Lazy load de rutas con `React.lazy()`
+- [ ] Code splitting por página
+- [ ] Optimizar bundle (<120 KB gzipped)
+- [ ] Medir LCP con Lighthouse
+
+### PWA
+- [ ] Crear `manifest.json`
+- [ ] Implementar Service Worker
+- [ ] Offline detection y queue de sync
+
+### Métricas
+- [ ] Implementar tracking de eventos
+- [ ] Dashboard de uso de IA (tokens, costes)
+- [ ] Monitoreo de latencia voz→guardado
 
 ---
 
 ## 📚 Recursos Útiles
 
-### Documentación del Proyecto
+### Documentación Interna
+- `SPEC.md`: Especificación funcional completa
+- `ROADMAP.md`: Fases de desarrollo
+- `DESIGN-SPEC.md`: Especificaciones de diseño y UI
+- `AGENTS.md`: Reglas de arquitectura hexagonal
+- `PROGRESS.md`: Estado actual del proyecto
 
-- `README.md`: setup, arquitectura, comandos
-- `AGENTS.md`: convenciones, hexagonal, reglas para agentes
-- `PROGRESS.md`: tracking detallado de tareas completadas/pendientes
-- `SPEC.md`: especificación funcional del MVP
-- `ROADMAP.md`: fases completas del desarrollo
+### Código Clave
+- `src/hooks/useSpendSubmit.ts`: Orquestación del flujo de guardado
+- `src/components/voice/VoiceRecorder.tsx`: Flujo de voz completo
+- `src/adapters/ai/MockAIProvider.ts`: Parser regex básico
+- `src/domain/rules/budgetCalculator.ts`: Lógica de presupuesto
 
-### Archivos de Configuración
-
-- `DESIGN-TOKENS.json`: colores, espaciados, tipografía
-- `PROMPTS.json`: prompts de IA (DeepSeek)
-- `SCHEMA.sql`: estructura de base de datos
-
-### Recursos Externos
-
-- [Supabase Docs](https://supabase.com/docs)
-- [Zustand Guide](https://docs.pmnd.rs/zustand/getting-started/introduction)
-- [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
+### External Docs
+- [Supabase Auth](https://supabase.com/docs/guides/auth)
+- [Zustand](https://docs.pmnd.rs/zustand)
+- [React Testing Library](https://testing-library.com/react)
 - [Tailwind CSS](https://tailwindcss.com/docs)
-- [DeepSeek API Docs](https://platform.deepseek.com/api-docs)
 
 ---
 
-## ❓ Troubleshooting
+## 🐛 Debugging Tips
 
-### "No puedo conectarme a Supabase"
+### Si el reconocimiento de voz no funciona:
+1. Verifica que estás en HTTPS o localhost
+2. Revisa permisos del micrófono en el navegador
+3. Mira la consola del navegador (F12) para ver logs de `[useSpeechRecognition]`
 
-- Verifica que `.env.local` existe y tiene los valores correctos
-- Verifica que `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` están correctos
-- Reinicia el servidor de desarrollo (`Ctrl+C` y `npm run dev`)
-- Verifica en Supabase que el proyecto está activo
+### Si el guardado falla:
+1. Verifica que `.env.local` tiene las credenciales correctas
+2. Asegúrate de que RLS está deshabilitado (para testing)
+3. Revisa la tabla `settings` en Supabase, debe existir el usuario demo
+4. Mira logs en consola: `[useSpendSubmit]`
 
-### "Los tests fallan"
-
-- Asegúrate de que todas las dependencias están instaladas: `npm install`
-- Verifica que no hay errores de TypeScript: `npm run type-check`
-- Lee el mensaje de error específico
-
-### "Errores de TypeScript"
-
-- Ejecuta `npm run type-check` para ver todos los errores
-- Revisa que los imports usan los path aliases correctamente (`@/domain/...`)
-- Verifica que no hay `any` sin justificación
-
-### "No sé por dónde empezar"
-
-1. Lee `AGENTS.md` (sección "Arquitectura Hexagonal")
-2. Lee `PROGRESS.md` (sección "🚧 Pendiente")
-3. Mira los archivos ya creados en `src/domain/` como ejemplo
-4. Empieza por la Fase 6 (stores) que es la base para todo lo demás
+### Si los colores se ven mal:
+1. Verifica que Tailwind está compilando correctamente
+2. Recarga sin caché (Cmd+Shift+R)
+3. Revisa `tailwind.config.js` - debe incluir todos los archivos `.tsx`
 
 ---
 
-## 💡 Consejos
+## 🎯 Recomendación del Asistente
 
-1. **Sigue la arquitectura hexagonal**: no mezcles capas, respeta las interfaces
-2. **Escribe tests**: al menos para casos de uso y componentes críticos
-3. **Comitea frecuentemente**: commits pequeños y atómicos
-4. **Usa Conventional Commits**: `feat(voice): add mic button`
-5. **Lee los comentarios**: los archivos tienen documentación inline útil
+**Sugerencia: Empezar con Dashboard (Opción A)**
+
+Razones:
+1. Muestra el valor inmediato del flujo de voz
+2. Usa hooks ya implementados (`useBudgetProgress`, `useLoadSpends`)
+3. Valida que la carga de gastos desde Supabase funciona
+4. Más impacto visual para demos
+5. Base sólida para las demás páginas
+
+**Orden sugerido**:
+1. Dashboard (Fase 7) ← **EMPIEZA AQUÍ**
+2. Gestión de gastos (Fase 8)
+3. Onboarding (Fase 9)
+4. Settings y exportación (Fase 10)
+5. PWA (Fase 11)
+6. Autenticación y seguridad
+7. Métricas (Fase 12)
+8. Polish y optimización (Fase 13)
 
 ---
 
-## 📞 Contacto
+## 💬 ¿Necesitas Ayuda?
 
-- **Autor**: Alex G. Herrera
-- **Proyecto**: HackABoss 2025
-- **Repositorio**: (añadir URL cuando esté en GitHub)
+Si tienes dudas sobre:
+- Arquitectura hexagonal → Lee `AGENTS.md`
+- Especificaciones funcionales → Lee `SPEC.md`
+- Diseño y UI → Lee `DESIGN-SPEC.md` y revisa mockups en `public/mockups/`
+- Estado del proyecto → Lee `PROGRESS.md`
 
 ---
 
-**¡Éxito con el desarrollo! 🚀**
-
-El setup está completo y sólido. Lo que sigue es implementar la UI y conectar todo.
-La arquitectura ya está pensada para que sea fácil y mantenible.
-
+**Última actualización**: Octubre 2024  
+**Próximo hito sugerido**: Dashboard (Fase 7)

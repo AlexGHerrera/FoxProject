@@ -5,7 +5,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { env } from './env'
 
-export const supabase = createClient(env.supabase.url, env.supabase.anon_key)
+export const supabase = createClient(env.supabase.url, env.supabase.anonKey)
 
 // Types generados desde el schema (placeholder, actualizar cuando tengamos el proyecto real)
 export type Database = {

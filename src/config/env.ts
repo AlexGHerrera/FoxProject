@@ -10,6 +10,9 @@ interface EnvConfig {
     url: string
     anonKey: string
   }
+  deepseek?: {
+    apiKey: string
+  }
   analytics?: {
     id: string
   }
@@ -33,6 +36,9 @@ export const env: EnvConfig = {
   supabase: {
     url: getEnvVar('VITE_SUPABASE_URL'),
     anonKey: getEnvVar('VITE_SUPABASE_ANON_KEY'),
+  },
+  deepseek: {
+    apiKey: getOptionalEnvVar('VITE_DEEPSEEK_API_KEY') || '',
   },
   analytics: {
     id: getOptionalEnvVar('VITE_ANALYTICS_ID') || '',

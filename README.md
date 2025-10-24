@@ -354,7 +354,7 @@ Ver `ROADMAP.md` para el plan completo. Highlights:
 
 ## 🤝 Contribuir
 
-Este es un proyecto educativo en HackABoss. Para contribuir:
+Este es un proyecto educativo. Para contribuir:
 
 1. Fork el repo
 2. Crea una branch (`feat/mi-feature`)
@@ -373,7 +373,7 @@ MIT License - ver `LICENSE` file.
 ## 🙏 Créditos
 
 - **Autor**: Alex G. Herrera
-- **Bootcamp**: HackABoss 2025
+- **Año**: 2025
 - **Stack**: React, TypeScript, Tailwind, Supabase, DeepSeek
 - **Inspiración**: Filosofía voice-first, arquitectura hexagonal, DDD
 
