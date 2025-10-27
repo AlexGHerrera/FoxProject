@@ -6,8 +6,9 @@
 
 ## 🎉 Estado Actual
 
-**✅ COMPLETADO: Dashboard y flujo de voz completo (Fase 7)**
+**✅ COMPLETADO: Dashboard, flujo de voz y gestión de gastos (Fases 7-8)**
 
+**Fase 7 - Dashboard:**
 - ✅ Dashboard con BudgetBar y RecentSpends
 - ✅ Foxy Avatar clickeable (voice-first)
 - ✅ Entrada manual como alternativa
@@ -17,6 +18,14 @@
 - ✅ Guardado en Supabase
 - ✅ UI accesible y mobile-friendly
 - ✅ React Router configurado
+
+**Fase 8 - Gestión de Gastos:**
+- ✅ SpendListPage con lista completa
+- ✅ Filtros: fechas, categorías, método de pago, ordenamiento
+- ✅ Búsqueda en tiempo real (debounced)
+- ✅ Editar y eliminar gastos
+- ✅ Navegación bottom entre páginas
+- ✅ Stats dinámicas (filtrados/totales)
 
 **⚠️ PROBLEMA CONOCIDO: Safari micrófono**
 - El indicador de micrófono en Safari puede quedar visible (bug del navegador)
@@ -39,37 +48,21 @@ El dashboard ya está implementado con todas sus funcionalidades:
 
 ---
 
-### Opción A: Gestión de Gastos (Fase 8) - **SIGUIENTE RECOMENDADO**
+### ~~Opción A: Gestión de Gastos (Fase 8)~~ - **✅ COMPLETADO**
 
-Implementar lista completa de gastos con filtros y búsqueda.
-
-#### Tareas:
-1. **`SpendCard` component**
-   - Mostrar gasto individual
-   - Acciones: editar, eliminar
-   - Swipe gestures (opcional)
-
-2. **`SpendList` component**
-   - Lista paginada de gastos
-   - Infinite scroll
-   - Estados: loading, empty, error
-
-3. **Filtros**
-   - Rango de fechas (date picker)
-   - Categorías (chips multi-select)
-   - Método de pago
-   - Persistir en URL query params
-
-4. **Búsqueda**
-   - Por merchant o nota
-   - Debounced input
-   - Highlight de resultados
-
-#### Estimación: 6-8 horas
+Lista completa de gastos con filtros y búsqueda ya implementada:
+- ✅ SpendCard con acciones editar/eliminar
+- ✅ SpendList con estados loading/empty
+- ✅ FilterModal completo (fechas, categorías, método pago, ordenamiento)
+- ✅ SearchBar con debounce (300ms)
+- ✅ useSpendFilters hook para lógica de filtrado
+- ✅ Integración completa en SpendListPage
+- ✅ Casos de uso updateSpend y deleteSpend
+- ✅ Navegación bottom entre páginas
 
 ---
 
-### Opción C: Onboarding (Fase 9)
+### Opción A: Onboarding (Fase 9) - **SIGUIENTE RECOMENDADO**
 
 Wizard de bienvenida para nuevos usuarios.
 
