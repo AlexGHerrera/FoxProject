@@ -17,19 +17,16 @@ const pageTransition = {
 export function SettingsPage() {
   const { onDragEnd, currentIndex, totalRoutes, direction } = useSwipeNavigation()
 
-  // Variantes dinámicas basadas en la dirección del swipe
+  // Variantes dinámicas basadas en la dirección del swipe (estilo carrusel)
   const pageVariants = {
     initial: (dir: number) => ({
-      x: dir > 0 ? 300 : dir < 0 ? -300 : 0,
-      opacity: 0,
+      x: dir > 0 ? '100%' : dir < 0 ? '-100%' : 0,
     }),
     animate: {
       x: 0,
-      opacity: 1,
     },
     exit: (dir: number) => ({
-      x: dir > 0 ? -300 : dir < 0 ? 300 : 0,
-      opacity: 0,
+      x: dir > 0 ? '-100%' : dir < 0 ? '100%' : 0,
     }),
   }
 
@@ -38,7 +35,8 @@ export function SettingsPage() {
       className="min-h-screen bg-background pb-20"
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.2}
+      dragElastic={0.1}
+      dragMomentum={false}
       onDragEnd={onDragEnd}
       custom={direction}
       variants={pageVariants}
