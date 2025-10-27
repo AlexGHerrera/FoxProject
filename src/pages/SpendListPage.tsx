@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SpendList, FilterModal, SearchBar } from '@/components/spend';
 import { FoxyAvatar } from '@/components/foxy';
-import { BottomNav, PageIndicator } from '@/components/ui';
+import { PageIndicator } from '@/components/ui';
 import { useSpendStore } from '@/stores';
 import { useSpendFilters } from '@/hooks';
 import { deleteSpend } from '@/application/deleteSpend';
@@ -175,9 +175,6 @@ export function SpendListPage() {
         currentFilters={filters}
         onApply={applyFilters}
       />
-
-      {/* Bottom Navigation */}
-      <BottomNav />
     </div>
   );
 }

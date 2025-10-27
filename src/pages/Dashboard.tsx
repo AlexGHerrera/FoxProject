@@ -10,7 +10,7 @@ import { useBudgetProgress } from '@/hooks/useBudgetProgress'
 import { useSpendStore } from '@/stores/useSpendStore'
 import { BudgetBar, RecentSpends } from '@/components/dashboard'
 import { FoxyAvatar } from '@/components/foxy'
-import { BottomNav, PageIndicator } from '@/components/ui'
+import { PageIndicator } from '@/components/ui'
 import { VoiceInputPage } from './VoiceInputPage'
 import { ManualInputPage } from './ManualInputPage'
 
@@ -153,9 +153,6 @@ export function Dashboard() {
           />
         </section>
       </div>
-
-      {/* Bottom Navigation */}
-      <BottomNav />
     </div>
   )
 }

@@ -4,7 +4,7 @@
  */
 
 import { useLocation } from 'react-router-dom'
-import { BottomNav, PageIndicator } from '@/components/ui'
+import { PageIndicator } from '@/components/ui'
 import { FoxyAvatar } from '@/components/foxy'
 
 const ROUTES = ['/', '/spends', '/settings'] as const
@@ -78,9 +78,6 @@ export function SettingsPage() {
           ))}
         </div>
       </main>
-
-      {/* Bottom Navigation */}
-      <BottomNav />
     </div>
   )
 }

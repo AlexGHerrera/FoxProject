@@ -1,7 +1,7 @@
 import { BrowserRouter } from 'react-router-dom'
 import { useTheme } from './hooks/useTheme'
 import { useUIStore } from './stores/useUIStore'
-import { ToastContainer, SafariBanner } from './components/ui'
+import { ToastContainer, SafariBanner, BottomNav } from './components/ui'
 import { PageCarousel } from './components/navigation'
 import { Dashboard, SpendListPage, SettingsPage } from './pages'
 import './App.css'
@@ -24,6 +24,9 @@ function App() {
         <SpendListPage />
         <SettingsPage />
       </PageCarousel>
+
+      {/* Bottom Navigation - Fijo, fuera del carrusel */}
+      <BottomNav />
     </BrowserRouter>
   )
 }
