@@ -18,12 +18,6 @@ import { ManualInputPage } from './ManualInputPage'
 // TODO: obtener el límite mensual de settings cuando implementemos esa funcionalidad
 const MONTHLY_LIMIT_CENTS = 100000 // 1000€ por defecto
 
-const pageVariants = {
-  initial: { x: -300, opacity: 0 },
-  animate: { x: 0, opacity: 1 },
-  exit: { x: 300, opacity: 0 },
-};
-
 const pageTransition = {
   type: 'spring',
   stiffness: 300,
@@ -34,7 +28,23 @@ export function Dashboard() {
   const navigate = useNavigate()
   const [showVoiceInput, setShowVoiceInput] = useState(false)
   const [showManualInput, setShowManualInput] = useState(false)
-  const { onDragEnd, currentIndex, totalRoutes } = useSwipeNavigation();
+  const { onDragEnd, currentIndex, totalRoutes, direction } = useSwipeNavigation();
+
+  // Variantes dinámicas basadas en la dirección del swipe
+  const pageVariants = {
+    initial: (dir: number) => ({
+      x: dir > 0 ? 300 : dir < 0 ? -300 : 0,
+      opacity: 0,
+    }),
+    animate: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (dir: number) => ({
+      x: dir > 0 ? -300 : dir < 0 ? 300 : 0,
+      opacity: 0,
+    }),
+  };
   
   // Cargar gastos al montar
   useLoadSpends()
@@ -76,6 +86,7 @@ export function Dashboard() {
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.2}
       onDragEnd={onDragEnd}
+      custom={direction}
       variants={pageVariants}
       initial="initial"
       animate="animate"
