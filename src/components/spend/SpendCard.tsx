@@ -1,6 +1,4 @@
-import { Spend } from '@/domain/models';
-import { getCategoryEmoji } from '@/domain/models/Category';
-import { centsToEur } from '@/domain/models/Spend';
+import { Spend, getCategoryEmoji, centsToEur } from '@/domain/models';
 
 interface SpendCardProps {
   spend: Spend;
