@@ -4,9 +4,9 @@
  * Las 3 páginas están montadas lado a lado, se ven ambas durante el drag
  */
 
-import { motion, PanInfo } from 'framer-motion'
+import { motion, PanInfo, useMotionValue } from 'framer-motion'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 const ROUTES = ['/', '/spends', '/settings'] as const
 const SWIPE_THRESHOLD = 100 // Umbral en pixels para activar navegación (aumentado para menos sensibilidad)
@@ -19,6 +19,7 @@ export function PageCarousel({ children }: PageCarouselProps) {
   const location = useLocation()
   const navigate = useNavigate()
   const currentIndex = ROUTES.indexOf(location.pathname as typeof ROUTES[number])
+  const previousIndex = useRef(currentIndex)
 
   // Si la ruta no está en ROUTES, redirigir al dashboard
   useEffect(() => {
@@ -26,6 +27,13 @@ export function PageCarousel({ children }: PageCarouselProps) {
       navigate('/', { replace: true })
     }
   }, [currentIndex, navigate])
+
+  // Actualizar previousIndex después de que la animación se complete
+  useEffect(() => {
+    if (currentIndex !== -1) {
+      previousIndex.current = currentIndex
+    }
+  }, [currentIndex])
 
   const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const offset = info.offset.x
@@ -63,16 +71,23 @@ export function PageCarousel({ children }: PageCarouselProps) {
       ? { left: 0.1, right: 0 } // Última página: no rebote a la derecha
       : 0.1 // Páginas intermedias: rebote en ambos lados
 
+  // NO usar initial/animate - solo key + animate para que framer-motion calcule la animación
+  const containerX = `-${currentIndex * 100}vw`
+
   return (
     <div className="fixed inset-0 overflow-hidden">
       {/* Contenedor que se mueve horizontalmente */}
       <motion.div
+        key={`carousel-${currentIndex}`} // Force re-render para que detecte cambio de posición
         className="flex h-full"
         style={{ 
           width: `${ROUTES.length * 100}vw` // 3 páginas × 100vw = 300vw
         }}
+        initial={{
+          x: `-${previousIndex.current * 100}vw`, // Posición anterior
+        }}
         animate={{
-          x: `-${currentIndex * 100}vw`, // Desplazamiento según índice actual
+          x: containerX, // Posición nueva
         }}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
