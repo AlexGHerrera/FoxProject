@@ -1,9 +1,30 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
 import { useTheme } from './hooks/useTheme'
 import { useUIStore } from './stores/useUIStore'
 import { ToastContainer, SafariBanner } from './components/ui'
-import { Dashboard, SpendListPage } from './pages'
+import { Dashboard, SpendListPage, SettingsPage } from './pages'
 import './App.css'
+
+function AnimatedRoutes() {
+  const location = useLocation()
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/spends" element={<SpendListPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        
+        {/* TODO: Agregar más rutas cuando se implementen */}
+        {/* <Route path="/onboarding" element={<OnboardingPage />} /> */}
+        
+        {/* Redirect desconocidos a dashboard */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AnimatePresence>
+  )
+}
 
 function App() {
   const { theme } = useTheme()
@@ -17,18 +38,8 @@ function App() {
       {/* Safari Banner - Aviso sobre indicador de micrófono */}
       <SafariBanner />
 
-      {/* Routes */}
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/spends" element={<SpendListPage />} />
-        
-        {/* TODO: Agregar más rutas cuando se implementen */}
-        {/* <Route path="/settings" element={<SettingsPage />} /> */}
-        {/* <Route path="/onboarding" element={<OnboardingPage />} /> */}
-        
-        {/* Redirect desconocidos a dashboard */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      {/* Animated Routes */}
+      <AnimatedRoutes />
     </BrowserRouter>
   )
 }

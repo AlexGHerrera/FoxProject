@@ -5,22 +5,36 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useLoadSpends } from '@/hooks/useLoadSpends'
+import { motion } from 'framer-motion'
+import { useLoadSpends, useSwipeNavigation } from '@/hooks'
 import { useBudgetProgress } from '@/hooks/useBudgetProgress'
 import { useSpendStore } from '@/stores/useSpendStore'
 import { BudgetBar, RecentSpends } from '@/components/dashboard'
 import { FoxyAvatar } from '@/components/foxy'
-import { BottomNav } from '@/components/ui'
+import { BottomNav, PageIndicator } from '@/components/ui'
 import { VoiceInputPage } from './VoiceInputPage'
 import { ManualInputPage } from './ManualInputPage'
 
 // TODO: obtener el límite mensual de settings cuando implementemos esa funcionalidad
 const MONTHLY_LIMIT_CENTS = 100000 // 1000€ por defecto
 
+const pageVariants = {
+  initial: { x: -300, opacity: 0 },
+  animate: { x: 0, opacity: 1 },
+  exit: { x: 300, opacity: 0 },
+};
+
+const pageTransition = {
+  type: 'spring',
+  stiffness: 300,
+  damping: 30,
+};
+
 export function Dashboard() {
   const navigate = useNavigate()
   const [showVoiceInput, setShowVoiceInput] = useState(false)
   const [showManualInput, setShowManualInput] = useState(false)
+  const { onDragEnd, currentIndex, totalRoutes } = useSwipeNavigation();
   
   // Cargar gastos al montar
   useLoadSpends()
@@ -56,7 +70,26 @@ export function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-light dark:bg-bg-dark transition-colors duration-200">
+    <motion.div
+      className="min-h-screen bg-bg-light dark:bg-bg-dark transition-colors duration-200"
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.2}
+      onDragEnd={onDragEnd}
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={pageTransition}
+    >
+      {/* Page Indicator */}
+      <div className="pt-4">
+        <PageIndicator
+          currentIndex={currentIndex}
+          totalPages={totalRoutes}
+          className="py-2"
+        />
+      </div>
 
       {/* Contenido principal */}
       <div className="max-w-4xl mx-auto px-4 py-6 pb-24">
@@ -144,7 +177,7 @@ export function Dashboard() {
 
       {/* Bottom Navigation */}
       <BottomNav />
-    </div>
+    </motion.div>
   )
 }
 
