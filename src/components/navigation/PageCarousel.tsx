@@ -9,7 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 
 const ROUTES = ['/', '/spends', '/settings'] as const
-const SWIPE_THRESHOLD = 50 // Umbral en pixels para activar navegación
+const SWIPE_THRESHOLD = 100 // Umbral en pixels para activar navegación (aumentado para menos sensibilidad)
 
 interface PageCarouselProps {
   children: React.ReactNode[]
@@ -31,17 +31,28 @@ export function PageCarousel({ children }: PageCarouselProps) {
     const offset = info.offset.x
     const velocity = info.velocity.x
 
+    console.log('🦊 Swipe:', { 
+      offset, 
+      velocity, 
+      currentIndex, 
+      currentRoute: ROUTES[currentIndex] 
+    })
+
     // Swipe a la izquierda (siguiente ruta)
-    if ((offset < -SWIPE_THRESHOLD || velocity < -300) && currentIndex < ROUTES.length - 1) {
+    if ((offset < -SWIPE_THRESHOLD || velocity < -500) && currentIndex < ROUTES.length - 1) {
+      console.log('→ Navegando a:', ROUTES[currentIndex + 1])
       navigate(ROUTES[currentIndex + 1])
       return
     }
 
     // Swipe a la derecha (ruta anterior)
-    if ((offset > SWIPE_THRESHOLD || velocity > 300) && currentIndex > 0) {
+    if ((offset > SWIPE_THRESHOLD || velocity > 500) && currentIndex > 0) {
+      console.log('← Navegando a:', ROUTES[currentIndex - 1])
       navigate(ROUTES[currentIndex - 1])
       return
     }
+
+    console.log('⚠️ No se navegó - umbral no alcanzado')
   }
 
   // Elasticidad dinámica: sin rebote en los extremos
@@ -70,8 +81,9 @@ export function PageCarousel({ children }: PageCarouselProps) {
         onDragEnd={handleDragEnd}
         transition={{
           type: 'spring',
-          stiffness: 300,
-          damping: 30,
+          stiffness: 200, // Reducido de 300 para movimiento más suave
+          damping: 25,    // Reducido de 30 para menos fricción
+          mass: 1,        // Añadido para más inercia natural
         }}
       >
         {/* Cada página ocupa 100vw y está una al lado de la otra */}
