@@ -99,27 +99,26 @@ export function SpendListPage() {
               </p>
             </div>
             
-            {/* Filters Button */}
-            <button
-              onClick={() => setShowFilters(true)}
-              className="flex-shrink-0 ml-auto mr-3 relative p-2 text-text hover:text-brand-cyan transition-colors rounded-lg hover:bg-brand-cyan/10"
-              aria-label="Filtros"
-            >
-              <span className="text-2xl">🔧</span>
-              {(filters.categories.length > 0 ||
-                filters.paymentMethod !== 'all' ||
-                filters.dateRange !== 'this-month') && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                  {filters.categories.length +
-                    (filters.paymentMethod !== 'all' ? 1 : 0) +
-                    (filters.dateRange !== 'this-month' ? 1 : 0)}
-                </span>
-              )}
-            </button>
-
-            {/* Foxy Avatar */}
-            <div className="flex-shrink-0">
-              <FoxyAvatar state="idle" size="sm" />
+            {/* Foxy Avatar - Click to open filters */}
+            <div className="flex-shrink-0 ml-4 flex flex-col items-center gap-1">
+              <button
+                onClick={() => setShowFilters(true)}
+                className="relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan rounded-full transition-transform hover:scale-105 active:scale-95"
+                aria-label="Abrir filtros"
+              >
+                {/* Badge de filtros activos */}
+                {(filters.categories.length > 0 ||
+                  filters.paymentMethod !== 'all' ||
+                  filters.dateRange !== 'this-month') && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold z-10">
+                    {filters.categories.length +
+                      (filters.paymentMethod !== 'all' ? 1 : 0) +
+                      (filters.dateRange !== 'this-month' ? 1 : 0)}
+                  </span>
+                )}
+                <FoxyAvatar state="idle" size="sm" />
+              </button>
+              <span className="text-[10px] text-muted font-medium">Filtros</span>
             </div>
           </div>
         </div>
