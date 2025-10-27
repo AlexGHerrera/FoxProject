@@ -1,5 +1,5 @@
-import { Spend, UpdateSpendData } from '@/domain/models/Spend';
-import { ISpendRepository } from '@/adapters/db/ISpendRepository';
+import type { Spend, UpdateSpendData } from '@/domain/models';
+import type { ISpendRepository } from '@/adapters/db/ISpendRepository';
 
 /**
  * Caso de uso: Actualizar un gasto existente

@@ -1,16 +1,8 @@
 import { useState } from 'react';
 import { Modal } from '@/components/ui';
 import { CATEGORIES, PAYMENT_METHODS } from '@/config/constants';
-import { getCategoryEmoji } from '@/domain/models/Category';
-
-export interface SpendFilters {
-  dateRange: 'today' | 'this-week' | 'this-month' | 'custom';
-  startDate?: string;
-  endDate?: string;
-  categories: string[];
-  paymentMethod?: 'efectivo' | 'tarjeta' | 'all';
-  sortBy: 'recent' | 'amount';
-}
+import { getCategoryEmoji } from '@/domain/models';
+import type { SpendFilters } from './types';
 
 interface FilterModalProps {
   isOpen: boolean;

@@ -1,4 +1,4 @@
-import { ISpendRepository } from '@/adapters/db/ISpendRepository';
+import type { ISpendRepository } from '@/adapters/db/ISpendRepository';
 
 /**
  * Caso de uso: Eliminar un gasto
