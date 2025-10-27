@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Spend } from '@/domain/models';
-import { SpendFilters } from '@/components/spend';
+import type { SpendFilters } from '@/components/spend/types';
 
 /**
  * Hook para gestionar filtros y búsqueda de gastos
