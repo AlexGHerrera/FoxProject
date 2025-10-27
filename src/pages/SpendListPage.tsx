@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { SpendList, FilterModal, SearchBar } from '@/components/spend';
 import { FoxyAvatar } from '@/components/foxy';
 import { BottomNav, PageIndicator } from '@/components/ui';
 import { useSpendStore } from '@/stores';
-import { useSpendFilters, useSwipeNavigation } from '@/hooks';
+import { useSpendFilters } from '@/hooks';
 import { deleteSpend } from '@/application/deleteSpend';
 import { SupabaseSpendRepository } from '@/adapters/db/SupabaseSpendRepository';
 import { supabase } from '@/config/supabase';
@@ -14,33 +13,15 @@ import { Spend } from '@/domain/models';
 
 const repository = new SupabaseSpendRepository(supabase);
 const DEMO_USER_ID = 'd5e6f7a8-b9c0-1d2e-3f4a-5b6c7d8e9f0a'; // TODO: Replace with real auth
-
-const pageTransition = {
-  type: 'spring',
-  stiffness: 300,
-  damping: 30,
-};
+const ROUTES = ['/', '/spends', '/settings'] as const;
 
 export function SpendListPage() {
-  const navigate = useNavigate();
+  const location = useLocation();
   const { spends, isLoading } = useSpendStore();
   const { showSuccess, showError } = useUIStore();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const { onDragEnd, currentIndex, totalRoutes, direction } = useSwipeNavigation();
-
-  // Variantes dinámicas basadas en la dirección del swipe (estilo carrusel)
-  const pageVariants = {
-    initial: (dir: number) => ({
-      x: dir > 0 ? '100%' : dir < 0 ? '-100%' : 0,
-    }),
-    animate: {
-      x: 0,
-    },
-    exit: (dir: number) => ({
-      x: dir > 0 ? '-100%' : dir < 0 ? '100%' : 0,
-    }),
-  };
+  const currentIndex = ROUTES.indexOf(location.pathname as typeof ROUTES[number]);
 
   // Filters and search
   const {
@@ -83,20 +64,7 @@ export function SpendListPage() {
   };
 
   return (
-    <motion.div
-      className="fixed inset-0 bg-background overflow-y-auto"
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.1}
-      dragMomentum={false}
-      onDragEnd={onDragEnd}
-      custom={direction}
-      variants={pageVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      transition={pageTransition}
-    >
+    <div className="h-full bg-background">
       {/* Header */}
       <header className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -135,7 +103,7 @@ export function SpendListPage() {
         {/* Page Indicator */}
         <PageIndicator
           currentIndex={currentIndex}
-          totalPages={totalRoutes}
+          totalPages={ROUTES.length}
           className="py-2"
         />
       </header>
@@ -210,7 +178,7 @@ export function SpendListPage() {
 
       {/* Bottom Navigation */}
       <BottomNav />
-    </motion.div>
+    </div>
   );
 }
 

@@ -1,30 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { AnimatePresence } from 'framer-motion'
+import { BrowserRouter } from 'react-router-dom'
 import { useTheme } from './hooks/useTheme'
 import { useUIStore } from './stores/useUIStore'
 import { ToastContainer, SafariBanner } from './components/ui'
+import { PageCarousel } from './components/navigation'
 import { Dashboard, SpendListPage, SettingsPage } from './pages'
 import './App.css'
-
-function AnimatedRoutes() {
-  const location = useLocation()
-
-  return (
-    <AnimatePresence mode="sync" initial={false}>
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/spends" element={<SpendListPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        
-        {/* TODO: Agregar más rutas cuando se implementen */}
-        {/* <Route path="/onboarding" element={<OnboardingPage />} /> */}
-        
-        {/* Redirect desconocidos a dashboard */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </AnimatePresence>
-  )
-}
 
 function App() {
   const { theme } = useTheme()
@@ -38,8 +18,12 @@ function App() {
       {/* Safari Banner - Aviso sobre indicador de micrófono */}
       <SafariBanner />
 
-      {/* Animated Routes */}
-      <AnimatedRoutes />
+      {/* Carrusel con las 3 páginas principales siempre montadas */}
+      <PageCarousel>
+        <Dashboard />
+        <SpendListPage />
+        <SettingsPage />
+      </PageCarousel>
     </BrowserRouter>
   )
 }

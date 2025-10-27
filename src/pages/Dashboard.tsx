@@ -4,9 +4,8 @@
  */
 
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { useLoadSpends, useSwipeNavigation } from '@/hooks'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useLoadSpends } from '@/hooks'
 import { useBudgetProgress } from '@/hooks/useBudgetProgress'
 import { useSpendStore } from '@/stores/useSpendStore'
 import { BudgetBar, RecentSpends } from '@/components/dashboard'
@@ -18,30 +17,14 @@ import { ManualInputPage } from './ManualInputPage'
 // TODO: obtener el límite mensual de settings cuando implementemos esa funcionalidad
 const MONTHLY_LIMIT_CENTS = 100000 // 1000€ por defecto
 
-const pageTransition = {
-  type: 'spring',
-  stiffness: 300,
-  damping: 30,
-};
+const ROUTES = ['/', '/spends', '/settings'] as const
 
 export function Dashboard() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [showVoiceInput, setShowVoiceInput] = useState(false)
   const [showManualInput, setShowManualInput] = useState(false)
-  const { onDragEnd, currentIndex, totalRoutes, direction } = useSwipeNavigation();
-
-  // Variantes dinámicas basadas en la dirección del swipe (estilo carrusel)
-  const pageVariants = {
-    initial: (dir: number) => ({
-      x: dir > 0 ? '100%' : dir < 0 ? '-100%' : 0,
-    }),
-    animate: {
-      x: 0,
-    },
-    exit: (dir: number) => ({
-      x: dir > 0 ? '-100%' : dir < 0 ? '100%' : 0,
-    }),
-  };
+  const currentIndex = ROUTES.indexOf(location.pathname as typeof ROUTES[number])
   
   // Cargar gastos al montar
   useLoadSpends()
@@ -77,25 +60,12 @@ export function Dashboard() {
   }
 
   return (
-    <motion.div
-      className="fixed inset-0 bg-bg-light dark:bg-bg-dark transition-colors duration-200 overflow-y-auto"
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.1}
-      dragMomentum={false}
-      onDragEnd={onDragEnd}
-      custom={direction}
-      variants={pageVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      transition={pageTransition}
-    >
+    <div className="h-full bg-bg-light dark:bg-bg-dark transition-colors duration-200">
       {/* Page Indicator */}
       <div className="pt-4">
         <PageIndicator
           currentIndex={currentIndex}
-          totalPages={totalRoutes}
+          totalPages={ROUTES.length}
           className="py-2"
         />
       </div>
@@ -186,7 +156,7 @@ export function Dashboard() {
 
       {/* Bottom Navigation */}
       <BottomNav />
-    </motion.div>
+    </div>
   )
 }
 

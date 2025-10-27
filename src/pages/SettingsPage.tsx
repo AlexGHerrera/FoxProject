@@ -3,48 +3,18 @@
  * Página de configuración - placeholder para futuras implementaciones
  */
 
-import { motion } from 'framer-motion'
-import { useSwipeNavigation } from '@/hooks'
+import { useLocation } from 'react-router-dom'
 import { BottomNav, PageIndicator } from '@/components/ui'
 import { FoxyAvatar } from '@/components/foxy'
 
-const pageTransition = {
-  type: 'spring',
-  stiffness: 300,
-  damping: 30,
-}
+const ROUTES = ['/', '/spends', '/settings'] as const
 
 export function SettingsPage() {
-  const { onDragEnd, currentIndex, totalRoutes, direction } = useSwipeNavigation()
-
-  // Variantes dinámicas basadas en la dirección del swipe (estilo carrusel)
-  const pageVariants = {
-    initial: (dir: number) => ({
-      x: dir > 0 ? '100%' : dir < 0 ? '-100%' : 0,
-    }),
-    animate: {
-      x: 0,
-    },
-    exit: (dir: number) => ({
-      x: dir > 0 ? '-100%' : dir < 0 ? '100%' : 0,
-    }),
-  }
+  const location = useLocation()
+  const currentIndex = ROUTES.indexOf(location.pathname as typeof ROUTES[number])
 
   return (
-    <motion.div
-      className="fixed inset-0 bg-background overflow-y-auto"
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.1}
-      dragMomentum={false}
-      onDragEnd={onDragEnd}
-      custom={direction}
-      variants={pageVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      transition={pageTransition}
-    >
+    <div className="h-full bg-background">
       {/* Header */}
       <header className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -66,7 +36,7 @@ export function SettingsPage() {
         {/* Page Indicator */}
         <PageIndicator
           currentIndex={currentIndex}
-          totalPages={totalRoutes}
+          totalPages={ROUTES.length}
           className="py-2"
         />
       </header>
@@ -111,7 +81,6 @@ export function SettingsPage() {
 
       {/* Bottom Navigation */}
       <BottomNav />
-    </motion.div>
+    </div>
   )
 }
-
