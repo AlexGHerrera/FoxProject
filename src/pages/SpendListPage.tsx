@@ -84,7 +84,7 @@ export function SpendListPage() {
 
   return (
     <motion.div
-      className="min-h-screen bg-background pb-20"
+      className="fixed inset-0 bg-background overflow-y-auto"
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.1}
@@ -141,7 +141,7 @@ export function SpendListPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-6">
+      <main className="max-w-4xl mx-auto px-4 py-6 pb-28">
         {/* Search Bar */}
         <div className="mb-4">
           <SearchBar

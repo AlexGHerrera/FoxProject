@@ -78,7 +78,7 @@ export function Dashboard() {
 
   return (
     <motion.div
-      className="min-h-screen bg-bg-light dark:bg-bg-dark transition-colors duration-200"
+      className="fixed inset-0 bg-bg-light dark:bg-bg-dark transition-colors duration-200 overflow-y-auto"
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.1}
@@ -101,7 +101,7 @@ export function Dashboard() {
       </div>
 
       {/* Contenido principal */}
-      <div className="max-w-4xl mx-auto px-4 py-6 pb-24">
+      <div className="max-w-4xl mx-auto px-4 py-6 pb-28">
         {/* Header */}
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-text-light dark:text-text-dark mb-1">

@@ -32,7 +32,7 @@ export function SettingsPage() {
 
   return (
     <motion.div
-      className="min-h-screen bg-background pb-20"
+      className="fixed inset-0 bg-background overflow-y-auto"
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.1}
@@ -72,7 +72,7 @@ export function SettingsPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-6">
+      <main className="max-w-4xl mx-auto px-4 py-6 pb-28">
         <div className="text-center py-12">
           <div className="text-6xl mb-4">⚙️</div>
           <h2 className="text-xl font-semibold text-text mb-2">
