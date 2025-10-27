@@ -25,7 +25,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-card/80 backdrop-blur-md border-t border-border z-50">
       <div className="max-w-4xl mx-auto px-2 py-2">
         <div className="flex items-center justify-around">
           {navItems.map((item) => (
