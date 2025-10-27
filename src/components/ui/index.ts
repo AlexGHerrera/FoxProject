@@ -13,3 +13,5 @@ export type { Toast, ToastType, ToastPosition, ToastProps, ToastContainerProps }
 
 export { SafariBanner } from './SafariBanner'
 
+export { BottomNav } from './BottomNav'
+

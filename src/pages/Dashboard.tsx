@@ -4,11 +4,13 @@
  */
 
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useLoadSpends } from '@/hooks/useLoadSpends'
 import { useBudgetProgress } from '@/hooks/useBudgetProgress'
 import { useSpendStore } from '@/stores/useSpendStore'
 import { BudgetBar, RecentSpends } from '@/components/dashboard'
 import { FoxyAvatar } from '@/components/foxy'
+import { BottomNav } from '@/components/ui'
 import { VoiceInputPage } from './VoiceInputPage'
 import { ManualInputPage } from './ManualInputPage'
 
@@ -16,6 +18,7 @@ import { ManualInputPage } from './ManualInputPage'
 const MONTHLY_LIMIT_CENTS = 100000 // 1000€ por defecto
 
 export function Dashboard() {
+  const navigate = useNavigate()
   const [showVoiceInput, setShowVoiceInput] = useState(false)
   const [showManualInput, setShowManualInput] = useState(false)
   
@@ -134,13 +137,13 @@ export function Dashboard() {
           <RecentSpends
             spends={spends}
             limit={5}
-            onViewAll={() => {
-              // TODO: navegar a página de gastos completa cuando implementemos routing
-              console.log('Ver todos los gastos')
-            }}
+            onViewAll={() => navigate('/spends')}
           />
         </section>
       </div>
+
+      {/* Bottom Navigation */}
+      <BottomNav />
     </div>
   )
 }

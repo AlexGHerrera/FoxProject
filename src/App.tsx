@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useTheme } from './hooks/useTheme'
 import { useUIStore } from './stores/useUIStore'
 import { ToastContainer, SafariBanner } from './components/ui'
-import { Dashboard } from './pages'
+import { Dashboard, SpendListPage } from './pages'
 import './App.css'
 
 function App() {
@@ -20,9 +20,9 @@ function App() {
       {/* Routes */}
       <Routes>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/spends" element={<SpendListPage />} />
         
         {/* TODO: Agregar más rutas cuando se implementen */}
-        {/* <Route path="/spends" element={<SpendsPage />} /> */}
         {/* <Route path="/settings" element={<SettingsPage />} /> */}
         {/* <Route path="/onboarding" element={<OnboardingPage />} /> */}
         
