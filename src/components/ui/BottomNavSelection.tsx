@@ -15,10 +15,9 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
         </p>
 
         {/* Actions */}
-        <div className="flex items-stretch justify-between">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
           <button
             onClick={onCancel}
-            style={{ width: 'calc(33.333% - 8px)' }}
             className="h-14 px-2 rounded-lg font-semibold text-sm bg-card text-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center active:scale-95"
             aria-label="Cancelar selección"
           >
@@ -28,7 +27,6 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
           <button
             onClick={onEdit}
             disabled={count === 0}
-            style={{ width: 'calc(33.333% - 8px)' }}
             className="h-14 rounded-lg font-bold bg-gray-400 text-gray-900 hover:bg-gray-500 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             aria-label="Editar gastos seleccionados"
           >
@@ -38,7 +36,6 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
           <button
             onClick={onDelete}
             disabled={count === 0}
-            style={{ width: 'calc(33.333% - 8px)' }}
             className="h-14 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             aria-label="Eliminar gastos seleccionados"
           >
