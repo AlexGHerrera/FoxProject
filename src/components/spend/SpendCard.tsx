@@ -81,7 +81,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
     <div className="relative overflow-hidden rounded-lg" ref={cardRef}>
       {/* Action Buttons (behind the card) */}
       <motion.div
-        className="absolute right-0 top-0 h-full flex items-center gap-2 pr-2 pl-2"
+        className="absolute right-0 top-0 h-full flex items-center gap-2 pl-2"
         style={{ 
           width: ACTIONS_WIDTH,
           opacity: actionsOpacity 
