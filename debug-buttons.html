@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug Bottom Nav Buttons</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 p-4">
+  <h1 class="text-2xl font-bold mb-4">Debug: BottomNavSelection Buttons</h1>
+  
+  <div class="mb-8">
+    <h2 class="text-lg font-semibold mb-2">Configuración actual (con inline styles)</h2>
+    <div class="bg-white border rounded-lg shadow-lg p-4">
+      <div class="max-w-4xl mx-auto">
+        <p class="text-sm text-gray-600 text-center mb-3">3 gastos seleccionados</p>
+        
+        <!-- Estructura actual -->
+        <div class="flex items-stretch gap-3">
+          <button
+            style="flex: 1 1 0px; min-width: 0;"
+            class="h-14 px-2 rounded-lg font-semibold text-sm bg-white text-gray-900 border border-gray-300 hover:bg-gray-100 transition-all flex items-center justify-center"
+            onclick="logButtonInfo(this, 'Cancelar')"
+          >
+            <span class="truncate">Cancelar</span>
+          </button>
+
+          <button
+            style="flex: 1 1 0px; min-width: 0;"
+            class="h-14 rounded-lg font-bold bg-gray-400 text-gray-900 hover:bg-gray-500 transition-all flex items-center justify-center"
+            onclick="logButtonInfo(this, 'Editar')"
+          >
+            <span class="text-3xl leading-none">✏️</span>
+          </button>
+
+          <button
+            style="flex: 1 1 0px; min-width: 0;"
+            class="h-14 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all flex items-center justify-center"
+            onclick="logButtonInfo(this, 'Eliminar')"
+          >
+            <span class="text-3xl leading-none">✕</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-8">
+    <h2 class="text-lg font-semibold mb-2">Test: Grid (sin flex)</h2>
+    <div class="bg-white border rounded-lg shadow-lg p-4">
+      <div class="max-w-4xl mx-auto">
+        <p class="text-sm text-gray-600 text-center mb-3">3 gastos seleccionados</p>
+        
+        <!-- Grid approach -->
+        <div class="grid grid-cols-3 gap-3">
+          <button
+            class="h-14 px-2 rounded-lg font-semibold text-sm bg-white text-gray-900 border border-gray-300 hover:bg-gray-100 transition-all flex items-center justify-center"
+            onclick="logButtonInfo(this, 'Cancelar (Grid)')"
+          >
+            <span class="truncate">Cancelar</span>
+          </button>
+
+          <button
+            class="h-14 rounded-lg font-bold bg-gray-400 text-gray-900 hover:bg-gray-500 transition-all flex items-center justify-center"
+            onclick="logButtonInfo(this, 'Editar (Grid)')"
+          >
+            <span class="text-3xl leading-none">✏️</span>
+          </button>
+
+          <button
+            class="h-14 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all flex items-center justify-center"
+            onclick="logButtonInfo(this, 'Eliminar (Grid)')"
+          >
+            <span class="text-3xl leading-none">✕</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-8">
+    <h2 class="text-lg font-semibold mb-2">Información del navegador</h2>
+    <div class="bg-white border rounded-lg shadow-lg p-4">
+      <div id="info" class="font-mono text-sm"></div>
+    </div>
+  </div>
+
+  <div class="mb-8">
+    <h2 class="text-lg font-semibold mb-2">Console Log</h2>
+    <div class="bg-gray-900 text-green-400 rounded-lg p-4">
+      <pre id="console" class="font-mono text-xs overflow-auto max-h-96"></pre>
+    </div>
+  </div>
+
+  <script>
+    const consoleDiv = document.getElementById('console');
+    const infoDiv = document.getElementById('info');
+
+    function log(message) {
+      console.log(message);
+      consoleDiv.textContent += message + '\n';
+    }
+
+    function logButtonInfo(button, name) {
+      const computed = window.getComputedStyle(button);
+      const rect = button.getBoundingClientRect();
+      
+      log(`\n=== ${name} ===`);
+      log(`Width: ${rect.width.toFixed(2)}px`);
+      log(`Height: ${rect.height.toFixed(2)}px`);
+      log(`Computed flex: ${computed.flex}`);
+      log(`Computed flex-grow: ${computed.flexGrow}`);
+      log(`Computed flex-shrink: ${computed.flexShrink}`);
+      log(`Computed flex-basis: ${computed.flexBasis}`);
+      log(`Computed min-width: ${computed.minWidth}`);
+      log(`Computed max-width: ${computed.maxWidth}`);
+      log(`Computed width: ${computed.width}`);
+      log(`Display: ${computed.display}`);
+    }
+
+    // Display viewport info
+    function updateInfo() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      infoDiv.innerHTML = `
+        <div>Viewport: ${width}px × ${height}px</div>
+        <div>User Agent: ${navigator.userAgent}</div>
+        <div class="mt-2"><strong>Instrucciones:</strong> Haz clic en cada botón para ver sus propiedades CSS computadas en el console log.</div>
+      `;
+    }
+
+    updateInfo();
+    window.addEventListener('resize', updateInfo);
+
+    // Log initial state
+    log('=== DEBUG: Bottom Nav Selection Buttons ===');
+    log('Redimensiona la ventana y haz clic en los botones para ver sus propiedades.');
+  </script>
+</body>
+</html>
+

@@ -13,6 +13,10 @@ interface UIState {
   removeToast: (id: string) => void
   clearToasts: () => void
   
+  // Selection Mode (for hiding bottom nav)
+  isSelectionModeActive: boolean
+  setSelectionModeActive: (active: boolean) => void
+  
   // Helper methods
   showSuccess: (message: string, duration?: number) => void
   showError: (message: string, duration?: number) => void
@@ -24,6 +28,11 @@ let toastIdCounter = 0
 
 export const useUIStore = create<UIState>((set) => ({
   toasts: [],
+  isSelectionModeActive: false,
+
+  setSelectionModeActive: (active) => {
+    set({ isSelectionModeActive: active })
+  },
 
   addToast: (toast) => {
     const id = `toast-${Date.now()}-${toastIdCounter++}`

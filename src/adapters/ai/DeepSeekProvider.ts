@@ -7,7 +7,7 @@ import type { IAIProvider } from './IAIProvider'
 import type { ParsedSpend } from '@/domain/models'
 import { AIProviderError } from './IAIProvider'
 import { AI_TIMEOUT_MS } from '@/config/constants'
-import { isValidCategory } from '@/domain/models/Category'
+import { isValidCategory } from '@/domain/models'
 
 // Importar prompts desde PROMPTS.json (temporalmente hardcodeado)
 const SYSTEM_PROMPT = `Eres un parser financiero para español (España). Devuelves SIEMPRE JSON válido sin texto extra.`

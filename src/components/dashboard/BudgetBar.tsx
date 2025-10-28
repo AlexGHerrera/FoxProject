@@ -4,7 +4,7 @@
  */
 
 import { useMemo } from 'react'
-import { centsToEur } from '@/domain/models/Spend'
+import { centsToEur } from '@/domain/models'
 
 interface BudgetBarProps {
   spent: number // céntimos

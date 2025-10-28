@@ -5,8 +5,7 @@
 
 import { useMemo } from 'react'
 import type { Spend } from '@/domain/models'
-import { centsToEur } from '@/domain/models/Spend'
-import { getCategoryEmoji } from '@/domain/models/Category'
+import { centsToEur, getCategoryEmoji } from '@/domain/models'
 
 interface RecentSpendsProps {
   spends: Spend[]

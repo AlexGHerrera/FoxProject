@@ -5,6 +5,14 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    watch: {
+      usePolling: true, // Mejor detección de cambios en macOS
+    },
+  },
+  optimizeDeps: {
+    force: true, // Forzar re-optimización en desarrollo
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

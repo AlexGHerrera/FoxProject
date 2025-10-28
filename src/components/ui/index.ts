@@ -13,3 +13,10 @@ export type { Toast, ToastType, ToastPosition, ToastProps, ToastContainerProps }
 
 export { SafariBanner } from './SafariBanner'
 
+export { BottomNav } from './BottomNav'
+
+export { BottomNavSelection } from './BottomNavSelection'
+
+export { PageIndicator } from './PageIndicator'
+
+export { ConfirmDialog } from './ConfirmDialog'

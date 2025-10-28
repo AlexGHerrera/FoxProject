@@ -25,6 +25,11 @@ export type CreateSpendData = Omit<Spend, 'id' | 'timestamp'> & {
 }
 
 /**
+ * Datos para actualizar un gasto existente (todos opcionales)
+ */
+export type UpdateSpendData = Partial<Omit<Spend, 'id' | 'userId' | 'timestamp'>>
+
+/**
  * Resultado del parseo de IA
  */
 export interface ParsedSpend {

@@ -8,6 +8,7 @@ import { useSpendStore } from '../stores/useSpendStore'
 import { SupabaseSpendRepository } from '../adapters/db/SupabaseSpendRepository'
 import { supabase } from '../config/supabase'
 import { useUIStore } from '../stores/useUIStore'
+import { DEMO_USER_ID } from '../config/constants'
 
 const spendRepository = new SupabaseSpendRepository(supabase)
 
@@ -22,7 +23,7 @@ export function useLoadSpends() {
         setError(null)
 
         // TODO: obtener userId real de auth cuando implementemos login
-        const userId = '00000000-0000-0000-0000-000000000001'
+        const userId = DEMO_USER_ID
 
         // Cargar últimos 100 gastos
         const spends = await spendRepository.list(userId)
