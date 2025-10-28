@@ -195,33 +195,16 @@ export function SpendCard({
           stiffness: 400,
           damping: 30,
         }}
-        className={`bg-card rounded-lg p-4 shadow-sm border transition-all relative z-10 ${
+        className={`rounded-lg p-4 shadow-sm border transition-all relative z-10 ${
           selectionMode 
             ? isSelected 
-              ? 'border-brand-cyan ring-2 ring-brand-cyan cursor-pointer' 
-              : 'border-border cursor-pointer'
-            : 'border-border cursor-grab active:cursor-grabbing'
+              ? 'bg-brand-cyan/10 border-brand-cyan cursor-pointer' 
+              : 'bg-card border-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800'
+            : 'bg-card border-border cursor-grab active:cursor-grabbing'
         }`}
         onClick={selectionMode && onToggleSelect ? () => onToggleSelect(spend) : undefined}
       >
         <div className="flex gap-4 items-start h-full">
-          {/* Checkbox (selection mode) */}
-          {selectionMode && (
-            <div className="flex-shrink-0 flex items-center">
-              <div 
-                className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
-                  isSelected 
-                    ? 'bg-brand-cyan border-brand-cyan' 
-                    : 'border-border bg-card'
-                }`}
-              >
-                {isSelected && (
-                  <span className="text-white text-sm font-bold">✓</span>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Category Icon */}
           <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-cyan/10 flex items-center justify-center text-2xl">
             {getCategoryEmoji(spend.category)}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SpendList, FilterModal, SearchBar, SpendEditModal, BulkEditModal, BulkEditChanges } from '@/components/spend';
 import { FoxyAvatar } from '@/components/foxy';
@@ -19,7 +19,7 @@ const ROUTES = ['/', '/spends', '/settings'] as const;
 export function SpendListPage() {
   const location = useLocation();
   const { spends, isLoading, updateSpend: updateSpendInStore, deleteSpend: deleteSpendFromStore } = useSpendStore();
-  const { showSuccess, showError } = useUIStore();
+  const { showSuccess, showError, setSelectionModeActive } = useUIStore();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [editingSpend, setEditingSpend] = useState<Spend | null>(null);
@@ -28,6 +28,11 @@ export function SpendListPage() {
   const [showBulkEdit, setShowBulkEdit] = useState(false);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const currentIndex = ROUTES.indexOf(location.pathname as typeof ROUTES[number]);
+
+  // Sync selection mode with UI store
+  useEffect(() => {
+    setSelectionModeActive(selectionMode);
+  }, [selectionMode, setSelectionModeActive]);
 
   // Filters and search
   const {

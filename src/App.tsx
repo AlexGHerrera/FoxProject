@@ -8,7 +8,7 @@ import './App.css'
 
 function App() {
   const { theme } = useTheme()
-  const { toasts, removeToast } = useUIStore()
+  const { toasts, removeToast, isSelectionModeActive } = useUIStore()
 
   return (
     <BrowserRouter>
@@ -25,8 +25,8 @@ function App() {
         <SettingsPage />
       </PageCarousel>
 
-      {/* Bottom Navigation - Fijo, fuera del carrusel */}
-      <BottomNav />
+      {/* Bottom Navigation - Oculto cuando hay modo selección activo */}
+      {!isSelectionModeActive && <BottomNav />}
     </BrowserRouter>
   )
 }
