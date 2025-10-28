@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { Spend, getCategoryEmoji, centsToEur } from '@/domain/models';
 import { ConfirmDialog } from '@/components/ui';
@@ -11,18 +11,25 @@ interface SpendCardProps {
 }
 
 const SWIPE_THRESHOLD = -80; // Minimum swipe distance to reveal actions
-const BUTTON_SIZE = 56; // Square button size (width = height)
 const BUTTON_GAP = 8; // Gap between buttons
 const ACTIONS_PADDING = 8; // Right padding
 
 export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [actionsWidth, setActionsWidth] = useState(200); // Default width
   const x = useMotionValue(0);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Calculate dynamic actions width: 3 buttons + 2 gaps + padding
-  const ACTIONS_WIDTH = (BUTTON_SIZE * 3) + (BUTTON_GAP * 2) + ACTIONS_PADDING;
+  // Measure card height and calculate actions width dynamically
+  useLayoutEffect(() => {
+    if (cardRef.current) {
+      const cardHeight = cardRef.current.offsetHeight;
+      // Calculate: 3 square buttons (height = width) + 2 gaps + padding
+      const calculatedWidth = (cardHeight * 3) + (BUTTON_GAP * 2) + ACTIONS_PADDING;
+      setActionsWidth(calculatedWidth);
+    }
+  }, [spend.note]); // Recalculate when note changes (affects height)
 
   // Transform for action buttons opacity (fade in as card slides)
   const actionsOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
@@ -33,7 +40,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
     // If swiped left enough, open
     if (offset < SWIPE_THRESHOLD) {
       setIsOpen(true);
-      x.set(-ACTIONS_WIDTH);
+      x.set(-actionsWidth);
     } 
     // If swiped right or not enough, close
     else {
@@ -86,9 +93,9 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
     <div className="relative overflow-hidden rounded-lg" ref={cardRef}>
       {/* Action Buttons (behind the card) */}
       <motion.div
-        className="absolute right-0 top-0 h-full flex items-center pr-2"
+        className="absolute right-0 top-0 h-full flex items-stretch pr-2"
         style={{ 
-          width: ACTIONS_WIDTH,
+          width: actionsWidth,
           opacity: actionsOpacity,
           gap: `${BUTTON_GAP}px`
         }}
@@ -97,8 +104,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
         {onSelect && (
           <button
             onClick={handleSelect}
-            className="bg-brand-cyan text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
-            style={{ width: BUTTON_SIZE, height: BUTTON_SIZE }}
+            className="aspect-square h-full bg-brand-cyan text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Seleccionar"
           >
             <span className="text-3xl">✓</span>
@@ -109,8 +115,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
         {onEdit && (
           <button
             onClick={handleEdit}
-            className="bg-gray-400 text-gray-900 font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
-            style={{ width: BUTTON_SIZE, height: BUTTON_SIZE }}
+            className="aspect-square h-full bg-gray-400 text-gray-900 font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Editar"
           >
             <span className="text-3xl">✏️</span>
@@ -121,8 +126,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
         {onDelete && (
           <button
             onClick={handleDeleteClick}
-            className="bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
-            style={{ width: BUTTON_SIZE, height: BUTTON_SIZE }}
+            className="aspect-square h-full bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Eliminar"
           >
             <span className="text-3xl">✕</span>
@@ -145,11 +149,11 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
       {/* Card (draggable) */}
       <motion.div
         drag="x"
-        dragConstraints={{ left: -ACTIONS_WIDTH, right: 0 }}
+        dragConstraints={{ left: -actionsWidth, right: 0 }}
         dragElastic={0.1}
         onDragEnd={handleDragEnd}
         style={{ x }}
-        animate={isOpen ? { x: -ACTIONS_WIDTH } : { x: 0 }}
+        animate={isOpen ? { x: -actionsWidth } : { x: 0 }}
         transition={{
           type: 'spring',
           stiffness: 400,
