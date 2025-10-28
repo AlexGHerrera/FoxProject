@@ -15,11 +15,10 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
         </p>
 
         {/* Actions */}
-        <div className="flex gap-2 sm:gap-3">
+        <div className="footer-actions flex gap-2 sm:gap-3">
           <button
             onClick={onCancel}
-            className="flex-[1_1_0%] !min-w-0 h-12 sm:h-14 rounded-lg font-semibold text-xs sm:text-sm bg-card text-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center border border-border active:scale-95"
-            style={{ minWidth: 0, flex: '1 1 0%' }}
+            className="h-12 sm:h-14 rounded-lg font-semibold text-xs sm:text-sm bg-card text-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center border border-border active:scale-95"
             aria-label="Cancelar selección"
           >
             <span className="truncate px-1">Cancelar</span>
@@ -28,8 +27,7 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
           <button
             onClick={onEdit}
             disabled={count === 0}
-            className="flex-[1_1_0%] !min-w-0 h-12 sm:h-14 rounded-lg font-bold bg-gray-400 text-gray-900 hover:bg-gray-500 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-            style={{ minWidth: 0, flex: '1 1 0%' }}
+            className="h-12 sm:h-14 rounded-lg font-bold bg-gray-400 text-gray-900 hover:bg-gray-500 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             aria-label="Editar gastos seleccionados"
           >
             <span className="text-2xl sm:text-3xl leading-none">✏️</span>
@@ -38,8 +36,7 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
           <button
             onClick={onDelete}
             disabled={count === 0}
-            className="flex-[1_1_0%] !min-w-0 h-12 sm:h-14 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-            style={{ minWidth: 0, flex: '1 1 0%' }}
+            className="h-12 sm:h-14 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             aria-label="Eliminar gastos seleccionados"
           >
             <span className="text-2xl sm:text-3xl leading-none">✕</span>
