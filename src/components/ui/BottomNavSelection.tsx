@@ -18,7 +18,7 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 h-16 rounded-lg font-semibold bg-card text-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center border border-border active:scale-95"
+            className="flex-1 aspect-square rounded-lg font-semibold bg-card text-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center border border-border active:scale-95"
             aria-label="Cancelar selección"
           >
             <span className="text-sm">Cancelar</span>
@@ -27,7 +27,7 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
           <button
             onClick={onEdit}
             disabled={count === 0}
-            className="w-16 h-16 rounded-lg font-bold bg-gray-400 text-gray-900 hover:bg-gray-500 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+            className="flex-1 aspect-square rounded-lg font-bold bg-gray-400 text-gray-900 hover:bg-gray-500 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             aria-label="Editar gastos seleccionados"
           >
             <span className="text-3xl">✏️</span>
@@ -36,7 +36,7 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
           <button
             onClick={onDelete}
             disabled={count === 0}
-            className="w-16 h-16 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+            className="flex-1 aspect-square rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             aria-label="Eliminar gastos seleccionados"
           >
             <span className="text-3xl">✕</span>
