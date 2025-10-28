@@ -10,7 +10,7 @@ interface SpendCardProps {
 }
 
 const SWIPE_THRESHOLD = -80; // Minimum swipe distance to reveal actions
-const ACTIONS_WIDTH = 220; // Width of action buttons container
+const ACTIONS_WIDTH = 280; // Width of action buttons container (enough for 3 square buttons)
 
 export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -72,7 +72,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
     <div className="relative overflow-hidden rounded-lg" ref={cardRef}>
       {/* Action Buttons (behind the card) */}
       <motion.div
-        className="absolute right-0 top-0 h-full flex items-center gap-2 pr-2"
+        className="absolute right-0 top-0 h-full flex items-center gap-2 pr-2 pl-2"
         style={{ 
           width: ACTIONS_WIDTH,
           opacity: actionsOpacity 
@@ -82,7 +82,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
         {onSelect && (
           <button
             onClick={handleSelect}
-            className="w-16 h-16 bg-brand-cyan text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="aspect-square h-full bg-brand-cyan text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Seleccionar"
           >
             <span className="text-3xl">✓</span>
@@ -93,7 +93,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
         {onEdit && (
           <button
             onClick={handleEdit}
-            className="w-16 h-16 bg-gray-400 text-gray-900 font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="aspect-square h-full bg-gray-400 text-gray-900 font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Editar"
           >
             <span className="text-3xl">✏️</span>
@@ -104,7 +104,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
         {onDelete && (
           <button
             onClick={handleDelete}
-            className="w-16 h-16 bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="aspect-square h-full bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Eliminar"
           >
             <span className="text-3xl">✕</span>
