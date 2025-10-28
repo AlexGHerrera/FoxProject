@@ -162,8 +162,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
                   {spend.merchant || 'Sin establecimiento'}
                 </h3>
                 <div className="flex items-center gap-1.5 mt-1">
-                  <p className="text-sm text-muted capitalize">{spend.category}</p>
-                  {/* Always show payment method icon with fallback */}
+                  {/* Payment method icon */}
                   <span className="text-base" title={spend.paidWith || 'tarjeta'}>
                     {spend.paidWith === 'efectivo' ? '💵' : '💳'}
                   </span>
