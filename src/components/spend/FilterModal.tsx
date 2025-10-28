@@ -100,8 +100,8 @@ export function FilterModal({ isOpen, onClose, currentFilters, onApply }: Filter
                     px-4 py-2 rounded-full text-sm font-medium transition-all
                     ${
                       isSelected
-                        ? 'bg-brand-magenta text-white shadow-md'
-                        : 'bg-card text-text border border-border hover:border-brand-magenta'
+                        ? 'bg-brand-cyan text-white shadow-md'
+                        : 'bg-card text-text border border-border hover:border-brand-cyan'
                     }
                   `}
                 >
@@ -128,8 +128,8 @@ export function FilterModal({ isOpen, onClose, currentFilters, onApply }: Filter
                     px-4 py-2 rounded-full text-sm font-medium transition-all
                     ${
                       isSelected
-                        ? 'bg-brand-orange text-white shadow-md'
-                        : 'bg-card text-text border border-border hover:border-brand-orange'
+                        ? 'bg-brand-cyan text-white shadow-md'
+                        : 'bg-card text-text border border-border hover:border-brand-cyan'
                     }
                   `}
                 >
