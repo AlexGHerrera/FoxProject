@@ -8,7 +8,7 @@ interface BottomNavSelectionProps {
 export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: BottomNavSelectionProps) {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border shadow-lg z-50 safe-area-bottom">
-      <div className="w-full max-w-4xl mx-auto px-4 py-3">
+      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 py-3">
         {/* Counter */}
         <p className="text-sm font-medium text-muted text-center mb-3">
           {count} {count === 1 ? 'gasto seleccionado' : 'gastos seleccionados'}
