@@ -93,7 +93,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
         {onEdit && (
           <button
             onClick={handleEdit}
-            className="flex-1 h-full bg-gray-600 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="flex-1 h-full bg-gray-400 text-gray-900 font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Editar"
           >
             <span className="text-3xl">✏️</span>
