@@ -11,7 +11,7 @@ interface SpendCardProps {
 }
 
 const SWIPE_THRESHOLD = -80; // Minimum swipe distance to reveal actions
-const ACTIONS_WIDTH = 300; // Width: 3 large square buttons + gaps + padding (aligned with UI)
+const ACTIONS_WIDTH = 320; // Width adjusted to align buttons flush with card edge
 
 export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps) {
   const [isOpen, setIsOpen] = useState(false);
