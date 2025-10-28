@@ -8,6 +8,9 @@ interface SpendCardProps {
   onEdit?: (spend: Spend) => void;
   onDelete?: (spend: Spend) => void;
   onSelect?: (spend: Spend) => void;
+  selectionMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: (spend: Spend) => void;
 }
 
 const SWIPE_THRESHOLD = -80; // Minimum swipe distance to reveal actions
@@ -15,13 +18,21 @@ const BUTTON_GAP = 8; // Gap between buttons
 const ACTIONS_PADDING = 8; // Right padding
 const AUTO_CLOSE_DELAY = 3000; // Auto-close after 3 seconds
 
-export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps) {
+export function SpendCard({ 
+  spend, 
+  onEdit, 
+  onDelete, 
+  onSelect, 
+  selectionMode = false,
+  isSelected = false,
+  onToggleSelect 
+}: SpendCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [actionsWidth, setActionsWidth] = useState(200); // Default width
   const x = useMotionValue(0);
   const cardRef = useRef<HTMLDivElement>(null);
-  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const closeTimeoutRef = useRef<number | null>(null);
 
   // Measure card height and calculate actions width dynamically
   useLayoutEffect(() => {
@@ -42,7 +53,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
       }
       
       // Set new timeout to close after 3 seconds
-      closeTimeoutRef.current = setTimeout(() => {
+      closeTimeoutRef.current = window.setTimeout(() => {
         setIsOpen(false);
         x.set(0);
       }, AUTO_CLOSE_DELAY);
@@ -173,20 +184,44 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
 
       {/* Card (draggable) */}
       <motion.div
-        drag="x"
+        drag={selectionMode ? false : "x"}
         dragConstraints={{ left: -actionsWidth, right: 0 }}
         dragElastic={0.1}
         onDragEnd={handleDragEnd}
-        style={{ x }}
-        animate={isOpen ? { x: -actionsWidth } : { x: 0 }}
+        style={{ x: selectionMode ? 0 : x }}
+        animate={isOpen && !selectionMode ? { x: -actionsWidth } : { x: 0 }}
         transition={{
           type: 'spring',
           stiffness: 400,
           damping: 30,
         }}
-        className="bg-card rounded-lg p-4 shadow-sm border border-border cursor-grab active:cursor-grabbing relative z-10"
+        className={`bg-card rounded-lg p-4 shadow-sm border transition-all relative z-10 ${
+          selectionMode 
+            ? isSelected 
+              ? 'border-brand-cyan ring-2 ring-brand-cyan cursor-pointer' 
+              : 'border-border cursor-pointer'
+            : 'border-border cursor-grab active:cursor-grabbing'
+        }`}
+        onClick={selectionMode && onToggleSelect ? () => onToggleSelect(spend) : undefined}
       >
         <div className="flex gap-4 items-start h-full">
+          {/* Checkbox (selection mode) */}
+          {selectionMode && (
+            <div className="flex-shrink-0 flex items-center">
+              <div 
+                className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+                  isSelected 
+                    ? 'bg-brand-cyan border-brand-cyan' 
+                    : 'border-border bg-card'
+                }`}
+              >
+                {isSelected && (
+                  <span className="text-white text-sm font-bold">✓</span>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Category Icon */}
           <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-cyan/10 flex items-center justify-center text-2xl">
             {getCategoryEmoji(spend.category)}

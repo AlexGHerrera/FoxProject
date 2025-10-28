@@ -3,6 +3,8 @@ export { SpendList } from './SpendList'
 export { SearchBar } from './SearchBar'
 export { FilterModal } from './FilterModal'
 export { SpendEditModal } from './SpendEditModal'
+export { BulkEditModal } from './BulkEditModal'
 export { PaymentMethodToggle } from './PaymentMethodToggle'
 export type { SpendFilters } from './types'
+export type { BulkEditChanges } from './BulkEditModal'
 

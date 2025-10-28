@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { SpendList, FilterModal, SearchBar, SpendEditModal } from '@/components/spend';
+import { SpendList, FilterModal, SearchBar, SpendEditModal, BulkEditModal, BulkEditChanges } from '@/components/spend';
 import { FoxyAvatar } from '@/components/foxy';
-import { PageIndicator } from '@/components/ui';
+import { PageIndicator, BottomNavSelection, ConfirmDialog } from '@/components/ui';
 import { useSpendStore } from '@/stores';
 import { useSpendFilters } from '@/hooks';
 import { deleteSpend } from '@/application/deleteSpend';
@@ -18,11 +18,15 @@ const ROUTES = ['/', '/spends', '/settings'] as const;
 
 export function SpendListPage() {
   const location = useLocation();
-  const { spends, isLoading, updateSpend: updateSpendInStore } = useSpendStore();
+  const { spends, isLoading, updateSpend: updateSpendInStore, deleteSpend: deleteSpendFromStore } = useSpendStore();
   const { showSuccess, showError } = useUIStore();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [editingSpend, setEditingSpend] = useState<Spend | null>(null);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showBulkEdit, setShowBulkEdit] = useState(false);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const currentIndex = ROUTES.indexOf(location.pathname as typeof ROUTES[number]);
 
   // Filters and search
@@ -82,9 +86,88 @@ export function SpendListPage() {
   };
 
   const handleSelect = (spend: Spend) => {
-    // TODO: Implement multi-select functionality
-    console.log('Select spend:', spend);
-    showError('Selección múltiple aún no implementada');
+    // Enter selection mode and select this spend
+    setSelectionMode(true);
+    setSelectedIds(new Set([spend.id]));
+  };
+
+  const handleToggleSelect = (spend: Spend) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(spend.id)) {
+        next.delete(spend.id);
+      } else {
+        next.add(spend.id);
+      }
+      return next;
+    });
+  };
+
+  const handleCancelSelection = () => {
+    setSelectionMode(false);
+    setSelectedIds(new Set());
+  };
+
+  const handleBulkEdit = () => {
+    setShowBulkEdit(true);
+  };
+
+  const handleBulkEditSave = async (changes: BulkEditChanges) => {
+    const selectedSpends = Array.from(selectedIds);
+    
+    try {
+      // Update each spend in DB
+      await Promise.all(
+        selectedSpends.map((id) =>
+          updateSpend(id, DEMO_USER_ID, changes, repository)
+        )
+      );
+
+      // Update in store
+      selectedSpends.forEach((id) => {
+        updateSpendInStore(id, changes);
+      });
+
+      showSuccess(`${selectedSpends.length} ${selectedSpends.length === 1 ? 'gasto actualizado' : 'gastos actualizados'}`);
+      handleCancelSelection();
+    } catch (error) {
+      console.error('Error updating spends:', error);
+      showError('Error al actualizar los gastos');
+      throw error;
+    }
+  };
+
+  const handleBulkDelete = () => {
+    setShowBulkDeleteConfirm(true);
+  };
+
+  const handleBulkDeleteConfirm = async () => {
+    const selectedSpends = Array.from(selectedIds);
+
+    try {
+      setIsDeleting(true);
+
+      // Delete each spend from DB
+      await Promise.all(
+        selectedSpends.map((id) =>
+          deleteSpend(id, DEMO_USER_ID, repository)
+        )
+      );
+
+      // Remove from store
+      selectedSpends.forEach((id) => {
+        deleteSpendFromStore(id);
+      });
+
+      showSuccess(`${selectedSpends.length} ${selectedSpends.length === 1 ? 'gasto eliminado' : 'gastos eliminados'}`);
+      handleCancelSelection();
+    } catch (error) {
+      console.error('Error deleting spends:', error);
+      showError('Error al eliminar los gastos');
+    } finally {
+      setIsDeleting(false);
+      setShowBulkDeleteConfirm(false);
+    }
   };
 
   return (
@@ -185,6 +268,9 @@ export function SpendListPage() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           onSelect={handleSelect}
+          selectionMode={selectionMode}
+          selectedIds={selectedIds}
+          onToggleSelect={handleToggleSelect}
           emptyMessage={
             searchQuery || filters.categories.length > 0
               ? 'No se encontraron gastos con estos filtros'
@@ -192,6 +278,16 @@ export function SpendListPage() {
           }
         />
       </main>
+
+      {/* Selection Mode Bottom Nav */}
+      {selectionMode && (
+        <BottomNavSelection
+          count={selectedIds.size}
+          onEdit={handleBulkEdit}
+          onDelete={handleBulkDelete}
+          onCancel={handleCancelSelection}
+        />
+      )}
 
       {/* Filter Modal */}
       <FilterModal
@@ -210,6 +306,26 @@ export function SpendListPage() {
           onSave={handleEditSave}
         />
       )}
+
+      {/* Bulk Edit Modal */}
+      <BulkEditModal
+        isOpen={showBulkEdit}
+        onClose={() => setShowBulkEdit(false)}
+        count={selectedIds.size}
+        onSave={handleBulkEditSave}
+      />
+
+      {/* Bulk Delete Confirm */}
+      <ConfirmDialog
+        isOpen={showBulkDeleteConfirm}
+        onClose={() => setShowBulkDeleteConfirm(false)}
+        onConfirm={handleBulkDeleteConfirm}
+        title={`¿Eliminar ${selectedIds.size} ${selectedIds.size === 1 ? 'gasto' : 'gastos'}?`}
+        message="Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        confirmVariant="danger"
+      />
     </div>
   );
 }

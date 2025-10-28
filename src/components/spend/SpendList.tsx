@@ -8,6 +8,9 @@ interface SpendListProps {
   onDelete?: (spend: Spend) => void;
   onSelect?: (spend: Spend) => void;
   emptyMessage?: string;
+  selectionMode?: boolean;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (spend: Spend) => void;
 }
 
 export function SpendList({
@@ -17,6 +20,9 @@ export function SpendList({
   onDelete,
   onSelect,
   emptyMessage = 'No hay gastos registrados',
+  selectionMode = false,
+  selectedIds = new Set(),
+  onToggleSelect,
 }: SpendListProps) {
   // Loading state
   if (loading) {
@@ -66,6 +72,9 @@ export function SpendList({
           onEdit={onEdit}
           onDelete={onDelete}
           onSelect={onSelect}
+          selectionMode={selectionMode}
+          isSelected={selectedIds.has(spend.id)}
+          onToggleSelect={onToggleSelect}
         />
       ))}
     </div>
