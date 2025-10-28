@@ -70,9 +70,9 @@ export function SpendListPage() {
   };
 
   return (
-    <div className="h-full bg-background">
+    <div className="h-full bg-background overflow-y-auto">
       {/* Header */}
-      <header className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-10">
+      <header className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
