@@ -148,15 +148,15 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
         }}
         className="bg-card rounded-lg p-4 shadow-sm border border-border cursor-grab active:cursor-grabbing relative z-10"
       >
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-start">
           {/* Category Icon */}
           <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-cyan/10 flex items-center justify-center text-2xl">
             {getCategoryEmoji(spend.category)}
           </div>
 
-          {/* Content - Aligned to top */}
-          <div className="flex-1 min-w-0 flex flex-col justify-center">
-            <div className="flex items-center justify-between gap-4">
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-text truncate leading-tight">
                   {spend.merchant || 'Sin establecimiento'}
@@ -167,9 +167,12 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
                     {spend.paidWith === 'efectivo' ? '💵' : '💳'}
                   </span>
                 </div>
+                {spend.note && (
+                  <p className="text-sm text-muted mt-1.5 truncate">{spend.note}</p>
+                )}
               </div>
 
-              {/* Amount - Aligned to top */}
+              {/* Amount */}
               <div className="flex-shrink-0 text-right">
                 <p className="font-bold text-lg text-text leading-tight">
                   {centsToEur(spend.amountCents).toFixed(2)} €
@@ -177,9 +180,6 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
                 <p className="text-xs text-muted mt-1">{formattedDate}</p>
               </div>
             </div>
-            {spend.note && (
-              <p className="text-sm text-muted mt-1.5 truncate">{spend.note}</p>
-            )}
           </div>
         </div>
       </motion.div>
