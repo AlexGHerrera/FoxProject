@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { SpendList, FilterModal, SearchBar } from '@/components/spend';
+import { SpendList, FilterModal, SearchBar, SpendEditModal } from '@/components/spend';
 import { FoxyAvatar } from '@/components/foxy';
 import { PageIndicator } from '@/components/ui';
 import { useSpendStore } from '@/stores';
 import { useSpendFilters } from '@/hooks';
 import { deleteSpend } from '@/application/deleteSpend';
+import { updateSpend } from '@/application/updateSpend';
 import { SupabaseSpendRepository } from '@/adapters/db/SupabaseSpendRepository';
 import { supabase } from '@/config/supabase';
 import { useUIStore } from '@/stores';
-import { Spend } from '@/domain/models';
+import { Spend, UpdateSpendData } from '@/domain/models';
 import { DEMO_USER_ID } from '@/config/constants';
 
 const repository = new SupabaseSpendRepository(supabase);
@@ -17,10 +18,11 @@ const ROUTES = ['/', '/spends', '/settings'] as const;
 
 export function SpendListPage() {
   const location = useLocation();
-  const { spends, isLoading } = useSpendStore();
+  const { spends, isLoading, updateSpend: updateSpendInStore } = useSpendStore();
   const { showSuccess, showError } = useUIStore();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [editingSpend, setEditingSpend] = useState<Spend | null>(null);
   const currentIndex = ROUTES.indexOf(location.pathname as typeof ROUTES[number]);
 
   // Filters and search
@@ -41,9 +43,25 @@ export function SpendListPage() {
   }).format(currentDate);
 
   const handleEdit = (spend: Spend) => {
-    // TODO: Navigate to edit page or open modal
-    console.log('Edit spend:', spend);
-    showError('Edición aún no implementada');
+    setEditingSpend(spend);
+  };
+
+  const handleEditSave = async (updatedData: UpdateSpendData) => {
+    if (!editingSpend) return;
+
+    try {
+      await updateSpend(editingSpend.id, DEMO_USER_ID, updatedData, repository);
+      
+      // Update in store
+      updateSpendInStore(editingSpend.id, updatedData);
+      
+      showSuccess('Gasto actualizado');
+      setEditingSpend(null);
+    } catch (error) {
+      console.error('Error updating spend:', error);
+      showError('Error al actualizar el gasto');
+      throw error; // Re-throw to let modal handle it
+    }
   };
 
   const handleDelete = async (spend: Spend) => {
@@ -182,6 +200,16 @@ export function SpendListPage() {
         currentFilters={filters}
         onApply={applyFilters}
       />
+
+      {/* Edit Modal */}
+      {editingSpend && (
+        <SpendEditModal
+          isOpen={!!editingSpend}
+          onClose={() => setEditingSpend(null)}
+          spend={editingSpend}
+          onSave={handleEditSave}
+        />
+      )}
     </div>
   );
 }
