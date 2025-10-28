@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Modal, Button } from '@/components/ui'
 import { CATEGORIES } from '@/config/constants'
+import { getCategoryEmoji } from '@/domain/models'
 import type { SpendFilters } from './types'
 import type { Category } from '@/domain/models'
 
@@ -25,21 +26,6 @@ const PAYMENT_METHODS = [
   { value: 'card', label: 'Tarjeta' },
   { value: 'transfer', label: 'Transferencia' },
 ] as const
-
-// Helper para obtener emoji de categoría
-function getCategoryEmoji(category: Category): string {
-  const emojiMap: Record<Category, string> = {
-    'comida': '🍔',
-    'transporte': '🚗',
-    'ocio': '🎬',
-    'salud': '💊',
-    'hogar': '🏠',
-    'ropa': '👕',
-    'educación': '📚',
-    'otros': '📦',
-  }
-  return emojiMap[category] || '📦'
-}
 
 export function FilterModal({ isOpen, onClose, currentFilters, onApply }: FilterModalProps) {
   const [localFilters, setLocalFilters] = useState<SpendFilters>(currentFilters)
