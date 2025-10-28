@@ -14,32 +14,34 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
           {count} {count === 1 ? 'gasto seleccionado' : 'gastos seleccionados'}
         </p>
 
-        {/* Actions */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+        {/* Actions - Vertical Stack */}
+        <div className="flex flex-col gap-2">
           <button
-            onClick={onCancel}
-            className="h-14 px-2 rounded-lg font-semibold text-sm bg-card text-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center active:scale-95"
-            aria-label="Cancelar selección"
+            onClick={onDelete}
+            disabled={count === 0}
+            className="w-full h-12 rounded-lg font-semibold text-sm bg-red-500 text-white hover:bg-red-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+            aria-label="Eliminar gastos seleccionados"
           >
-            <span className="truncate">Cancelar</span>
+            <span className="text-xl">✕</span>
+            <span>Eliminar</span>
           </button>
 
           <button
             onClick={onEdit}
             disabled={count === 0}
-            className="h-14 rounded-lg font-bold bg-gray-400 text-gray-900 hover:bg-gray-500 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+            className="w-full h-12 rounded-lg font-semibold text-sm bg-gray-400 text-gray-900 hover:bg-gray-500 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             aria-label="Editar gastos seleccionados"
           >
-            <span className="text-3xl leading-none">✏️</span>
+            <span className="text-xl">✏️</span>
+            <span>Editar</span>
           </button>
 
           <button
-            onClick={onDelete}
-            disabled={count === 0}
-            className="h-14 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-            aria-label="Eliminar gastos seleccionados"
+            onClick={onCancel}
+            className="w-full h-12 rounded-lg font-semibold text-sm bg-card text-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center active:scale-95"
+            aria-label="Cancelar selección"
           >
-            <span className="text-3xl leading-none">✕</span>
+            <span>Cancelar</span>
           </button>
         </div>
       </div>
