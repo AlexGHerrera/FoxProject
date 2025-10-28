@@ -15,7 +15,7 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
         </p>
 
         {/* Actions */}
-        <div className="footer-actions flex gap-2 sm:gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           <button
             onClick={onCancel}
             className="h-12 sm:h-14 rounded-lg font-semibold text-xs sm:text-sm bg-card text-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center active:scale-95"
