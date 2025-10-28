@@ -8,14 +8,14 @@ interface BottomNavSelectionProps {
 export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: BottomNavSelectionProps) {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border shadow-lg z-50">
-      <div className="max-w-4xl mx-auto px-3 sm:px-4 py-3">
+      <div className="w-full px-4 py-3">
         {/* Counter */}
         <p className="text-sm font-medium text-muted text-center mb-3">
           {count} {count === 1 ? 'gasto seleccionado' : 'gastos seleccionados'}
         </p>
 
         {/* Actions */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3 max-w-4xl mx-auto">
           <button
             onClick={onCancel}
             className="min-w-0 h-14 rounded-lg font-semibold text-sm bg-card text-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center active:scale-95"
