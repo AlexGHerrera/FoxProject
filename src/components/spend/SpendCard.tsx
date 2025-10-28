@@ -11,7 +11,7 @@ interface SpendCardProps {
 }
 
 const SWIPE_THRESHOLD = -80; // Minimum swipe distance to reveal actions
-const ACTIONS_WIDTH = 320; // Width adjusted to align buttons flush with card edge
+const ACTIONS_WIDTH = 240; // Width: 3 square buttons + gaps, aligned to right edge
 
 export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -81,7 +81,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
     <div className="relative overflow-hidden rounded-lg" ref={cardRef}>
       {/* Action Buttons (behind the card) */}
       <motion.div
-        className="absolute right-0 top-0 h-full flex items-center gap-2 pl-2"
+        className="absolute right-0 top-0 h-full flex items-center gap-2 justify-end"
         style={{ 
           width: ACTIONS_WIDTH,
           opacity: actionsOpacity 
