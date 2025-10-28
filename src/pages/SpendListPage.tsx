@@ -10,9 +10,9 @@ import { SupabaseSpendRepository } from '@/adapters/db/SupabaseSpendRepository';
 import { supabase } from '@/config/supabase';
 import { useUIStore } from '@/stores';
 import { Spend } from '@/domain/models';
+import { DEMO_USER_ID } from '@/config/constants';
 
 const repository = new SupabaseSpendRepository(supabase);
-const DEMO_USER_ID = 'd5e6f7a8-b9c0-1d2e-3f4a-5b6c7d8e9f0a'; // TODO: Replace with real auth
 const ROUTES = ['/', '/spends', '/settings'] as const;
 
 export function SpendListPage() {

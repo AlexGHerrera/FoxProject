@@ -15,6 +15,7 @@ import { useSpendStore } from '../stores/useSpendStore'
 import { useVoiceStore } from '../stores/useVoiceStore'
 import { useUIStore } from '../stores/useUIStore'
 import { env } from '../config/env'
+import { DEMO_USER_ID } from '../config/constants'
 import type { ParsedSpend } from '../adapters/ai/IAIProvider'
 
 // Initialize providers (only once)
@@ -82,7 +83,7 @@ export function useSpendSubmit() {
 
         // TODO: obtener userId real de auth cuando implementemos login
         // Por ahora usamos un UUID fijo para testing
-        const userId = '00000000-0000-0000-0000-000000000001'
+        const userId = DEMO_USER_ID
 
         const spend = await saveSpend(
           userId,
