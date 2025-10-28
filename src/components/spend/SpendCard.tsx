@@ -11,7 +11,7 @@ interface SpendCardProps {
 }
 
 const SWIPE_THRESHOLD = -80; // Minimum swipe distance to reveal actions
-const ACTIONS_WIDTH = 240; // Width: 3 square buttons + gaps, aligned to right edge
+const ACTIONS_WIDTH = 270; // Width: 3 square buttons + gaps, aligned to right edge
 
 export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -161,7 +161,14 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
                 <h3 className="font-semibold text-text truncate">
                   {spend.merchant || 'Sin establecimiento'}
                 </h3>
-                <p className="text-sm text-muted capitalize">{spend.category}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <p className="text-sm text-muted capitalize">{spend.category}</p>
+                  {spend.paidWith && (
+                    <span className="text-xs">
+                      {spend.paidWith === 'efectivo' ? '💵' : '💳'}
+                    </span>
+                  )}
+                </div>
                 {spend.note && (
                   <p className="text-sm text-muted mt-1 truncate">{spend.note}</p>
                 )}
@@ -175,15 +182,6 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
                 <p className="text-xs text-muted">{formattedDate}</p>
               </div>
             </div>
-
-            {/* Method */}
-            {spend.paidWith && (
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs px-2 py-1 rounded-full bg-surface text-muted">
-                  {spend.paidWith === 'efectivo' ? '💵 Efectivo' : '💳 Tarjeta'}
-                </span>
-              </div>
-            )}
           </div>
         </div>
       </motion.div>
