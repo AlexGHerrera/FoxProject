@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { Spend, getCategoryEmoji, centsToEur } from '@/domain/models';
 import { ConfirmDialog } from '@/components/ui';
@@ -11,13 +11,18 @@ interface SpendCardProps {
 }
 
 const SWIPE_THRESHOLD = -80; // Minimum swipe distance to reveal actions
-const ACTIONS_WIDTH = 200; // Width: 3 buttons with gaps
+const BUTTON_SIZE = 56; // Square button size (width = height)
+const BUTTON_GAP = 8; // Gap between buttons
+const ACTIONS_PADDING = 8; // Right padding
 
 export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const x = useMotionValue(0);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  // Calculate dynamic actions width: 3 buttons + 2 gaps + padding
+  const ACTIONS_WIDTH = (BUTTON_SIZE * 3) + (BUTTON_GAP * 2) + ACTIONS_PADDING;
 
   // Transform for action buttons opacity (fade in as card slides)
   const actionsOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
@@ -81,17 +86,19 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
     <div className="relative overflow-hidden rounded-lg" ref={cardRef}>
       {/* Action Buttons (behind the card) */}
       <motion.div
-        className="absolute right-0 top-0 h-full flex items-stretch gap-2 pr-2"
+        className="absolute right-0 top-0 h-full flex items-center pr-2"
         style={{ 
           width: ACTIONS_WIDTH,
-          opacity: actionsOpacity 
+          opacity: actionsOpacity,
+          gap: `${BUTTON_GAP}px`
         }}
       >
         {/* Select Button */}
         {onSelect && (
           <button
             onClick={handleSelect}
-            className="flex-1 bg-brand-cyan text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="bg-brand-cyan text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            style={{ width: BUTTON_SIZE, height: BUTTON_SIZE }}
             aria-label="Seleccionar"
           >
             <span className="text-3xl">✓</span>
@@ -102,7 +109,8 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
         {onEdit && (
           <button
             onClick={handleEdit}
-            className="flex-1 bg-gray-400 text-gray-900 font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="bg-gray-400 text-gray-900 font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            style={{ width: BUTTON_SIZE, height: BUTTON_SIZE }}
             aria-label="Editar"
           >
             <span className="text-3xl">✏️</span>
@@ -113,7 +121,8 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
         {onDelete && (
           <button
             onClick={handleDeleteClick}
-            className="flex-1 bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            style={{ width: BUTTON_SIZE, height: BUTTON_SIZE }}
             aria-label="Eliminar"
           >
             <span className="text-3xl">✕</span>
@@ -156,11 +165,14 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-4 mb-1">
+            <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-text truncate leading-tight">
                   {spend.merchant || 'Sin establecimiento'}
                 </h3>
+                {spend.note && (
+                  <p className="text-sm text-muted truncate line-clamp-1 mt-0.5">{spend.note}</p>
+                )}
                 <div className="flex items-center gap-1.5 mt-1">
                   {/* Payment method icon */}
                   <span className="text-base" title={spend.paidWith || 'tarjeta'}>
@@ -177,9 +189,6 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
                 <p className="text-xs text-muted mt-1">{formattedDate}</p>
               </div>
             </div>
-            {spend.note && (
-              <p className="text-sm text-muted truncate line-clamp-1">{spend.note}</p>
-            )}
           </div>
         </div>
       </motion.div>
