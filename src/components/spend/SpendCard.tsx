@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { Spend, getCategoryEmoji, centsToEur } from '@/domain/models';
 import { ConfirmDialog } from '@/components/ui';
@@ -13,6 +13,7 @@ interface SpendCardProps {
 const SWIPE_THRESHOLD = -80; // Minimum swipe distance to reveal actions
 const BUTTON_GAP = 8; // Gap between buttons
 const ACTIONS_PADDING = 8; // Right padding
+const AUTO_CLOSE_DELAY = 3000; // Auto-close after 3 seconds
 
 export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +21,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
   const [actionsWidth, setActionsWidth] = useState(200); // Default width
   const x = useMotionValue(0);
   const cardRef = useRef<HTMLDivElement>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Measure card height and calculate actions width dynamically
   useLayoutEffect(() => {
@@ -30,6 +32,29 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
       setActionsWidth(calculatedWidth);
     }
   }, [spend.note]); // Recalculate when note changes (affects height)
+
+  // Auto-close after 3 seconds of inactivity
+  useEffect(() => {
+    if (isOpen) {
+      // Clear any existing timeout
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+      
+      // Set new timeout to close after 3 seconds
+      closeTimeoutRef.current = setTimeout(() => {
+        setIsOpen(false);
+        x.set(0);
+      }, AUTO_CLOSE_DELAY);
+    }
+
+    // Cleanup timeout on unmount or when isOpen changes
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, [isOpen, x]);
 
   // Transform for action buttons opacity (fade in as card slides)
   const actionsOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
