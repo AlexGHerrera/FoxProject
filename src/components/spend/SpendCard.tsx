@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { Spend, getCategoryEmoji, centsToEur } from '@/domain/models';
+import { ConfirmDialog } from '@/components/ui';
 
 interface SpendCardProps {
   spend: Spend;
@@ -10,17 +11,18 @@ interface SpendCardProps {
 }
 
 const SWIPE_THRESHOLD = -80; // Minimum swipe distance to reveal actions
-const ACTIONS_WIDTH = 400; // Width: 3 large square buttons + gaps + padding
+const ACTIONS_WIDTH = 390; // Width: 3 large square buttons + gaps + padding
 
 export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const x = useMotionValue(0);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Transform for action buttons opacity (fade in as card slides)
   const actionsOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
 
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const offset = info.offset.x;
     
     // If swiped left enough, open
@@ -44,10 +46,17 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
     }
   };
 
-  const handleDelete = () => {
-    if (onDelete && confirm('¿Eliminar este gasto?')) {
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (onDelete) {
       onDelete(spend);
     }
+    // Close swipe after deletion
+    setIsOpen(false);
+    x.set(0);
   };
 
   const handleSelect = () => {
@@ -103,7 +112,7 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
         {/* Delete Button */}
         {onDelete && (
           <button
-            onClick={handleDelete}
+            onClick={handleDeleteClick}
             className="aspect-square h-full bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Eliminar"
           >
@@ -111,6 +120,18 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
           </button>
         )}
       </motion.div>
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteConfirm}
+        title="¿Eliminar este gasto?"
+        message={`Se eliminará el gasto de ${centsToEur(spend.amountCents).toFixed(2)} € en ${spend.merchant || spend.category}. Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        confirmVariant="danger"
+      />
 
       {/* Card (draggable) */}
       <motion.div
@@ -156,11 +177,13 @@ export function SpendCard({ spend, onEdit, onDelete, onSelect }: SpendCardProps)
             </div>
 
             {/* Method */}
-            <div className="flex items-center gap-2 mt-2">
-              <span className="text-xs px-2 py-1 rounded-full bg-surface text-muted">
-                {spend.method === 'cash' ? '💵 Efectivo' : '💳 Tarjeta'}
-              </span>
-            </div>
+            {spend.paidWith && (
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-xs px-2 py-1 rounded-full bg-surface text-muted">
+                  {spend.paidWith === 'efectivo' ? '💵 Efectivo' : '💳 Tarjeta'}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>

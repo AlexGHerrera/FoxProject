@@ -17,3 +17,4 @@ export { BottomNav } from './BottomNav'
 
 export { PageIndicator } from './PageIndicator'
 
+export { ConfirmDialog } from './ConfirmDialog'
