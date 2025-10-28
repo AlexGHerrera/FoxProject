@@ -15,31 +15,31 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
         </p>
 
         {/* Actions */}
-        <div className="flex gap-3 justify-between">
+        <div className="flex gap-2 sm:gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 h-14 rounded-lg font-semibold bg-card text-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center border border-border active:scale-95"
+            className="flex-1 min-h-[44px] h-12 sm:h-14 rounded-lg font-semibold bg-card text-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center border border-border active:scale-95"
             aria-label="Cancelar selección"
           >
-            <span className="text-sm">Cancelar</span>
+            <span className="text-xs sm:text-sm">Cancelar</span>
           </button>
 
           <button
             onClick={onEdit}
             disabled={count === 0}
-            className="w-14 h-14 rounded-lg font-bold bg-gray-400 text-gray-900 hover:bg-gray-500 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex-shrink-0"
+            className="aspect-square min-w-[44px] w-12 sm:w-14 h-12 sm:h-14 rounded-lg font-bold bg-gray-400 text-gray-900 hover:bg-gray-500 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex-shrink-0"
             aria-label="Editar gastos seleccionados"
           >
-            <span className="text-3xl">✏️</span>
+            <span className="text-2xl sm:text-3xl">✏️</span>
           </button>
 
           <button
             onClick={onDelete}
             disabled={count === 0}
-            className="w-14 h-14 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex-shrink-0"
+            className="aspect-square min-w-[44px] w-12 sm:w-14 h-12 sm:h-14 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex-shrink-0"
             aria-label="Eliminar gastos seleccionados"
           >
-            <span className="text-3xl">✕</span>
+            <span className="text-2xl sm:text-3xl">✕</span>
           </button>
         </div>
       </div>
