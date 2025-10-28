@@ -46,4 +46,3 @@ export function BottomNavSelection({ count, onEdit, onDelete, onCancel }: Bottom
     </div>
   );
 }
-
