@@ -1,193 +1,170 @@
-import { useState } from 'react';
-import { Modal } from '@/components/ui';
-import { CATEGORIES, PAYMENT_METHODS } from '@/config/constants';
-import { getCategoryEmoji } from '@/domain/models';
-import type { SpendFilters } from './types';
+import { useState } from 'react'
+import { Modal, Button } from '@/components/ui'
+import { CATEGORIES } from '@/config/constants'
+import type { SpendFilters } from './types'
+import type { Category } from '@/domain/models'
 
 interface FilterModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  currentFilters: SpendFilters;
-  onApply: (filters: SpendFilters) => void;
+  isOpen: boolean
+  onClose: () => void
+  currentFilters: SpendFilters
+  onApply: (filters: SpendFilters) => void
 }
 
-export function FilterModal({
-  isOpen,
-  onClose,
-  currentFilters,
-  onApply,
-}: FilterModalProps) {
-  const [filters, setFilters] = useState<SpendFilters>(currentFilters);
+const DATE_RANGES = [
+  { value: 'today', label: 'Hoy' },
+  { value: 'this-week', label: 'Esta semana' },
+  { value: 'this-month', label: 'Este mes' },
+  { value: 'last-month', label: 'Mes pasado' },
+  { value: 'all', label: 'Todo' },
+] as const
 
-  // Current month/year
-  const currentDate = new Date();
-  const monthYear = new Intl.DateTimeFormat('es-ES', {
-    month: 'long',
-    year: 'numeric',
-  }).format(currentDate);
+const PAYMENT_METHODS = [
+  { value: 'all', label: 'Todos' },
+  { value: 'cash', label: 'Efectivo' },
+  { value: 'card', label: 'Tarjeta' },
+  { value: 'transfer', label: 'Transferencia' },
+] as const
 
-  const handleApply = () => {
-    onApply(filters);
-    onClose();
-  };
+// Helper para obtener emoji de categoría
+function getCategoryEmoji(category: Category): string {
+  const emojiMap: Record<Category, string> = {
+    'comida': '🍔',
+    'transporte': '🚗',
+    'ocio': '🎬',
+    'salud': '💊',
+    'hogar': '🏠',
+    'ropa': '👕',
+    'educación': '📚',
+    'otros': '📦',
+  }
+  return emojiMap[category] || '📦'
+}
 
-  const handleReset = () => {
-    const defaultFilters: SpendFilters = {
-      dateRange: 'this-month',
-      categories: [],
-      paymentMethod: 'all',
-      sortBy: 'recent',
-    };
-    setFilters(defaultFilters);
-  };
+export function FilterModal({ isOpen, onClose, currentFilters, onApply }: FilterModalProps) {
+  const [localFilters, setLocalFilters] = useState<SpendFilters>(currentFilters)
 
-  const toggleCategory = (category: string) => {
-    setFilters((prev) => ({
+  const handleCategoryToggle = (category: Category) => {
+    setLocalFilters((prev) => ({
       ...prev,
       categories: prev.categories.includes(category)
         ? prev.categories.filter((c) => c !== category)
         : [...prev.categories, category],
-    }));
-  };
+    }))
+  }
+
+  const handleApply = () => {
+    onApply(localFilters)
+    onClose()
+  }
+
+  const handleReset = () => {
+    const resetFilters: SpendFilters = {
+      categories: [],
+      dateRange: 'this-month',
+      paymentMethod: 'all',
+    }
+    setLocalFilters(resetFilters)
+    onApply(resetFilters)
+  }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Filtros">
-      <div className="space-y-6 p-4">
-        {/* Current Month Display */}
-        <div className="flex items-center justify-between p-4 bg-surface rounded-lg">
-          <div>
-            <p className="text-sm text-muted">Mes actual:</p>
-            <p className="text-lg font-semibold text-text capitalize">{monthYear}</p>
+    <Modal isOpen={isOpen} onClose={onClose} title="Filtrar gastos">
+      <div className="space-y-6">
+        {/* Categories */}
+        <div>
+          <h3 className="text-sm font-semibold text-text mb-3">Categorías</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {CATEGORIES.map((category) => {
+              const isSelected = localFilters.categories.includes(category)
+              return (
+                <button
+                  key={category}
+                  onClick={() => handleCategoryToggle(category)}
+                  className={`
+                    px-3 py-2 rounded-lg text-sm font-medium transition-all
+                    ${
+                      isSelected
+                        ? 'bg-brand-cyan text-white shadow-md'
+                        : 'bg-card text-text border border-border hover:border-brand-cyan'
+                    }
+                  `}
+                >
+                  <span className="mr-2">{getCategoryEmoji(category)}</span>
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </button>
+              )
+            })}
           </div>
-          <div className="text-3xl">🦊</div>
         </div>
 
         {/* Date Range */}
         <div>
-          <h3 className="font-semibold text-text mb-3">Rango de fechas</h3>
+          <h3 className="text-sm font-semibold text-text mb-3">Período</h3>
           <div className="flex flex-wrap gap-2">
-            {[
-              { value: 'today', label: 'Hoy' },
-              { value: 'this-week', label: 'Esta semana' },
-              { value: 'this-month', label: 'Este mes' },
-              { value: 'custom', label: 'Personalizado' },
-            ].map((option) => (
-              <button
-                key={option.value}
-                onClick={() =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    dateRange: option.value as SpendFilters['dateRange'],
-                  }))
-                }
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filters.dateRange === option.value
-                    ? 'bg-brand-cyan text-white'
-                    : 'bg-surface text-text hover:bg-brand-cyan/10'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Categories */}
-        <div>
-          <h3 className="font-semibold text-text mb-3">Categorías</h3>
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((category) => (
-              <button
-                key={category}
-                onClick={() => toggleCategory(category)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filters.categories.includes(category)
-                    ? 'bg-brand-cyan text-white'
-                    : 'bg-surface text-text hover:bg-brand-cyan/10'
-                }`}
-              >
-                <span>{getCategoryEmoji(category)}</span>
-                <span>{category}</span>
-              </button>
-            ))}
+            {DATE_RANGES.map((range) => {
+              const isSelected = localFilters.dateRange === range.value
+              return (
+                <button
+                  key={range.value}
+                  onClick={() =>
+                    setLocalFilters((prev) => ({ ...prev, dateRange: range.value }))
+                  }
+                  className={`
+                    px-4 py-2 rounded-full text-sm font-medium transition-all
+                    ${
+                      isSelected
+                        ? 'bg-brand-magenta text-white shadow-md'
+                        : 'bg-card text-text border border-border hover:border-brand-magenta'
+                    }
+                  `}
+                >
+                  {range.label}
+                </button>
+              )
+            })}
           </div>
         </div>
 
         {/* Payment Method */}
         <div>
-          <h3 className="font-semibold text-text mb-3">Método de pago</h3>
-          <div className="flex gap-2">
-            {[
-              { value: 'all', label: 'Todos', icon: '💳' },
-              { value: 'efectivo', label: 'Efectivo', icon: '💵' },
-              { value: 'tarjeta', label: 'Tarjeta', icon: '💳' },
-            ].map((option) => (
-              <button
-                key={option.value}
-                onClick={() =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    paymentMethod: option.value as SpendFilters['paymentMethod'],
-                  }))
-                }
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-1 ${
-                  filters.paymentMethod === option.value
-                    ? 'bg-brand-cyan text-white'
-                    : 'bg-surface text-text hover:bg-brand-cyan/10'
-                }`}
-              >
-                <span>{option.icon}</span>
-                <span>{option.label}</span>
-              </button>
-            ))}
+          <h3 className="text-sm font-semibold text-text mb-3">Método de pago</h3>
+          <div className="flex flex-wrap gap-2">
+            {PAYMENT_METHODS.map((method) => {
+              const isSelected = localFilters.paymentMethod === method.value
+              return (
+                <button
+                  key={method.value}
+                  onClick={() =>
+                    setLocalFilters((prev) => ({ ...prev, paymentMethod: method.value }))
+                  }
+                  className={`
+                    px-4 py-2 rounded-full text-sm font-medium transition-all
+                    ${
+                      isSelected
+                        ? 'bg-brand-orange text-white shadow-md'
+                        : 'bg-card text-text border border-border hover:border-brand-orange'
+                    }
+                  `}
+                >
+                  {method.label}
+                </button>
+              )
+            })}
           </div>
         </div>
 
-        {/* Sort By */}
-        <div>
-          <h3 className="font-semibold text-text mb-3">Ordenar por</h3>
-          <div className="flex gap-2">
-            {[
-              { value: 'recent', label: 'Más reciente' },
-              { value: 'amount', label: 'Mayor gasto' },
-            ].map((option) => (
-              <button
-                key={option.value}
-                onClick={() =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    sortBy: option.value as SpendFilters['sortBy'],
-                  }))
-                }
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-1 ${
-                  filters.sortBy === option.value
-                    ? 'bg-brand-cyan text-white'
-                    : 'bg-surface text-text hover:bg-brand-cyan/10'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
+        {/* Actions */}
+        <div className="flex gap-3 pt-4 border-t border-border">
+          <Button variant="secondary" onClick={handleReset} className="flex-1">
+            Limpiar
+          </Button>
+          <Button onClick={handleApply} className="flex-1">
+            Aplicar filtros
+          </Button>
         </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex gap-3 p-4 border-t border-border">
-        <button
-          onClick={handleReset}
-          className="flex-1 px-4 py-3 text-sm font-medium text-text bg-surface rounded-lg hover:bg-muted transition-colors"
-        >
-          Borrar
-        </button>
-        <button
-          onClick={handleApply}
-          className="flex-1 px-4 py-3 text-sm font-medium text-white bg-brand-cyan rounded-lg hover:bg-brand-cyan/90 transition-colors"
-        >
-          Aplicar filtros
-        </button>
       </div>
     </Modal>
-  );
+  )
 }
 

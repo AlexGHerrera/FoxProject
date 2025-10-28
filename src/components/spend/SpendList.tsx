@@ -6,6 +6,7 @@ interface SpendListProps {
   loading?: boolean;
   onEdit?: (spend: Spend) => void;
   onDelete?: (spend: Spend) => void;
+  onSelect?: (spend: Spend) => void;
   emptyMessage?: string;
 }
 
@@ -14,6 +15,7 @@ export function SpendList({
   loading = false,
   onEdit,
   onDelete,
+  onSelect,
   emptyMessage = 'No hay gastos registrados',
 }: SpendListProps) {
   // Loading state
@@ -63,9 +65,11 @@ export function SpendList({
           spend={spend}
           onEdit={onEdit}
           onDelete={onDelete}
+          onSelect={onSelect}
         />
       ))}
     </div>
   );
 }
+
 

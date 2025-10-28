@@ -27,3 +27,4 @@ export function PageIndicator({ currentIndex, totalPages, className = '' }: Page
   )
 }
 
+

@@ -63,6 +63,12 @@ export function SpendListPage() {
     }
   };
 
+  const handleSelect = (spend: Spend) => {
+    // TODO: Implement multi-select functionality
+    console.log('Select spend:', spend);
+    showError('Selección múltiple aún no implementada');
+  };
+
   return (
     <div className="h-full bg-background">
       {/* Header */}
@@ -160,6 +166,7 @@ export function SpendListPage() {
           loading={isLoading || isDeleting}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onSelect={handleSelect}
           emptyMessage={
             searchQuery || filters.categories.length > 0
               ? 'No se encontraron gastos con estos filtros'
