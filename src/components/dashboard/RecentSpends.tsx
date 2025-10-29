@@ -3,7 +3,7 @@
  * Muestra los últimos gastos registrados con swipe-to-reveal para editar/eliminar
  */
 
-import { useState, useMemo, useRef, useLayoutEffect } from 'react'
+import { useState, useMemo, useRef, useLayoutEffect, useEffect } from 'react'
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion'
 import type { Spend } from '@/domain/models'
 import { centsToEur, getCategoryEmoji } from '@/domain/models'
@@ -118,6 +118,36 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
     }
   }, [spend.note]) // Recalculate when note changes (affects height)
 
+  // Close card on any external interaction (scroll, click outside, etc.)
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleInteraction = (e: Event) => {
+      // Don't close if clicking on the card itself or its action buttons
+      if (cardRef.current && (cardRef.current.contains(e.target as Node) || 
+          (e.target as HTMLElement).closest('.swipe-actions'))) {
+        return
+      }
+      setIsOpen(false)
+    }
+
+    // Close on scroll
+    const handleScroll = () => {
+      setIsOpen(false)
+    }
+
+    // Listen to various events
+    window.addEventListener('scroll', handleScroll, true) // capture phase for nested scrolls
+    document.addEventListener('click', handleInteraction)
+    document.addEventListener('touchstart', handleInteraction)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true)
+      document.removeEventListener('click', handleInteraction)
+      document.removeEventListener('touchstart', handleInteraction)
+    }
+  }, [isOpen])
+
   // Transform for action buttons opacity (fade in as card slides)
   const actionsOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1])
 
@@ -158,7 +188,7 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
     <div className="relative overflow-hidden rounded-xl" ref={cardRef}>
       {/* Action Buttons (behind the card) */}
       <motion.div
-        className="absolute right-0 top-0 h-full flex items-stretch pr-2"
+        className="swipe-actions absolute right-0 top-0 h-full flex items-stretch pr-2"
         style={{ 
           width: actionsWidth,
           opacity: actionsOpacity,
