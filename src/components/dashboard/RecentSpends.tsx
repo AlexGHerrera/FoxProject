@@ -260,7 +260,7 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
           {/* Merchant name with payment method icon */}
           <div className="flex items-center gap-1.5">
             <p className="text-sm font-medium text-text-light dark:text-text-dark truncate">
-              {spend.merchant || 'Sin establecimiento'}
+              {spend.merchant || spend.category}
             </p>
             {spend.paidWith && (
               <span className="text-xs flex-shrink-0" title={spend.paidWith}>
