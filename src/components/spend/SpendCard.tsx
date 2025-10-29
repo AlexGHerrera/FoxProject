@@ -219,22 +219,18 @@ export function SpendCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
-                {/* Merchant name with payment method icon */}
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-semibold text-text truncate leading-tight">
-                    {spend.merchant || 'Sin establecimiento'}
-                  </h3>
-                  <span className="text-base flex-shrink-0" title={spend.paidWith || 'tarjeta'}>
-                    {spend.paidWith === 'efectivo' ? '💵' : '💳'}
-                  </span>
-                </div>
+                <h3 className="font-semibold text-text truncate leading-tight">
+                  {spend.merchant || 'Sin establecimiento'}
+                </h3>
                 {spend.note && (
                   <p className="text-sm text-muted truncate line-clamp-1 mt-0.5">{spend.note}</p>
                 )}
-                {/* Category name */}
-                <p className="text-xs text-muted mt-1">
-                  {spend.category}
-                </p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  {/* Payment method icon */}
+                  <span className="text-base" title={spend.paidWith || 'tarjeta'}>
+                    {spend.paidWith === 'efectivo' ? '💵' : '💳'}
+                  </span>
+                </div>
               </div>
 
               {/* Amount */}
