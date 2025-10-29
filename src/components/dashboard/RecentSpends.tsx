@@ -153,11 +153,9 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
     // If swiping fast to the left, open even if not past threshold
     const shouldOpen = offset < SWIPE_THRESHOLD || (velocity < -500 && offset < -20)
     
-    if (shouldOpen) {
-      setIsOpen(true)
-    } else {
-      setIsOpen(false)
-    }
+    // Always set a definitive state (open or closed)
+    // This ensures the card always animates to a final position
+    setIsOpen(shouldOpen)
   }
 
   const handleEdit = () => {
@@ -232,6 +230,10 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
         dragConstraints={{ left: -actionsWidth, right: 0 }}
         dragElastic={0.1}
         dragMomentum={false}
+        dragTransition={{
+          bounceStiffness: 500,
+          bounceDamping: 35,
+        }}
         onDragEnd={handleDragEnd}
         style={{ x }}
         animate={isOpen ? { x: -actionsWidth } : { x: 0 }}
