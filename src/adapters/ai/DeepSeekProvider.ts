@@ -82,10 +82,10 @@ export class DeepSeekProvider implements IAIProvider {
           model: this.config.model,
           messages: [
             { role: 'system', content: SYSTEM_PROMPT },
-            { role: 'user', content: `${INSTRUCTION_PROMPT}\n\nFrase: "${text}"` },
+            { role: 'user', content: `${INSTRUCTION_PROMPT}\n\nFrase: "${text}"\n\nIMPORTANTE: Responde ÚNICAMENTE con el objeto JSON, sin texto adicional, sin markdown, sin explicaciones.` },
           ],
-          temperature: 0.3,
-          max_tokens: 200,
+          temperature: 0.2, // Más determinista para JSON consistente
+          max_tokens: 300, // Más espacio para respuestas complejas
         }),
         signal: controller.signal,
       })
@@ -103,14 +103,52 @@ export class DeepSeekProvider implements IAIProvider {
         throw new Error('No content in DeepSeek response')
       }
 
+      console.log('[DeepSeekProvider] Raw response:', content)
+
+      // Limpiar respuesta: a veces DeepSeek añade texto antes/después del JSON
+      let cleanedContent = content.trim()
+      
+      // Buscar JSON entre ```json y ``` si está en markdown
+      const markdownMatch = cleanedContent.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/)
+      if (markdownMatch) {
+        cleanedContent = markdownMatch[1]
+      }
+      
+      // Buscar el primer { y último } para extraer solo el JSON
+      const firstBrace = cleanedContent.indexOf('{')
+      const lastBrace = cleanedContent.lastIndexOf('}')
+      
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        cleanedContent = cleanedContent.substring(firstBrace, lastBrace + 1)
+      }
+
       // Parse JSON response
-      const parsed = JSON.parse(content) as {
+      let parsed: {
         amount_eur: number
         category: string
         merchant?: string
         note?: string
         paid_with?: 'tarjeta' | 'efectivo' | 'transferencia' | null
         confidence: number
+      }
+
+      try {
+        parsed = JSON.parse(cleanedContent)
+      } catch (parseError) {
+        console.error('[DeepSeekProvider] JSON parse error:', parseError)
+        console.error('[DeepSeekProvider] Content was:', content)
+        throw new Error(`Failed to parse DeepSeek response as JSON: ${content.substring(0, 100)}`)
+      }
+
+      // Validar campos requeridos
+      if (typeof parsed.amount_eur !== 'number') {
+        throw new Error('Missing or invalid amount_eur in response')
+      }
+      if (!parsed.category) {
+        throw new Error('Missing category in response')
+      }
+      if (typeof parsed.confidence !== 'number') {
+        throw new Error('Missing or invalid confidence in response')
       }
 
       // Validar y normalizar
