@@ -210,9 +210,14 @@ export function SpendCard({
         onClick={selectionMode && onToggleSelect ? () => onToggleSelect(spend) : undefined}
       >
         <div className="flex gap-4 items-start h-full">
-          {/* Category Icon */}
-          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-cyan/10 flex items-center justify-center text-2xl">
-            {getCategoryEmoji(spend.category)}
+          {/* Category Icon and Name */}
+          <div className="flex-shrink-0 flex flex-col items-center gap-1">
+            <div className="w-12 h-12 rounded-xl bg-brand-cyan/10 flex items-center justify-center text-2xl">
+              {getCategoryEmoji(spend.category)}
+            </div>
+            <p className="text-xs text-muted text-center leading-tight max-w-[60px] truncate">
+              {spend.category}
+            </p>
           </div>
 
           {/* Content */}
