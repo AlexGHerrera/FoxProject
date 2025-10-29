@@ -56,14 +56,27 @@ export function validateTranscript(text: string): { isValid: boolean; reason?: s
 
 /**
  * Parser regex para casos simples (evita llamada a API)
+ * CONSERVADOR: Solo para casos MUY claros y cortos
  * Formatos detectables:
  * - "5€ café"
- * - "10 euros en mercadona"
+ * - "10 euros mercadona"
  * - "taxi 6,50"
- * - "3€ tarjeta starbucks"
  */
 export function tryParseWithRegex(text: string): ParsedSpend | null {
   const lowerText = text.toLowerCase().trim()
+
+  // FILTRO 1: Si el texto es largo o complejo, usar IA
+  // Casos complejos: múltiples productos, descripciones largas, etc.
+  const wordCount = text.trim().split(/\s+/).length
+  if (wordCount > 5) {
+    // Texto largo/complejo → necesita IA
+    return null
+  }
+
+  // FILTRO 2: Si contiene "y" (múltiples items), usar IA
+  if (/\sy\s/.test(lowerText)) {
+    return null // "vermut y frutos secos" → IA
+  }
 
   // Extraer importe con múltiples formatos
   const amount = extractAmount(lowerText)
@@ -80,8 +93,12 @@ export function tryParseWithRegex(text: string): ParsedSpend | null {
   // Extraer merchant (básico)
   const merchant = extractMerchantSimple(lowerText)
 
-  // Solo retornar resultado si tenemos confianza alta en categoría
-  if (category !== 'Otros') {
+  // FILTRO 3: Solo casos MUY simples con categoría clara
+  // Si no encontramos merchant conocido Y la categoría no es super obvia, usar IA
+  const hasKnownMerchant = merchant !== null
+  const isSuperSimple = wordCount <= 3
+  
+  if (category !== 'Otros' && (hasKnownMerchant || isSuperSimple)) {
     return {
       amountEur: amount,
       category,
@@ -92,7 +109,7 @@ export function tryParseWithRegex(text: string): ParsedSpend | null {
     }
   }
 
-  return null // Categoría ambigua, necesita IA
+  return null // Caso complejo, necesita IA
 }
 
 /**
@@ -131,15 +148,17 @@ function extractPaidWith(text: string): 'tarjeta' | 'efectivo' | 'transferencia'
 }
 
 /**
- * Detecta categoría por palabras clave (casos muy claros)
+ * Detecta categoría por palabras clave (casos MUY claros SOLO)
+ * CONSERVADOR: Solo marcas/palabras inequívocas
  */
 function detectCategoryByKeywords(text: string): string {
   const keywords: Record<string, string[]> = {
-    'Café': ['café', 'coffee', 'cafeteria', 'cafetería', 'starbucks', 'cappuccino', 'latte', 'espresso'],
-    'Comida fuera': ['comida', 'cena', 'almuerzo', 'restaurante', 'mcdonalds', 'burger', 'pizza'],
-    'Supermercado': ['super', 'mercadona', 'carrefour', 'lidl', 'dia', 'aldi', 'compra'],
-    'Transporte': ['taxi', 'uber', 'cabify', 'metro', 'bus', 'tren', 'gasolina', 'parking'],
-    'Ocio': ['cine', 'teatro', 'concierto', 'entrada', 'fiesta', 'bar', 'copa'],
+    // Solo palabras INEQUÍVOCAS para cada categoría
+    'Café': ['starbucks', 'cappuccino', 'latte', 'espresso'], // "café" removido (muy ambiguo)
+    'Comida fuera': ['mcdonalds', 'burger king', 'pizza hut'], // Solo cadenas claras
+    'Supermercado': ['mercadona', 'carrefour', 'lidl', 'dia', 'aldi'], // Solo supermercados conocidos
+    'Transporte': ['taxi', 'uber', 'cabify', 'metro', 'bus', 'tren', 'gasolina'], // Transporte claro
+    // Ocio removido (demasiado ambiguo)
   }
 
   for (const [category, words] of Object.entries(keywords)) {
@@ -150,7 +169,7 @@ function detectCategoryByKeywords(text: string): string {
     }
   }
 
-  return 'Otros'
+  return 'Otros' // Si no es super claro, que lo maneje la IA
 }
 
 /**
