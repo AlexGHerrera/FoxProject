@@ -79,7 +79,7 @@ interface SwipeableSpendCardProps {
   onDelete?: (spend: Spend) => void
 }
 
-const SWIPE_THRESHOLD = -80 // Minimum swipe distance to reveal actions
+const SWIPE_THRESHOLD = -40 // Minimum swipe distance to reveal actions (reduced for better UX)
 const BUTTON_GAP = 8 // Gap between buttons
 const ACTIONS_PADDING = 8 // Right padding
 const AUTO_CLOSE_DELAY = 3000 // Auto-close after 3 seconds
@@ -151,7 +151,7 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
     
     // Consider velocity for better feel
     // If swiping fast to the left, open even if not past threshold
-    const shouldOpen = offset < SWIPE_THRESHOLD || (velocity < -500 && offset < -20)
+    const shouldOpen = offset < SWIPE_THRESHOLD || (velocity < -300 && offset < -15)
     
     // Always set a definitive state (open or closed)
     // This ensures the card always animates to a final position
