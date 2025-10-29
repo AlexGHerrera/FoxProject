@@ -3,7 +3,7 @@
  * Muestra los últimos gastos registrados con swipe-to-reveal para editar/eliminar
  */
 
-import { useState, useMemo, useRef, useLayoutEffect, useEffect } from 'react'
+import { useState, useMemo, useRef, useLayoutEffect } from 'react'
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion'
 import type { Spend } from '@/domain/models'
 import { centsToEur, getCategoryEmoji } from '@/domain/models'
@@ -79,10 +79,9 @@ interface SwipeableSpendCardProps {
   onDelete?: (spend: Spend) => void
 }
 
-const SWIPE_THRESHOLD = -40 // Minimum swipe distance to reveal actions (reduced for better UX)
+const SWIPE_THRESHOLD = -10 // Minimum swipe distance to reveal actions (reduced for better UX)
 const BUTTON_GAP = 8 // Gap between buttons
 const ACTIONS_PADDING = 8 // Right padding
-const AUTO_CLOSE_DELAY = 3000 // Auto-close after 3 seconds
 
 function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps) {
   const [isOpen, setIsOpen] = useState(false)
@@ -90,7 +89,6 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
   const [actionsWidth, setActionsWidth] = useState(150) // Default width for 2 buttons
   const x = useMotionValue(0)
   const cardRef = useRef<HTMLDivElement>(null)
-  const closeTimeoutRef = useRef<number | null>(null)
 
   const amountEur = useMemo(() => centsToEur(spend.amountCents), [spend.amountCents])
   const emoji = getCategoryEmoji(spend.category)
@@ -120,28 +118,6 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
     }
   }, [spend.note]) // Recalculate when note changes (affects height)
 
-  // Auto-close after 3 seconds of inactivity
-  useEffect(() => {
-    if (isOpen) {
-      // Clear any existing timeout
-      if (closeTimeoutRef.current) {
-        clearTimeout(closeTimeoutRef.current)
-      }
-      
-      // Set new timeout to close after 3 seconds
-      closeTimeoutRef.current = window.setTimeout(() => {
-        setIsOpen(false)
-      }, AUTO_CLOSE_DELAY)
-    }
-
-    // Cleanup timeout on unmount or when isOpen changes
-    return () => {
-      if (closeTimeoutRef.current) {
-        clearTimeout(closeTimeoutRef.current)
-      }
-    }
-  }, [isOpen])
-
   // Transform for action buttons opacity (fade in as card slides)
   const actionsOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1])
 
@@ -151,7 +127,7 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
     
     // Consider velocity for better feel
     // If swiping fast to the left, open even if not past threshold
-    const shouldOpen = offset < SWIPE_THRESHOLD || (velocity < -300 && offset < -15)
+    const shouldOpen = offset < SWIPE_THRESHOLD || (velocity < -10 && offset < -15)
     
     // Always set a definitive state (open or closed)
     // This ensures the card always animates to a final position
