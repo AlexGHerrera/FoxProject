@@ -1,7 +1,7 @@
 {
   "parseSpend": {
     "system": "Eres un parser financiero para español (España). Devuelves SIEMPRE JSON válido sin texto extra.",
-    "instruction": "Extrae {amount_eur}, {category}, {merchant}, {note}, {confidence} de la frase del usuario.\n- Admite formatos: '10,55', '10.55', '10 con 55', '€10', '10 euros'.\n- Si hay varias cantidades, elige la más probable como IMPORTE.\n- Categoriza en una de: ['Café','Comida fuera','Supermercado','Transporte','Ocio','Hogar','Salud','Compras','Otros'].\n- {merchant} opcional (marca/tienda), {note} opcional.\n- {confidence} en 0..1 (≥0.8 auto‑confirm).\nResponde SOLO con JSON.",
+    "instruction": "Extrae {amount_eur}, {category}, {merchant}, {note}, {paid_with}, {confidence} de la frase del usuario.\n- Admite formatos: '10,55', '10.55', '10 con 55', '€10', '10 euros'.\n- Si hay varias cantidades, elige la más probable como IMPORTE.\n- Categoriza en una de: ['Café','Comida fuera','Supermercado','Transporte','Ocio','Hogar','Salud','Compras','Otros'].\n- {merchant} es el establecimiento (Zara, Starbucks, etc.).\n- {paid_with} detecta forma de pago: 'tarjeta', 'efectivo', 'transferencia' o null si no se menciona.\n- {note} es el comentario o descripción de los artículos (ej: 'una camiseta', '2 pantalones', 'camiseta y 2 pantalones').\n- {confidence} en 0..1 (≥0.8 auto‑confirm).\n- IMPORTANTE: El usuario puede decir los campos en cualquier orden.\nResponde SOLO con JSON.",
     "schema": {
       "type": "object",
       "properties": {
@@ -17,6 +17,10 @@
         "note": {
           "type": "string"
         },
+        "paid_with": {
+          "type": "string",
+          "enum": ["tarjeta", "efectivo", "transferencia", null]
+        },
         "confidence": {
           "type": "number"
         }
@@ -29,23 +33,47 @@
     },
     "examples": [
       {
+        "input": "3€ una camiseta en zara con tarjeta",
+        "output": {
+          "amount_eur": 3.0,
+          "category": "Compras",
+          "merchant": "Zara",
+          "note": "una camiseta",
+          "paid_with": "tarjeta",
+          "confidence": 0.95
+        }
+      },
+      {
+        "input": "3€ con tarjeta en zara una camiseta y 2 pantalones",
+        "output": {
+          "amount_eur": 3.0,
+          "category": "Compras",
+          "merchant": "Zara",
+          "note": "una camiseta y 2 pantalones",
+          "paid_with": "tarjeta",
+          "confidence": 0.95
+        }
+      },
+      {
         "input": "Café 1 con 80 en el bar de abajo",
         "output": {
           "amount_eur": 1.8,
           "category": "Café",
           "merchant": "bar de abajo",
           "note": "",
+          "paid_with": null,
           "confidence": 0.93
         }
       },
       {
-        "input": "Camiseta 10 euros el corte inglés",
+        "input": "10 euros camiseta el corte inglés en efectivo",
         "output": {
           "amount_eur": 10.0,
           "category": "Compras",
           "merchant": "El Corte Inglés",
-          "note": "",
-          "confidence": 0.9
+          "note": "camiseta",
+          "paid_with": "efectivo",
+          "confidence": 0.92
         }
       },
       {
@@ -55,47 +83,52 @@
           "category": "Transporte",
           "merchant": "Taxi",
           "note": "",
+          "paid_with": null,
           "confidence": 0.95
         }
       },
       {
-        "input": "Super 35,70",
+        "input": "Super 35,70 con tarjeta",
         "output": {
           "amount_eur": 35.7,
           "category": "Supermercado",
           "merchant": "",
           "note": "",
-          "confidence": 0.88
+          "paid_with": "tarjeta",
+          "confidence": 0.92
         }
       },
       {
-        "input": "10 con 50 céntimos de coca cola",
+        "input": "10 con 50 céntimos de coca cola en efectivo",
         "output": {
           "amount_eur": 10.5,
           "category": "Café",
           "merchant": "",
           "note": "coca cola",
-          "confidence": 0.85
+          "paid_with": "efectivo",
+          "confidence": 0.88
         }
       },
       {
-        "input": "una coca cola",
-        "output": {
-          "amount_eur": 0.0,
-          "category": "Café",
-          "merchant": "",
-          "note": "coca cola - sin importe detectado",
-          "confidence": 0.3
-        }
-      },
-      {
-        "input": "parking 2 horas 3€",
+        "input": "parking 2 horas 3€ transferencia",
         "output": {
           "amount_eur": 3.0,
           "category": "Transporte",
           "merchant": "Parking",
           "note": "2 horas",
+          "paid_with": "transferencia",
           "confidence": 0.91
+        }
+      },
+      {
+        "input": "en starbucks un cappuccino 4,50 con tarjeta",
+        "output": {
+          "amount_eur": 4.5,
+          "category": "Café",
+          "merchant": "Starbucks",
+          "note": "un cappuccino",
+          "paid_with": "tarjeta",
+          "confidence": 0.94
         }
       }
     ]

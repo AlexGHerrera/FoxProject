@@ -37,6 +37,7 @@ export interface ParsedSpend {
   category: Category
   merchant: string
   note: string
+  paidWith: 'efectivo' | 'tarjeta' | 'transferencia' | null
   confidence: number // 0..1
 }
 

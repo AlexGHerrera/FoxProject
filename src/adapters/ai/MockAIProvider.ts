@@ -23,6 +23,9 @@ export class MockAIProvider implements IAIProvider {
     // Extraer merchant
     const merchant = this.extractMerchant(text)
     
+    // Extraer forma de pago
+    const paidWith = this.extractPaidWith(text)
+    
     // Calcular confidence básica
     const confidence = this.calculateConfidence(amount, category, merchant)
 
@@ -31,6 +34,7 @@ export class MockAIProvider implements IAIProvider {
       category,
       merchant: merchant || '',
       note: '',
+      paidWith,
       confidence,
     }
   }
@@ -155,6 +159,23 @@ export class MockAIProvider implements IAIProvider {
           .map(word => word.charAt(0).toUpperCase() + word.slice(1))
           .join(' ')
       }
+    }
+
+    return null
+  }
+
+  private extractPaidWith(text: string): 'tarjeta' | 'efectivo' | 'transferencia' | null {
+    const lowerText = text.toLowerCase()
+
+    // Detectar forma de pago
+    if (lowerText.includes('tarjeta') || lowerText.includes('con tarjeta') || lowerText.includes('card')) {
+      return 'tarjeta'
+    }
+    if (lowerText.includes('efectivo') || lowerText.includes('cash') || lowerText.includes('en efectivo')) {
+      return 'efectivo'
+    }
+    if (lowerText.includes('transferencia') || lowerText.includes('bizum') || lowerText.includes('transfer')) {
+      return 'transferencia'
     }
 
     return null

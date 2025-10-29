@@ -12,12 +12,15 @@ import { isValidCategory } from '@/domain/models'
 // Importar prompts desde PROMPTS.json (temporalmente hardcodeado)
 const SYSTEM_PROMPT = `Eres un parser financiero para español (España). Devuelves SIEMPRE JSON válido sin texto extra.`
 
-const INSTRUCTION_PROMPT = `Extrae {amount_eur}, {category}, {merchant}, {note}, {confidence} de la frase del usuario.
+const INSTRUCTION_PROMPT = `Extrae {amount_eur}, {category}, {merchant}, {note}, {paid_with}, {confidence} de la frase del usuario.
 - Admite formatos: '10,55', '10.55', '10 con 55', '€10', '10 euros'.
 - Si hay varias cantidades, elige la más probable como IMPORTE.
 - Categoriza en una de: ['Café','Comida fuera','Supermercado','Transporte','Ocio','Hogar','Salud','Compras','Otros'].
-- {merchant} opcional (marca/tienda), {note} opcional.
+- {merchant} es el establecimiento (Zara, Starbucks, etc.).
+- {paid_with} detecta forma de pago: 'tarjeta', 'efectivo', 'transferencia' o null si no se menciona.
+- {note} es el comentario o descripción de los artículos (ej: 'una camiseta', '2 pantalones', 'camiseta y 2 pantalones').
 - {confidence} en 0..1 (≥0.8 auto‑confirm).
+- IMPORTANTE: El usuario puede decir los campos en cualquier orden.
 Responde SOLO con JSON.`
 
 interface DeepSeekConfig {
@@ -106,6 +109,7 @@ export class DeepSeekProvider implements IAIProvider {
         category: string
         merchant?: string
         note?: string
+        paid_with?: 'tarjeta' | 'efectivo' | 'transferencia' | null
         confidence: number
       }
 
@@ -120,6 +124,7 @@ export class DeepSeekProvider implements IAIProvider {
         category: parsed.category as any,
         merchant: parsed.merchant || '',
         note: parsed.note || '',
+        paidWith: parsed.paid_with || null,
         confidence: parsed.confidence,
       }
     } catch (error) {
