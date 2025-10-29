@@ -15,7 +15,7 @@ import { PageIndicator } from '@/components/ui'
 import { SpendEditModal } from '@/components/spend'
 import { VoiceInputPage } from './VoiceInputPage'
 import { ManualInputPage } from './ManualInputPage'
-import type { Spend } from '@/domain/models'
+import type { Spend, UpdateSpendData } from '@/domain/models'
 
 // TODO: obtener el límite mensual de settings cuando implementemos esa funcionalidad
 const MONTHLY_LIMIT_CENTS = 100000 // 1000€ por defecto
@@ -44,6 +44,20 @@ export function Dashboard() {
   // Handlers para editar y eliminar
   const handleEdit = (spend: Spend) => {
     setEditingSpend(spend)
+  }
+
+  const handleSaveEdit = async (updatedData: UpdateSpendData) => {
+    if (!editingSpend) return
+    
+    try {
+      await useSpendStore.getState().updateSpend(editingSpend.id, updatedData)
+      showToast('Gasto actualizado correctamente', 'success')
+      setEditingSpend(null)
+    } catch (error) {
+      console.error('Error updating spend:', error)
+      showToast('Error al actualizar el gasto', 'error')
+      throw error
+    }
   }
 
   const handleDelete = async (spend: Spend) => {
@@ -179,8 +193,10 @@ export function Dashboard() {
       {/* Edit Spend Modal */}
       {editingSpend && (
         <SpendEditModal
+          isOpen={!!editingSpend}
           spend={editingSpend}
           onClose={() => setEditingSpend(null)}
+          onSave={handleSaveEdit}
         />
       )}
     </div>
