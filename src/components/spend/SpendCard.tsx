@@ -211,11 +211,11 @@ export function SpendCard({
       >
         <div className="flex gap-4 items-start h-full">
           {/* Category Icon and Name */}
-          <div className="flex-shrink-0 flex flex-col items-center gap-1">
+          <div className="flex-shrink-0 flex flex-col items-center gap-1 w-16">
             <div className="w-12 h-12 rounded-xl bg-brand-cyan/10 flex items-center justify-center text-2xl">
               {getCategoryEmoji(spend.category)}
             </div>
-            <p className="text-xs text-muted text-center leading-tight max-w-[60px] truncate">
+            <p className="text-xs text-muted text-center leading-tight w-full break-words">
               {spend.category}
             </p>
           </div>
@@ -223,10 +223,10 @@ export function SpendCard({
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                {/* Merchant name with payment method icon */}
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-semibold text-text truncate leading-tight">
+              <div className="flex-1 min-w-0 flex flex-col items-center">
+                {/* Merchant name with payment method icon - centered */}
+                <div className="flex items-center gap-1.5 justify-center w-full">
+                  <h3 className="font-semibold text-text leading-tight text-center">
                     {spend.merchant || 'Sin establecimiento'}
                   </h3>
                   <span className="text-base flex-shrink-0" title={spend.paidWith || 'tarjeta'}>
@@ -234,7 +234,7 @@ export function SpendCard({
                   </span>
                 </div>
                 {spend.note && (
-                  <p className="text-sm text-muted truncate line-clamp-1 mt-0.5">{spend.note}</p>
+                  <p className="text-sm text-muted truncate line-clamp-1 mt-0.5 w-full text-center">{spend.note}</p>
                 )}
               </div>
 
