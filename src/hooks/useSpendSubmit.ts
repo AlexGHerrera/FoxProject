@@ -39,7 +39,7 @@ export function useSpendSubmit() {
   const { showSuccess, showError } = useUIStore()
 
   /**
-   * Parse transcript usando IA
+   * Parse transcript usando IA con fallback automático
    */
   const parseTranscript = useCallback(async (transcript: string) => {
     if (!transcript || transcript.length < 3) {
@@ -52,7 +52,24 @@ export function useSpendSubmit() {
       setVoiceState('processing')
 
       const startTime = performance.now()
-      const parsed = await parseSpend(transcript, aiProvider)
+      
+      // Intentar con el provider principal
+      let parsed: ParsedSpend | null = null
+      try {
+        parsed = await parseSpend(transcript, aiProvider)
+      } catch (primaryError) {
+        console.warn('[useSpendSubmit] Primary AI provider failed, trying fallback...', primaryError)
+        
+        // Si DeepSeek falla, usar MockAIProvider como fallback
+        if (hasDeepSeekKey) {
+          const fallbackProvider = new MockAIProvider()
+          parsed = await parseSpend(transcript, fallbackProvider)
+          showError('DeepSeek falló, usando parser local básico')
+        } else {
+          throw primaryError
+        }
+      }
+      
       const latency = Math.round(performance.now() - startTime)
 
       console.log('[useSpendSubmit] Parsed:', {

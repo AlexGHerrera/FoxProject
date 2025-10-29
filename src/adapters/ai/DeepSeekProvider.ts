@@ -45,22 +45,30 @@ export class DeepSeekProvider implements IAIProvider {
   async parseSpendText(text: string, locale = 'es-ES'): Promise<ParsedSpend> {
     const startTime = Date.now()
 
+    console.log('[DeepSeekProvider] Starting parse request:', { text, locale })
+
     try {
       const response = await this.callDeepSeek(text, locale)
       const latency = Date.now() - startTime
 
-      console.log('[DeepSeekProvider] Parse successful', {
+      console.log('[DeepSeekProvider] Parse successful ✅', {
         latency,
         confidence: response.confidence,
+        result: response,
       })
 
       return response
     } catch (error) {
       const latency = Date.now() - startTime
-      console.error('[DeepSeekProvider] Parse failed', { latency, error })
+      console.error('[DeepSeekProvider] Parse failed ❌', { 
+        latency, 
+        error,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorStack: error instanceof Error ? error.stack : undefined,
+      })
 
       throw new AIProviderError(
-        'Error parsing spend with DeepSeek',
+        error instanceof Error ? error.message : 'Error parsing spend with DeepSeek',
         'deepseek',
         error
       )
@@ -70,6 +78,12 @@ export class DeepSeekProvider implements IAIProvider {
   private async callDeepSeek(text: string, locale: string): Promise<ParsedSpend> {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), this.config.timeout)
+
+    console.log('[DeepSeekProvider] Calling API:', {
+      url: `${this.config.baseUrl}/chat/completions`,
+      model: this.config.model,
+      timeout: this.config.timeout,
+    })
 
     try {
       const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
