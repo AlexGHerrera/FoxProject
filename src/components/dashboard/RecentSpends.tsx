@@ -116,7 +116,26 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
       const calculatedWidth = (cardHeight * 2) + BUTTON_GAP + ACTIONS_PADDING
       setActionsWidth(calculatedWidth)
     }
-  }, [spend.note]) // Recalculate when note changes (affects height)
+  }, [spend.merchant, spend.category]) // Recalculate when content changes (affects height)
+
+  // Use ResizeObserver to handle dynamic height changes
+  useLayoutEffect(() => {
+    if (!cardRef.current) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const cardHeight = entry.contentRect.height
+        const calculatedWidth = (cardHeight * 2) + BUTTON_GAP + ACTIONS_PADDING
+        setActionsWidth(calculatedWidth)
+      }
+    })
+
+    resizeObserver.observe(cardRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
 
   // Close card on any external interaction (scroll, click outside, etc.)
   useEffect(() => {

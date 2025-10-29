@@ -40,7 +40,26 @@ export function SpendCard({
       const calculatedWidth = (cardHeight * 3) + (BUTTON_GAP * 2) + ACTIONS_PADDING;
       setActionsWidth(calculatedWidth);
     }
-  }, [spend.note]); // Recalculate when note changes (affects height)
+  }, [spend.note, spend.category, spend.merchant]); // Recalculate when content changes (affects height)
+
+  // Use ResizeObserver to handle dynamic height changes
+  useLayoutEffect(() => {
+    if (!cardRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const cardHeight = entry.contentRect.height;
+        const calculatedWidth = (cardHeight * 3) + (BUTTON_GAP * 2) + ACTIONS_PADDING;
+        setActionsWidth(calculatedWidth);
+      }
+    });
+
+    resizeObserver.observe(cardRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   // Close card on any external interaction (scroll, click outside, etc.)
   useEffect(() => {
