@@ -55,7 +55,6 @@ export function SpendCard({
       // Set new timeout to close after 3 seconds
       closeTimeoutRef.current = window.setTimeout(() => {
         setIsOpen(false);
-        x.set(0);
       }, AUTO_CLOSE_DELAY);
     }
 
@@ -65,23 +64,23 @@ export function SpendCard({
         clearTimeout(closeTimeoutRef.current);
       }
     };
-  }, [isOpen, x]);
+  }, [isOpen]);
 
   // Transform for action buttons opacity (fade in as card slides)
   const actionsOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
 
   const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const offset = info.offset.x;
+    const velocity = info.velocity.x;
     
-    // If swiped left enough, open
-    if (offset < SWIPE_THRESHOLD) {
+    // Consider velocity for better feel
+    // If swiping fast to the left, open even if not past threshold
+    const shouldOpen = offset < SWIPE_THRESHOLD || (velocity < -500 && offset < -20);
+    
+    if (shouldOpen) {
       setIsOpen(true);
-      x.set(-actionsWidth);
-    } 
-    // If swiped right or not enough, close
-    else {
+    } else {
       setIsOpen(false);
-      x.set(0);
     }
   };
 
@@ -90,7 +89,6 @@ export function SpendCard({
       onEdit(spend);
       // Close after action
       setIsOpen(false);
-      x.set(0);
     }
   };
 
@@ -104,7 +102,6 @@ export function SpendCard({
     }
     // Close swipe after deletion
     setIsOpen(false);
-    x.set(0);
   };
 
   const handleSelect = () => {
@@ -112,7 +109,6 @@ export function SpendCard({
       onSelect(spend);
       // Close after action
       setIsOpen(false);
-      x.set(0);
     }
   };
 
@@ -187,15 +183,16 @@ export function SpendCard({
         drag={selectionMode ? false : "x"}
         dragConstraints={{ left: -actionsWidth, right: 0 }}
         dragElastic={0.1}
+        dragMomentum={false}
         onDragEnd={handleDragEnd}
         style={{ x: selectionMode ? 0 : x }}
         animate={isOpen && !selectionMode ? { x: -actionsWidth } : { x: 0 }}
         transition={{
           type: 'spring',
-          stiffness: 400,
-          damping: 30,
+          stiffness: 500,
+          damping: 35,
         }}
-        className={`rounded-lg p-4 shadow-sm border transition-all relative z-10 ${
+        className={`rounded-lg p-4 shadow-sm border relative z-10 ${
           selectionMode 
             ? isSelected 
               ? 'bg-brand-cyan/10 border-brand-cyan cursor-pointer' 
