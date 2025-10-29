@@ -257,10 +257,19 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
 
         {/* Info del gasto */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-text-light dark:text-text-dark truncate">
-            {spend.merchant || spend.category}
-          </p>
-          <div className="flex items-center gap-2 text-xs text-muted-light dark:text-muted-dark">
+          {/* Merchant name with payment method icon */}
+          <div className="flex items-center gap-1.5">
+            <p className="text-sm font-medium text-text-light dark:text-text-dark truncate">
+              {spend.merchant || 'Sin establecimiento'}
+            </p>
+            {spend.paidWith && (
+              <span className="text-xs flex-shrink-0" title={spend.paidWith}>
+                {spend.paidWith === 'efectivo' ? '💵' : '💳'}
+              </span>
+            )}
+          </div>
+          {/* Category name and time */}
+          <div className="flex items-center gap-2 text-xs text-muted-light dark:text-muted-dark mt-0.5">
             <span>{spend.category}</span>
             <span>•</span>
             <span>{timeAgo}</span>
@@ -272,11 +281,6 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
           <p className="text-base font-bold text-text-light dark:text-text-dark">
             {amountEur.toFixed(2)}€
           </p>
-          {spend.paidWith && (
-            <p className="text-xs text-muted-light dark:text-muted-dark">
-              {spend.paidWith === 'efectivo' ? '💵' : '💳'}
-            </p>
-          )}
         </div>
       </motion.div>
     </div>
