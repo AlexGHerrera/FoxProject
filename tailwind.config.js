@@ -5,35 +5,48 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Light mode
+        // Sistema legacy (mantener para compatibilidad)
         'bg-light': '#F9FAFB',
         'surface-light': '#FFFFFF',
         'text-light': '#111827',
         'muted-light': '#6B7280',
-        'brand-cyan': '#00B8D9',
-        'brand-cyan-neon': '#00E5FF',
-        'brand-orange': '#FF9D00',
-        'success': '#10B981',
-        'warning': '#F59E0B',
-        'danger': '#EF4444',
         'divider-light': '#E5E7EB',
         'card-light': '#FFFFFF',
         'chip-bg-light': '#EEF2FF',
         
-        // Dark mode
         'bg-dark': '#0F111A',
         'surface-dark': '#12141F',
         'text-dark': '#F3F4F6',
         'muted-dark': '#94A3B8',
-        'brand-cyan-dark': '#00D3FF',
-        'brand-cyan-neon-dark': '#35FFFF',
-        'brand-orange-dark': '#FFB84C',
-        'success-dark': '#34D399',
-        'warning-dark': '#F59E0B',
-        'danger-dark': '#F87171',
         'divider-dark': '#1F2430',
         'card-dark': '#141826',
         'chip-bg-dark': '#1B2030',
+        
+        // Colores de marca
+        'brand-cyan': {
+          DEFAULT: '#00B8D9',
+          dark: '#00D3FF',
+        },
+        'brand-cyan-neon': {
+          DEFAULT: '#00E5FF',
+          dark: '#35FFFF',
+        },
+        'brand-orange': {
+          DEFAULT: '#FF9D00',
+          dark: '#FFB84C',
+        },
+        success: {
+          DEFAULT: '#10B981',
+          dark: '#34D399',
+        },
+        warning: {
+          DEFAULT: '#F59E0B',
+          dark: '#F59E0B',
+        },
+        danger: {
+          DEFAULT: '#EF4444',
+          dark: '#F87171',
+        },
       },
       borderRadius: {
         'xs': '6px',
@@ -87,5 +100,46 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities, theme }) {
+      addUtilities({
+        '.bg-background': {
+          backgroundColor: '#F9FAFB',
+          '.dark &': {
+            backgroundColor: '#0F111A',
+          },
+        },
+        '.bg-surface': {
+          backgroundColor: '#FFFFFF',
+          '.dark &': {
+            backgroundColor: '#12141F',
+          },
+        },
+        '.bg-card': {
+          backgroundColor: '#FFFFFF',
+          '.dark &': {
+            backgroundColor: '#141826',
+          },
+        },
+        '.text-text': {
+          color: '#111827',
+          '.dark &': {
+            color: '#F3F4F6',
+          },
+        },
+        '.text-muted': {
+          color: '#6B7280',
+          '.dark &': {
+            color: '#94A3B8',
+          },
+        },
+        '.border-border': {
+          borderColor: '#E5E7EB',
+          '.dark &': {
+            borderColor: '#1F2430',
+          },
+        },
+      })
+    },
+  ],
 }

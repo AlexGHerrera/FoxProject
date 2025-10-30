@@ -35,9 +35,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       primary:
         'bg-brand-cyan dark:bg-brand-cyan-dark text-white hover:opacity-90 focus:ring-brand-cyan shadow-md',
       secondary:
-        'bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark border border-divider-light dark:border-divider-dark hover:bg-gray-50 dark:hover:bg-gray-800 focus:ring-brand-cyan',
+        'bg-card text-text border border-border hover:bg-gray-50 dark:hover:bg-gray-800 focus:ring-brand-cyan',
       ghost:
-        'text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-800 focus:ring-brand-cyan',
+        'text-text hover:bg-gray-100 dark:hover:bg-gray-800 focus:ring-brand-cyan',
       danger:
         'bg-danger dark:bg-danger-dark text-white hover:opacity-90 focus:ring-danger shadow-md',
     }

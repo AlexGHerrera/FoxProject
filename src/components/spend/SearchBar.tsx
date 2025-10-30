@@ -53,7 +53,7 @@ export function SearchBar({
           value={localValue}
           onChange={(e) => setLocalValue(e.target.value)}
           placeholder={placeholder}
-          className="w-full pl-10 pr-10 py-3 text-text bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-cyan focus:border-transparent"
+          className="w-full pl-10 pr-10 py-3 text-text bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-cyan focus:border-transparent"
         />
         
         {/* Search Icon */}

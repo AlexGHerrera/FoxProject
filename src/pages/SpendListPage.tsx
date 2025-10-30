@@ -221,7 +221,7 @@ export function SpendListPage() {
       </header>
 
       {/* Main Content */}
-      <main className={`max-w-4xl mx-auto px-4 py-6 ${selectionMode ? 'pb-52' : 'pb-28'}`}>
+      <main className={`max-w-4xl mx-auto px-4 py-6 ${selectionMode ? 'pb-44 sm:pb-44' : 'pb-28'}`}>
         {/* Search Bar */}
         <div className="mb-4">
           <SearchBar

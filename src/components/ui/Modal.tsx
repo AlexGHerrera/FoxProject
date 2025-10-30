@@ -74,20 +74,20 @@ export function Modal({
     >
       <div
         ref={modalRef}
-        className={`${sizeStyles[size]} w-full bg-surface-light dark:bg-surface-dark rounded-xl shadow-xl animate-in zoom-in-95 duration-200`}
+        className={`${sizeStyles[size]} w-full bg-card rounded-xl shadow-xl animate-in zoom-in-95 duration-200`}
       >
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between p-6 border-b border-divider-light dark:border-divider-dark">
+          <div className="flex items-center justify-between p-6 border-b border-border">
             <h2
               id="modal-title"
-              className="text-xl font-semibold text-text-light dark:text-text-dark"
+              className="text-xl font-semibold text-text"
             >
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark transition-colors p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="text-muted hover:text-text transition-colors p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
               aria-label="Cerrar modal"
             >
               <svg
@@ -112,7 +112,7 @@ export function Modal({
 
         {/* Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-3 p-6 border-t border-divider-light dark:border-divider-dark">
+          <div className="flex items-center justify-end gap-3 p-6 border-t border-border">
             {footer}
           </div>
         )}

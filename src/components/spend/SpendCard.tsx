@@ -145,8 +145,9 @@ export function SpendCard({
   }).format(date);
 
   return (
-    <div className="relative overflow-hidden rounded-lg" ref={cardRef}>
-      {/* Action Buttons (behind the card) */}
+    <div className={`relative overflow-hidden rounded-lg ${selectionMode && isSelected ? 'z-[60]' : ''}`} ref={cardRef}>
+      {/* Action Buttons (behind the card) - Only show when NOT in selection mode */}
+      {!selectionMode && (
       <motion.div
         className="swipe-actions absolute right-0 top-0 h-full flex items-stretch pr-2"
         style={{ 
@@ -188,6 +189,7 @@ export function SpendCard({
           </button>
         )}
       </motion.div>
+      )}
 
       {/* Confirm Delete Dialog */}
       <ConfirmDialog
@@ -219,7 +221,7 @@ export function SpendCard({
           stiffness: 500,
           damping: 35,
         }}
-        className={`rounded-lg p-4 shadow-sm border relative z-10 ${
+        className={`rounded-lg p-4 shadow-sm border relative ${
           selectionMode 
             ? isSelected 
               ? 'bg-brand-cyan/10 border-brand-cyan cursor-pointer' 
@@ -242,10 +244,10 @@ export function SpendCard({
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0 flex flex-col items-center">
-                {/* Merchant name with payment method icon - centered */}
-                <div className="flex items-center gap-1.5 justify-center w-full">
-                  <h3 className="font-semibold text-text leading-tight text-center">
+              <div className="flex-1 min-w-0">
+                {/* Merchant name with payment method icon */}
+                <div className="flex items-center gap-1.5">
+                  <h3 className="font-semibold text-text leading-tight">
                     {spend.merchant || 'Sin establecimiento'}
                   </h3>
                   <span className="text-base flex-shrink-0" title={spend.paidWith || 'tarjeta'}>
@@ -253,7 +255,7 @@ export function SpendCard({
                   </span>
                 </div>
                 {spend.note && (
-                  <p className="text-sm text-muted truncate line-clamp-1 mt-0.5 w-full text-center">{spend.note}</p>
+                  <p className="text-sm text-muted truncate line-clamp-1 mt-0.5">{spend.note}</p>
                 )}
               </div>
 

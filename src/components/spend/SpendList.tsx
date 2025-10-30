@@ -34,12 +34,12 @@ export function SpendList({
             className="bg-card rounded-lg p-4 shadow-sm animate-pulse"
           >
             <div className="flex gap-4">
-              <div className="w-12 h-12 bg-surface rounded-xl" />
+              <div className="w-12 h-12 bg-muted/20 rounded-xl" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-surface rounded w-3/4" />
-                <div className="h-3 bg-surface rounded w-1/2" />
+                <div className="h-4 bg-muted/20 rounded w-3/4" />
+                <div className="h-3 bg-muted/20 rounded w-1/2" />
               </div>
-              <div className="w-20 h-6 bg-surface rounded" />
+              <div className="w-20 h-6 bg-muted/20 rounded" />
             </div>
           </div>
         ))}
