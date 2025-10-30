@@ -50,14 +50,14 @@ export function ManualInputPage({ onClose }: ManualInputPageProps) {
   // Pantalla de confirmación
   if (showConfirm && parsedSpend) {
     return (
-      <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center justify-center p-6">
-        <h1 className="text-2xl font-bold text-text-light dark:text-text-dark mb-2 text-center">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+        <h1 className="text-2xl font-bold text-text mb-2 text-center">
           He anotado un {parsedSpend.category.toLowerCase()} de
         </h1>
         <p className="text-5xl font-bold text-brand-cyan dark:text-brand-cyan-dark mb-4">
           {parsedSpend.amountEur.toFixed(2)} €
         </p>
-        <p className="text-xl text-muted-light dark:text-muted-dark mb-8">
+        <p className="text-xl text-muted mb-8">
           ¿Confirmo?
         </p>
 
@@ -93,11 +93,11 @@ export function ManualInputPage({ onClose }: ManualInputPageProps) {
 
   // Pantalla de entrada manual
   return (
-    <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center justify-center p-6">
-      <h1 className="text-2xl font-bold text-text-light dark:text-text-dark mb-2 text-center">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+      <h1 className="text-2xl font-bold text-text mb-2 text-center">
         ✏️ Entrada manual
       </h1>
-      <p className="text-sm text-muted-light dark:text-muted-dark mb-8 text-center">
+      <p className="text-sm text-muted mb-8 text-center">
         Escribe el gasto como lo dirías por voz
       </p>
 
@@ -106,7 +106,7 @@ export function ManualInputPage({ onClose }: ManualInputPageProps) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Ej: 5 euros de café en Starbucks"
-          className="w-full p-4 rounded-lg border-2 border-brand-cyan dark:border-brand-cyan-dark bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark text-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand-cyan"
+          className="w-full p-4 rounded-lg border-2 border-brand-cyan dark:border-brand-cyan-dark bg-surface text-text text-lg resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan"
           rows={4}
           autoFocus
         />
@@ -132,7 +132,7 @@ export function ManualInputPage({ onClose }: ManualInputPageProps) {
 
       {/* Hint */}
       <div className="mt-8 max-w-md">
-        <p className="text-xs text-muted-light dark:text-muted-dark text-center">
+        <p className="text-xs text-muted text-center">
           💡 Tip: Escribe de forma natural, como "10 euros de pizza" o "50€ de gasolina"
         </p>
       </div>

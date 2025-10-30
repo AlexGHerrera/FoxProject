@@ -82,7 +82,7 @@ export function FoxyAvatar({ state = 'idle', size = 'md', className = '' }: Foxy
 
       {/* Indicador de estado (opcional) */}
       {state !== 'idle' && (
-        <div className="text-xs font-medium text-muted-light dark:text-muted-dark">
+        <div className="text-xs font-medium text-muted">
           {state === 'listening' && '🎤 Escuchando...'}
           {state === 'happy' && '✨ ¡Genial!'}
           {state === 'alert' && '⚠️ Atención'}

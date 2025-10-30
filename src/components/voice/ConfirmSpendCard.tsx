@@ -7,6 +7,7 @@
 import { useState, useRef, useLayoutEffect, useEffect } from 'react'
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion'
 import { ConfirmDialog } from '../ui'
+import { cn } from '@/utils/cn'
 import type { ParsedSpend } from '../../domain/models'
 
 interface ConfirmSpendCardProps {
@@ -182,7 +183,9 @@ export function ConfirmSpendCard({
           stiffness: 500,
           damping: 35,
         }}
-        className="rounded-xl p-4 bg-surface-light dark:bg-surface-dark border border-divider-light dark:border-divider-dark shadow-sm cursor-grab active:cursor-grabbing relative z-10"
+        className={cn(
+          'rounded-xl p-4 bg-surface border border-border shadow-sm cursor-grab active:cursor-grabbing relative z-10'
+        )}
       >
         <div className="flex items-center justify-between">
           {/* Importe grande */}
@@ -193,20 +196,20 @@ export function ConfirmSpendCard({
 
             {/* Categoría y detalles */}
             <div className="mt-1 space-y-1">
-              <div className="text-sm font-medium text-text-light dark:text-text-dark">
+              <div className="text-sm font-medium text-text">
                 {spend.category}
               </div>
 
               {/* Establecimiento si existe */}
               {spend.merchant && (
-                <div className="text-xs text-muted-light dark:text-muted-dark">
+                <div className="text-xs text-muted">
                   {spend.merchant}
                 </div>
               )}
 
               {/* Forma de pago si existe */}
               {spend.paidWith && (
-                <div className="text-xs text-muted-light dark:text-muted-dark">
+                <div className="text-xs text-muted">
                   {spend.paidWith === 'tarjeta' && '💳 Con tarjeta'}
                   {spend.paidWith === 'efectivo' && '💵 En efectivo'}
                   {spend.paidWith === 'transferencia' && '📱 Transferencia'}
@@ -218,10 +221,10 @@ export function ConfirmSpendCard({
           {/* Indicador de confianza individual (solo si múltiples) */}
           {totalCount > 1 && (
             <div className="ml-4">
-              <div className="text-xs text-muted-light dark:text-muted-dark mb-1">
+              <div className="text-xs text-muted mb-1">
                 {(spend.confidence * 100).toFixed(0)}%
               </div>
-              <div className="w-12 h-1.5 bg-divider-light dark:bg-divider-dark rounded-full overflow-hidden">
+              <div className="w-12 h-1.5 bg-divider rounded-full overflow-hidden">
                 <div
                   className={`h-full ${
                     spend.confidence >= 0.7

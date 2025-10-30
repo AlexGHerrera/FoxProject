@@ -2,6 +2,7 @@ import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { Spend, getCategoryEmoji, centsToEur } from '@/domain/models';
 import { ConfirmDialog } from '@/components/ui';
+import { cn } from '@/utils/cn';
 
 interface SpendCardProps {
   spend: Spend;
@@ -145,7 +146,7 @@ export function SpendCard({
   }).format(date);
 
   return (
-    <div className={`relative overflow-hidden rounded-lg ${selectionMode && isSelected ? 'z-[60]' : ''}`} ref={cardRef}>
+    <div className={`relative overflow-hidden rounded-lg`} ref={cardRef}>
       {/* Action Buttons (behind the card) - Only show when NOT in selection mode */}
       {!selectionMode && (
       <motion.div
@@ -221,13 +222,14 @@ export function SpendCard({
           stiffness: 500,
           damping: 35,
         }}
-        className={`rounded-lg p-4 shadow-sm border relative ${
+        className={cn(
+          'rounded-lg p-4 shadow-sm border relative',
           selectionMode 
             ? isSelected 
               ? 'bg-brand-cyan/10 border-brand-cyan cursor-pointer' 
               : 'bg-card border-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800'
             : 'bg-card border-border cursor-grab active:cursor-grabbing'
-        }`}
+        )}
         onClick={selectionMode && onToggleSelect ? () => onToggleSelect(spend) : undefined}
       >
         <div className="flex gap-4 items-start h-full">

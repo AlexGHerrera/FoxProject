@@ -63,14 +63,14 @@ export function QuickConfirmScreen({
   }
 
   return (
-    <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center p-6 pb-28 overflow-y-auto">
+    <div className="min-h-screen bg-background flex flex-col items-center p-6 pb-28 overflow-y-auto">
       {/* Foxy Avatar - Estado feliz */}
       <div className="mb-6 mt-8">
         <FoxyAvatar state="happy" size="lg" />
       </div>
 
       {/* Título */}
-      <h1 className="text-2xl font-bold text-text-light dark:text-text-dark mb-2 text-center">
+      <h1 className="text-2xl font-bold text-text mb-2 text-center">
         {count === 1 
           ? '✓ He detectado un gasto'
           : `✓ He detectado ${count} gastos`
@@ -93,9 +93,9 @@ export function QuickConfirmScreen({
 
       {/* Total (solo si múltiples) */}
       {count > 1 && (
-        <div className="w-full max-w-md mb-6 p-4 bg-chip-bg-light dark:bg-chip-bg-dark rounded-xl border border-divider-light dark:border-divider-dark">
+        <div className="w-full max-w-md mb-6 p-4 bg-chip-bg rounded-xl border border-border">
           <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold text-text-light dark:text-text-dark">
+            <span className="text-lg font-semibold text-text">
               Total
             </span>
             <span className="text-2xl font-bold text-brand-cyan dark:text-brand-cyan-dark">
@@ -105,11 +105,11 @@ export function QuickConfirmScreen({
           
           {/* Confidence total */}
           <div className="mt-3 flex items-center justify-between">
-            <span className="text-sm text-muted-light dark:text-muted-dark">
+            <span className="text-sm text-muted">
               Confianza del análisis
             </span>
             <div className="flex items-center gap-2">
-              <div className="w-20 h-2 bg-divider-light dark:bg-divider-dark rounded-full overflow-hidden">
+              <div className="w-20 h-2 bg-divider rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all ${
                     currentTotalConfidence >= 0.7
@@ -121,7 +121,7 @@ export function QuickConfirmScreen({
                   style={{ width: `${currentTotalConfidence * 100}%` }}
                 />
               </div>
-              <span className="text-sm font-medium text-text-light dark:text-text-dark">
+              <span className="text-sm font-medium text-text">
                 {(currentTotalConfidence * 100).toFixed(0)}%
               </span>
             </div>
