@@ -61,3 +61,4 @@ Script temporal para deshabilitar RLS (Row Level Security).
 **Última actualización**: Octubre 2025  
 **Mantenedor**: Alex G. Herrera
 
+
