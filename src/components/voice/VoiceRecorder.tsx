@@ -13,6 +13,7 @@ import { env } from '../../config/env'
 import { MicButton } from './MicButton'
 import { TranscriptDisplay } from './TranscriptDisplay'
 import { ConfirmModal } from './ConfirmModal'
+import { cn } from '@/utils/cn'
 import type { ParsedSpend, ParsedSpendResult } from '../../domain/models'
 
 interface VoiceRecorderProps {
@@ -20,14 +21,15 @@ interface VoiceRecorderProps {
 }
 
 export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
-  const { transcript, state } = useVoiceStore()
-  const { isRecording } = useSpeechRecognition()
+  const { transcript, state, mode, setTranscript, reset: resetVoice, setMode, setState } = useVoiceStore()
+  const { isRecording, startRecording } = useSpeechRecognition()
   const { parseTranscript, submitMultipleSpends, parsedResult } = useSpendSubmit()
   
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [pendingResult, setPendingResult] = useState<ParsedSpendResult | null>(null)
   
   const isUsingMock = !env.deepseek?.apiKey || env.deepseek.apiKey.length === 0
+  const isContinuous = mode === 'continuous'
 
   const handleParse = useCallback(async () => {
     if (!transcript) {
@@ -51,7 +53,18 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
       if (result.totalConfidence >= 0.95) {
         console.log('[VoiceRecorder] Auto-confirming (confidence >= 0.95)')
         const spends = await submitMultipleSpends(result.spends)
-        // Cerrar modal inmediatamente después de guardar
+        
+        // En modo continuous, continuar grabando después de guardar
+        if (isContinuous && spends) {
+          console.log('[VoiceRecorder] Continuous mode: auto-confirmed, clearing transcript and continuing')
+          setTranscript('') // Limpiar transcript para siguiente segmento
+          // Volver a estado 'listening' para continuar grabando
+          setState('listening')
+          // El reconocimiento sigue activo, solo limpiamos el transcript y resetemos el estado
+          return
+        }
+        
+        // Cerrar modal inmediatamente después de guardar (modo normal)
         if (spends && onClose) {
           onClose()
         }
@@ -65,7 +78,7 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
     } catch (error) {
       console.error('[VoiceRecorder] Error in handleParse:', error)
     }
-  }, [transcript, parseTranscript, submitMultipleSpends, onClose])
+  }, [transcript, parseTranscript, submitMultipleSpends, onClose, isContinuous, setTranscript])
 
   // Auto-parse cuando el estado cambia a 'processing'
   useEffect(() => {
@@ -80,7 +93,17 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
     setShowConfirmModal(false)
     setPendingResult(null)
     
-    // Cerrar el modal principal inmediatamente
+    // En modo continuous, continuar grabando después de guardar
+    if (isContinuous && savedSpends) {
+      console.log('[VoiceRecorder] Continuous mode: clearing transcript and continuing')
+      setTranscript('') // Limpiar transcript para siguiente segmento
+      // Volver a estado 'listening' para continuar grabando
+      setState('listening')
+      // El reconocimiento sigue activo, solo limpiamos el transcript y resetemos el estado
+      return
+    }
+    
+    // Cerrar el modal principal inmediatamente (modo normal)
     if (onClose && savedSpends) {
       onClose()
     }
@@ -89,6 +112,14 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
   const handleCancel = () => {
     setShowConfirmModal(false)
     setPendingResult(null)
+  }
+
+  // Toggle de modo de grabación
+  const handleModeChange = (newMode: 'ptt' | 'toggle' | 'continuous') => {
+    // Solo cambiar modo si no está grabando
+    if (!isRecording) {
+      setMode(newMode)
+    }
   }
 
   return (
@@ -107,6 +138,49 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
       {/* Transcript Display - Editable */}
       <TranscriptDisplay editable={true} />
 
+      {/* Mode Selector */}
+      <div className="flex justify-center gap-2">
+        <button
+          onClick={() => handleModeChange('toggle')}
+          disabled={isRecording}
+          className={cn(
+            'px-4 py-2 text-sm rounded-lg transition-colors',
+            mode === 'toggle'
+              ? 'bg-brand-cyan text-white font-semibold'
+              : 'bg-chip-bg text-text hover:bg-chip-bg/80',
+            isRecording && 'opacity-50 cursor-not-allowed'
+          )}
+        >
+          Toggle
+        </button>
+        <button
+          onClick={() => handleModeChange('ptt')}
+          disabled={isRecording}
+          className={cn(
+            'px-4 py-2 text-sm rounded-lg transition-colors',
+            mode === 'ptt'
+              ? 'bg-brand-cyan text-white font-semibold'
+              : 'bg-chip-bg text-text hover:bg-chip-bg/80',
+            isRecording && 'opacity-50 cursor-not-allowed'
+          )}
+        >
+          PTT
+        </button>
+        <button
+          onClick={() => handleModeChange('continuous')}
+          disabled={isRecording}
+          className={cn(
+            'px-4 py-2 text-sm rounded-lg transition-colors',
+            mode === 'continuous'
+              ? 'bg-brand-cyan text-white font-semibold'
+              : 'bg-chip-bg text-text hover:bg-chip-bg/80',
+            isRecording && 'opacity-50 cursor-not-allowed'
+          )}
+        >
+          Continuo
+        </button>
+      </div>
+
       {/* Mic Button (centered) */}
       <div className="flex justify-center pt-4">
         <MicButton />
@@ -115,13 +189,13 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
       {/* Status hints */}
       <div className="text-center">
         {state === 'idle' && (
-          <p className="text-sm text-muted-light dark:text-muted-dark">
+          <p className="text-sm text-muted">
             Presiona el micrófono para empezar
           </p>
         )}
         {state === 'listening' && (
           <p className="text-sm text-brand-cyan dark:text-brand-cyan-dark animate-pulse">
-            Escuchando... di tu gasto
+            {isContinuous ? 'Escuchando continuamente... habla pausado entre gastos' : 'Escuchando... di tu gasto'}
           </p>
         )}
         {state === 'processing' && (
@@ -154,11 +228,11 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
       )}
 
       {/* Tips */}
-      <div className="mt-8 p-4 bg-chip-bg-light dark:bg-chip-bg-dark rounded-lg">
-        <h3 className="text-sm font-semibold text-text-light dark:text-text-dark mb-2">
+      <div className="mt-8 p-4 bg-chip-bg rounded-lg">
+        <h3 className="text-sm font-semibold text-text mb-2">
           💡 Ejemplos de frases:
         </h3>
-        <ul className="text-xs text-muted-light dark:text-muted-dark space-y-1">
+        <ul className="text-xs text-muted space-y-1">
           <li>"5 euros de café en Starbucks"</li>
           <li>"10 con 50 de coca cola"</li>
           <li>"Parking 3 horas, 2 euros"</li>

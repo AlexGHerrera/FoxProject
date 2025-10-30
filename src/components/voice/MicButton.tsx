@@ -7,6 +7,7 @@
 
 import { useVoiceStore } from '../../stores/useVoiceStore'
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition'
+import { cn } from '@/utils/cn'
 
 export function MicButton() {
   const { isRecording, mode } = useVoiceStore()
@@ -53,17 +54,17 @@ export function MicButton() {
       onMouseUp={handleMouseUp}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className={`
-        relative w-18 h-18 rounded-full
-        bg-gradient-to-b from-brand-cyan-neon to-brand-cyan
-        dark:from-brand-cyan-neon-dark dark:to-brand-cyan-dark
-        shadow-mic
-        transition-all duration-200
-        focus:outline-none focus:ring-4 focus:ring-brand-cyan/50
-        active:scale-95
-        disabled:opacity-50 disabled:cursor-not-allowed
-        ${isRecording ? 'animate-pulse scale-110' : 'hover:scale-105'}
-      `}
+      className={cn(
+        'relative w-18 h-18 rounded-full',
+        'bg-gradient-to-b from-brand-cyan-neon to-brand-cyan',
+        'dark:from-brand-cyan-neon-dark dark:to-brand-cyan-dark',
+        'shadow-mic',
+        'transition-all duration-200',
+        'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-cyan/50',
+        'active:scale-95',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
+        isRecording ? 'animate-pulse scale-110' : 'hover:scale-105'
+      )}
       aria-label={isRecording ? 'Detener grabación' : 'Iniciar grabación'}
       aria-pressed={isRecording}
       style={{
@@ -104,7 +105,7 @@ export function MicButton() {
       {/* Mode hint (only visible when not recording) */}
       {!isRecording && (
         <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
-          <span className="text-xs text-muted-light dark:text-muted-dark">
+          <span className="text-xs text-muted">
             {mode === 'ptt' ? 'Mantén presionado' : 'Toca para grabar'}
           </span>
         </div>

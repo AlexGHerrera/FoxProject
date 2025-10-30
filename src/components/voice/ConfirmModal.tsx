@@ -7,6 +7,7 @@
 import { useState } from 'react'
 import { Modal, ModalFooter } from '../ui/Modal'
 import { Button } from '../ui/Button'
+import { cn } from '@/utils/cn'
 import type { ParsedSpend } from '../../domain/models'
 import { CATEGORIES, PAYMENT_METHODS } from '../../config/constants'
 
@@ -70,12 +71,12 @@ export function ConfirmModal({
     >
       <div className="space-y-4">
         {/* Confidence indicator */}
-        <div className="flex items-center justify-between p-3 bg-chip-bg-light dark:bg-chip-bg-dark rounded-md">
-          <span className="text-sm text-muted-light dark:text-muted-dark">
+        <div className="flex items-center justify-between p-3 bg-chip-bg rounded-md">
+          <span className="text-sm text-muted">
             Confianza del análisis
           </span>
           <div className="flex items-center gap-2">
-            <div className="w-24 h-2 bg-divider-light dark:bg-divider-dark rounded-full overflow-hidden">
+            <div className="w-24 h-2 bg-divider rounded-full overflow-hidden">
               <div
                 className={`h-full transition-all ${
                   totalConfidence >= 0.7
@@ -87,7 +88,7 @@ export function ConfirmModal({
                 style={{ width: `${totalConfidence * 100}%` }}
               />
             </div>
-            <span className="text-sm font-medium text-text-light dark:text-text-dark">
+            <span className="text-sm font-medium text-text">
               {(totalConfidence * 100).toFixed(0)}%
             </span>
           </div>
@@ -113,14 +114,14 @@ export function ConfirmModal({
 
               {/* Título del gasto */}
               {count > 1 && (
-                <div className="text-xs font-semibold text-muted-light dark:text-muted-dark uppercase">
+                <div className="text-xs font-semibold text-muted uppercase">
                   Gasto {index + 1}
                 </div>
               )}
 
               {/* Amount */}
               <div>
-                <label className="block text-sm font-medium text-text-light dark:text-text-dark mb-1">
+                <label className="block text-sm font-medium text-text mb-1">
                   Cantidad (€)
                 </label>
                 <input
@@ -129,19 +130,19 @@ export function ConfirmModal({
                   onChange={(e) => updateSpend(index, { amountEur: parseFloat(e.target.value) || 0 })}
                   step="0.01"
                   min="0"
-                  className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-divider-light dark:border-divider-dark rounded-md text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-brand-cyan"
+                  className="input-base"
                 />
               </div>
 
               {/* Category */}
               <div>
-                <label className="block text-sm font-medium text-text-light dark:text-text-dark mb-1">
+                <label className="block text-sm font-medium text-text mb-1">
                   Categoría
                 </label>
                 <select
                   value={spend.category}
                   onChange={(e) => updateSpend(index, { category: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-divider-light dark:border-divider-dark rounded-md text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-brand-cyan"
+                  className="input-base"
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>
@@ -153,27 +154,27 @@ export function ConfirmModal({
 
               {/* Merchant */}
               <div>
-                <label className="block text-sm font-medium text-text-light dark:text-text-dark mb-1">
+                <label className="block text-sm font-medium text-text mb-1">
                   Establecimiento
                 </label>
                 <input
                   type="text"
                   value={spend.merchant}
                   onChange={(e) => updateSpend(index, { merchant: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-divider-light dark:border-divider-dark rounded-md text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-brand-cyan"
+                  className="input-base"
                   placeholder="Ej: Mercadona, Zara..."
                 />
               </div>
 
               {/* Payment Method */}
               <div>
-                <label className="block text-sm font-medium text-text-light dark:text-text-dark mb-1">
+                <label className="block text-sm font-medium text-text mb-1">
                   Forma de pago
                 </label>
                 <select
                   value={spend.paidWith || ''}
                   onChange={(e) => updateSpend(index, { paidWith: e.target.value as any || null })}
-                  className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-divider-light dark:border-divider-dark rounded-md text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-brand-cyan"
+                  className="input-base"
                 >
                   <option value="">No especificado</option>
                   {PAYMENT_METHODS.map((pm) => (
@@ -187,14 +188,14 @@ export function ConfirmModal({
               {/* Date */}
               {spend.date && (
                 <div>
-                  <label className="block text-sm font-medium text-text-light dark:text-text-dark mb-1">
+                  <label className="block text-sm font-medium text-text mb-1">
                     Fecha
                   </label>
                   <input
                     type="text"
                     value={spend.date}
                     onChange={(e) => updateSpend(index, { date: e.target.value })}
-                    className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-divider-light dark:border-divider-dark rounded-md text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-brand-cyan"
+                    className="input-base"
                     placeholder="ayer, el martes, hace 3 días..."
                   />
                 </div>
@@ -203,20 +204,20 @@ export function ConfirmModal({
               {/* Note */}
               {spend.note && (
                 <div>
-                  <label className="block text-sm font-medium text-text-light dark:text-text-dark mb-1">
+                  <label className="block text-sm font-medium text-text mb-1">
                     Nota
                   </label>
                   <input
                     type="text"
                     value={spend.note}
                     onChange={(e) => updateSpend(index, { note: e.target.value })}
-                    className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-divider-light dark:border-divider-dark rounded-md text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-brand-cyan"
+                    className="input-base"
                   />
                 </div>
               )}
 
               {/* Confidence individual */}
-              <div className="text-xs text-muted-light dark:text-muted-dark">
+              <div className="text-xs text-muted">
                 Confianza: {(spend.confidence * 100).toFixed(0)}%
               </div>
             </div>
@@ -225,9 +226,9 @@ export function ConfirmModal({
 
         {/* Total */}
         {count > 1 && (
-          <div className="pt-3 border-t border-divider-light dark:border-divider-dark">
+          <div className="pt-3 border-t border-border">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-text-light dark:text-text-dark">
+              <span className="text-sm font-medium text-text">
                 Total
               </span>
               <span className="text-lg font-bold text-brand-cyan dark:text-brand-cyan-dark">

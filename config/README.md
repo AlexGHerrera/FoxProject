@@ -55,3 +55,4 @@ Cuando actualices estos archivos:
 **Última actualización**: Octubre 2025  
 **Mantenedor**: Alex G. Herrera
 
+

@@ -72,12 +72,12 @@ export function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-pulse text-brand-cyan dark:text-brand-cyan-dark text-4xl mb-4">
             🦊
           </div>
-          <p className="text-muted-light dark:text-muted-dark">Cargando...</p>
+          <p className="text-muted">Cargando...</p>
         </div>
       </div>
     )
@@ -94,7 +94,7 @@ export function Dashboard() {
   }
 
   return (
-    <div className="h-full bg-bg-light dark:bg-bg-dark transition-colors duration-200">
+    <div className="h-full bg-background transition-colors duration-200">
       {/* Page Indicator */}
       <div className="pt-4">
         <PageIndicator
@@ -108,16 +108,16 @@ export function Dashboard() {
       <div className="max-w-4xl mx-auto px-4 py-6 pb-28">
         {/* Header */}
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-text-light dark:text-text-dark mb-1">
+          <h1 className="text-3xl font-bold text-text mb-1">
             🦊 Foxy
           </h1>
-          <p className="text-muted-light dark:text-muted-dark">
+          <p className="text-muted">
             Tu asistente financiero
           </p>
         </header>
 
         {/* Budget Progress */}
-        <section className="mb-8 bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-md">
+        <section className="mb-8 bg-surface rounded-2xl p-6 shadow-md">
           <BudgetBar
             spent={budgetProgress.spent}
             limit={budgetProgress.limit}
@@ -126,20 +126,20 @@ export function Dashboard() {
           />
           
           {/* Stats adicionales */}
-          <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-divider-light dark:border-divider-dark">
+          <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-border">
             <div>
-              <p className="text-xs text-muted-light dark:text-muted-dark mb-1">
+              <p className="text-xs text-muted mb-1">
                 Promedio diario
               </p>
-              <p className="text-lg font-semibold text-text-light dark:text-text-dark">
+              <p className="text-lg font-semibold text-text">
                 {(budgetProgress.averageDaily / 100).toFixed(2)}€
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-light dark:text-muted-dark mb-1">
+              <p className="text-xs text-muted mb-1">
                 Días restantes
               </p>
-              <p className="text-lg font-semibold text-text-light dark:text-text-dark">
+              <p className="text-lg font-semibold text-text">
                 {budgetProgress.daysLeft} días
               </p>
             </div>
@@ -161,10 +161,10 @@ export function Dashboard() {
           
           {/* Call to action claro */}
           <div className="text-center">
-            <p className="text-lg font-medium text-text-light dark:text-text-dark mb-1">
+            <p className="text-lg font-medium text-text mb-1">
               Toca a Foxy para registrar por voz
             </p>
-            <p className="text-xs text-muted-light dark:text-muted-dark">
+            <p className="text-xs text-muted">
               Es la forma más rápida
             </p>
           </div>
@@ -172,14 +172,14 @@ export function Dashboard() {
           {/* Botón manual DISCRETO (solo texto, sin botón visible) */}
           <button
             onClick={() => setShowManualInput(true)}
-            className="text-xs text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark transition-colors underline decoration-dashed"
+            className="text-xs text-muted hover:text-text transition-colors underline decoration-dashed"
           >
             ✏️ O escribe manualmente
           </button>
         </section>
 
         {/* Recent Spends */}
-        <section className="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-md">
+        <section className="bg-surface rounded-2xl p-6 shadow-md">
           <RecentSpends
             spends={spends}
             limit={5}

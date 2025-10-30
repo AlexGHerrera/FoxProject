@@ -14,8 +14,8 @@ interface VoiceStore {
   isRecording: boolean
   error: string | null
   
-  // Mode: 'ptt' (push-to-talk) o 'toggle' (tap on/off)
-  mode: 'ptt' | 'toggle'
+  // Mode: 'ptt' (push-to-talk), 'toggle' (tap on/off), o 'continuous' (grabación continua con segmentación)
+  mode: 'ptt' | 'toggle' | 'continuous'
   
   // Actions
   setState: (state: VoiceState) => void

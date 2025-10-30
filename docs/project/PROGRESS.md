@@ -156,6 +156,14 @@
   - ✅ Categorías completas visibles (sin truncar)
   - ✅ Establecimiento centrado con icono de pago
   - ✅ Diseño balanceado y profesional
+- [x] **Modo Continuous Recording** (Nov 2025):
+  - ✅ Toggle UI con 3 modos (Toggle/PTT/Continuous)
+  - ✅ Detección automática de pausas (2s silencio)
+  - ✅ Segmentación automática de gastos
+  - ✅ Continuación de grabación después de guardar
+- [x] **Fix UI: Centrado de Establecimiento** (Nov 2025):
+  - ✅ Nombre del establecimiento centrado visualmente
+  - ✅ Layout balanceado con spacer
 
 ---
 
@@ -167,13 +175,16 @@
 
 ## 📋 Pendiente
 
-### Fase 8: Gestión de Gastos
+### Fase 8: Gestión de Gastos ✅
 - [x] Implementar `SpendCard` y `SpendList` ✅
 - [x] **Swipe-to-Reveal** (Oct 29, 2025):
   - ✅ Seleccionar + Editar + Eliminar
   - ✅ ResizeObserver para adaptación dinámica
-- [ ] Implementar filtros (rango, categorías, método pago)
-- [ ] Implementar búsqueda
+- [x] Implementar filtros (rango, categorías, método pago) ✅
+- [x] Implementar búsqueda ✅
+- [x] **Fix UI: Centrado de Establecimiento** (Nov 2025):
+  - ✅ Nombre del establecimiento centrado en tarjeta
+  - ✅ Layout balanceado visualmente
 - [ ] Implementar paginación/infinite scroll
 - [ ] Persistir filtros en URL query params
 
@@ -295,5 +306,5 @@ Todos los colores, espaciados, y tipografía vienen de `config/DESIGN-TOKENS.jso
 
 ---
 
-**Última actualización**: Octubre 2024  
-**Próximo hito**: Gestión completa de gastos (Fase 8)
+**Última actualización**: Noviembre 2025  
+**Próximo hito**: Onboarding (Fase 9) o Exportar CSV (Fase 10)

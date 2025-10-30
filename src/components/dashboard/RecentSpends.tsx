@@ -28,10 +28,10 @@ export function RecentSpends({ spends, limit = 5, onViewAll, onEdit, onDelete }:
   if (spends.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-light dark:text-muted-dark mb-2">
+        <p className="text-muted mb-2">
           🎤 Aún no hay gastos registrados
         </p>
-        <p className="text-sm text-muted-light dark:text-muted-dark">
+        <p className="text-sm text-muted">
           Usa el botón de micrófono para empezar
         </p>
       </div>
@@ -42,7 +42,7 @@ export function RecentSpends({ spends, limit = 5, onViewAll, onEdit, onDelete }:
     <div className="w-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-text-light dark:text-text-dark">
+        <h2 className="text-lg font-semibold text-text">
           Gastos recientes
         </h2>
         {onViewAll && spends.length > limit && (
@@ -267,7 +267,7 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
           stiffness: 500,
           damping: 35,
         }}
-        className="flex items-center gap-3 p-3 bg-surface-light dark:bg-surface-dark rounded-xl cursor-grab active:cursor-grabbing relative z-10"
+        className="flex items-center gap-3 p-3 bg-surface rounded-xl cursor-grab active:cursor-grabbing relative z-10"
       >
         {/* Emoji de categoría */}
         <div className="text-2xl flex-shrink-0" aria-hidden="true">
@@ -276,10 +276,10 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
 
         {/* Info del gasto */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-text-light dark:text-text-dark truncate">
+          <p className="text-sm font-medium text-text truncate">
             {spend.merchant || spend.category}
           </p>
-          <div className="flex items-center gap-2 text-xs text-muted-light dark:text-muted-dark">
+          <div className="flex items-center gap-2 text-xs text-muted">
             <span>{spend.category}</span>
             <span>•</span>
             <span>{timeAgo}</span>
@@ -288,11 +288,11 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
 
         {/* Monto */}
         <div className="text-right flex-shrink-0">
-          <p className="text-base font-bold text-text-light dark:text-text-dark">
+          <p className="text-base font-bold text-text">
             {amountEur.toFixed(2)}€
           </p>
           {spend.paidWith && (
-            <p className="text-xs text-muted-light dark:text-muted-dark">
+            <p className="text-xs text-muted">
               {spend.paidWith === 'efectivo' ? '💵' : '💳'}
             </p>
           )}

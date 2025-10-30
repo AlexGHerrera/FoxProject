@@ -36,16 +36,16 @@ export function BudgetBar({ spent, limit, percentage, status }: BudgetBarProps) 
     <div className="w-full">
       {/* Header: porcentaje y monto */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-muted-light dark:text-muted-dark">
+        <span className="text-sm font-medium text-muted">
           {percentage.toFixed(0)}% del límite
         </span>
-        <span className="text-lg font-bold text-text-light dark:text-text-dark">
+        <span className="text-lg font-bold text-text">
           {spentEur.toFixed(2)}€ / {limitEur.toFixed(2)}€
         </span>
       </div>
 
       {/* Barra de progreso */}
-      <div className="relative w-full h-3 bg-divider-light dark:bg-divider-dark rounded-full overflow-hidden">
+      <div className="relative w-full h-3 bg-divider rounded-full overflow-hidden">
         <div
           className={`absolute top-0 left-0 h-full ${barColor} transition-all duration-300 ease-out rounded-full`}
           style={{ width: `${visualPercentage}%` }}
@@ -53,7 +53,7 @@ export function BudgetBar({ spent, limit, percentage, status }: BudgetBarProps) 
           aria-valuenow={percentage}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-label={`Gastado ${percentage.toFixed(0)}% del presupuesto mensual`}
+            aria-label={`Gastado ${percentage.toFixed(0)}% del presupuesto mensual`}
         />
       </div>
 

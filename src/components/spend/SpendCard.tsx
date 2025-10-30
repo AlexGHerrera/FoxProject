@@ -2,6 +2,7 @@ import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { Spend, getCategoryEmoji, centsToEur } from '@/domain/models';
 import { ConfirmDialog } from '@/components/ui';
+import { cn } from '@/utils/cn';
 
 interface SpendCardProps {
   spend: Spend;
@@ -60,6 +61,17 @@ export function SpendCard({
       resizeObserver.disconnect();
     };
   }, []);
+
+  // Close card when entering selection mode and reset position when exiting
+  useEffect(() => {
+    if (selectionMode) {
+      setIsOpen(false);
+    } else {
+      // Reset card position when exiting selection mode
+      setIsOpen(false);
+      x.set(0);
+    }
+  }, [selectionMode, x]);
 
   // Close card on any external interaction (scroll, click outside, etc.)
   useEffect(() => {
@@ -145,7 +157,7 @@ export function SpendCard({
   }).format(date);
 
   return (
-    <div className={`relative overflow-hidden rounded-lg ${selectionMode && isSelected ? 'z-[60]' : ''}`} ref={cardRef}>
+    <div className={`relative overflow-hidden rounded-lg`} ref={cardRef}>
       {/* Action Buttons (behind the card) - Only show when NOT in selection mode */}
       {!selectionMode && (
       <motion.div
@@ -221,13 +233,14 @@ export function SpendCard({
           stiffness: 500,
           damping: 35,
         }}
-        className={`rounded-lg p-4 shadow-sm border relative ${
+        className={cn(
+          'rounded-lg p-4 shadow-sm border relative',
           selectionMode 
             ? isSelected 
-              ? 'bg-brand-cyan/10 border-brand-cyan cursor-pointer' 
-              : 'bg-card border-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800'
+              ? 'bg-brand-cyan/10 border-brand-cyan cursor-pointer backdrop-blur-md' 
+              : 'bg-card border-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 backdrop-blur-md'
             : 'bg-card border-border cursor-grab active:cursor-grabbing'
-        }`}
+        )}
         onClick={selectionMode && onToggleSelect ? () => onToggleSelect(spend) : undefined}
       >
         <div className="flex gap-4 items-start h-full">
@@ -242,31 +255,32 @@ export function SpendCard({
           </div>
 
           {/* Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                {/* Merchant name with payment method icon */}
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-semibold text-text leading-tight">
-                    {spend.merchant || 'Sin establecimiento'}
-                  </h3>
-                  <span className="text-base flex-shrink-0" title={spend.paidWith || 'tarjeta'}>
-                    {spend.paidWith === 'efectivo' ? '💵' : '💳'}
-                  </span>
-                </div>
-                {spend.note && (
-                  <p className="text-sm text-muted truncate line-clamp-1 mt-0.5">{spend.note}</p>
-                )}
+          <div className="flex-1 min-w-0 flex flex-col justify-center">
+            <div className="flex items-center justify-between gap-4 relative">
+              {/* Spacer para balancear el layout (igual ancho que el icono de categoría) */}
+              <div className="flex-shrink-0 w-16"></div>
+              
+              {/* Merchant name with payment method icon - centered */}
+              <div className="flex-1 flex items-center justify-center gap-1.5">
+                <h3 className="font-semibold text-text leading-tight text-center">
+                  {spend.merchant || 'Sin establecimiento'}
+                </h3>
+                <span className="text-base flex-shrink-0" title={spend.paidWith || 'tarjeta'}>
+                  {spend.paidWith === 'efectivo' ? '💵' : '💳'}
+                </span>
               </div>
 
               {/* Amount */}
-              <div className="flex-shrink-0 text-right">
+              <div className="flex-shrink-0 text-right w-20">
                 <p className="font-bold text-lg text-text leading-tight">
                   {centsToEur(spend.amountCents).toFixed(2)} €
                 </p>
                 <p className="text-xs text-muted mt-1">{formattedDate}</p>
               </div>
             </div>
+            {spend.note && (
+              <p className="text-sm text-muted truncate line-clamp-1 mt-0.5 text-center">{spend.note}</p>
+            )}
           </div>
         </div>
       </motion.div>

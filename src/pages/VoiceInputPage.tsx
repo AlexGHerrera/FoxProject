@@ -140,16 +140,16 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
     if (isEditing) {
       // Modo edición del texto reconocido (estética mejorada)
       return (
-        <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center justify-center p-6 pb-28">
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 pb-28">
           {/* Foxy Avatar - Estado idle */}
           <div className="mb-6">
             <FoxyAvatar state="idle" size="lg" />
           </div>
 
-          <h1 className="text-2xl font-bold text-text-light dark:text-text-dark mb-2 text-center">
+          <h1 className="text-2xl font-bold text-text mb-2 text-center">
             Edita el texto reconocido
           </h1>
-          <p className="text-sm text-muted-light dark:text-muted-dark mb-6 text-center max-w-md">
+          <p className="text-sm text-muted mb-6 text-center max-w-md">
             Modifica lo que dijiste y lo reprocesaré
           </p>
 
@@ -157,7 +157,7 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
             <textarea
               value={transcript}
               onChange={handleTranscriptChange}
-              className="w-full p-4 rounded-xl border-2 border-brand-cyan dark:border-brand-cyan-dark bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark text-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand-cyan shadow-sm"
+              className="w-full p-4 rounded-xl border-2 border-brand-cyan dark:border-brand-cyan-dark bg-surface text-text text-lg resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan shadow-sm"
               rows={5}
               placeholder="Ej: 5 euros de café en Starbucks"
               autoFocus
@@ -197,15 +197,15 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
 
   // Pantalla de grabación
   return (
-    <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
       {/* Título */}
-      <h1 className="text-3xl font-bold text-text-light dark:text-text-dark mb-2">
+      <h1 className="text-3xl font-bold text-text mb-2">
         {state === 'listening' ? 'Estoy escuchando...' : 'Esperando...'}
       </h1>
 
       {/* Transcripción solo para mostrar */}
       {transcript && (
-        <p className="text-lg text-muted-light dark:text-muted-dark mb-8 text-center max-w-md">
+        <p className="text-lg text-muted mb-8 text-center max-w-md">
           {transcript}
         </p>
       )}
@@ -220,7 +220,7 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
 
       {/* Hint si está escuchando */}
       {state === 'listening' && (
-        <p className="text-sm text-muted-light dark:text-muted-dark mb-8 text-center">
+        <p className="text-sm text-muted mb-8 text-center">
           Habla de forma natural...
         </p>
       )}
@@ -228,7 +228,7 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
       {/* Botón cancelar */}
       <button
         onClick={onClose}
-        className="mt-4 text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark transition-colors underline decoration-dashed"
+        className="mt-4 text-muted hover:text-text transition-colors underline decoration-dashed"
       >
         Cancelar
       </button>
@@ -236,13 +236,13 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
       {/* Indicador de procesamiento */}
       {state === 'processing' && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-surface-light dark:bg-surface-dark rounded-xl p-6 flex flex-col items-center gap-4">
+          <div className="bg-surface rounded-xl p-6 flex flex-col items-center gap-4">
             <div className="flex gap-1">
               <div className="w-3 h-3 bg-brand-cyan rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
               <div className="w-3 h-3 bg-brand-cyan rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
               <div className="w-3 h-3 bg-brand-cyan rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
-            <p className="text-text-light dark:text-text-dark">
+            <p className="text-text">
               Analizando con IA...
             </p>
           </div>

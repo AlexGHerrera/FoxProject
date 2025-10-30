@@ -6,6 +6,7 @@
  */
 
 import { ButtonHTMLAttributes, forwardRef } from 'react'
+import { cn } from '@/utils/cn'
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
@@ -29,17 +30,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+      'btn-base'
 
     const variantStyles = {
       primary:
-        'bg-brand-cyan dark:bg-brand-cyan-dark text-white hover:opacity-90 focus:ring-brand-cyan shadow-md',
+        'bg-brand-cyan dark:bg-brand-cyan-dark text-white hover:opacity-90 focus-visible:ring-brand-cyan shadow-md',
       secondary:
-        'bg-card text-text border border-border hover:bg-gray-50 dark:hover:bg-gray-800 focus:ring-brand-cyan',
+        'bg-card text-text border border-border hover:bg-gray-50 dark:hover:bg-gray-800 focus-visible:ring-brand-cyan',
       ghost:
-        'text-text hover:bg-gray-100 dark:hover:bg-gray-800 focus:ring-brand-cyan',
+        'text-text hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:ring-brand-cyan',
       danger:
-        'bg-danger dark:bg-danger-dark text-white hover:opacity-90 focus:ring-danger shadow-md',
+        'bg-danger dark:bg-danger-dark text-white hover:opacity-90 focus-visible:ring-danger shadow-md',
     }
 
     const sizeStyles = {
@@ -54,7 +55,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || loading}
-        className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyles} ${className}`}
+        className={cn(baseStyles, variantStyles[variant], sizeStyles[size], widthStyles, className)}
         {...props}
       >
         {loading && (
