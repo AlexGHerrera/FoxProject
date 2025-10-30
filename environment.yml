@@ -1,0 +1,21 @@
+name: foxy-testing
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11
+  - nodejs=20
+  - pip
+  - requests
+  - python-dotenv
+  - pytest
+  - pytest-asyncio
+  - aiohttp
+  - rich  # Para output colorido y bonito
+  - pip:
+    - playwright
+    - httpx
+
+
+
+
