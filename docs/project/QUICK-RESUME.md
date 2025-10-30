@@ -6,9 +6,11 @@
 
 ## 📍 Estado Actual
 
-**Rama activa**: `feat/mejorar-dashboard-voz` + cambios de multi-spend (sin commitear)  
-**Commits**: 9 (listos) + cambios mayores en sesión actual  
-**Estado**: 🔄 Multi-spend + fechas implementado, falta modo continuous  
+**Rama activa**: `feat/continuous-recording`  
+**Commits recientes**: 
+- `69fe192` - fix(ui): center merchant name in spend card
+- `8a3cb98` - feat(voice): implement continuous recording mode  
+**Estado**: ✅ Modo continuous implementado y funcionando  
 **API DeepSeek**: ✅ Optimizada (250 tokens, temp 0.1, latencia target 1-2s)
 
 ---
@@ -113,6 +115,31 @@
 - Validaciones cruzadas obligatorias
 - Ejemplos de sesión completos
 
+### Sesión Nov 2025 (Continuous Recording + UI Fixes) 🆕:
+
+#### 16. **Modo Continuous Recording** 🎙️
+```bash
+✅ Toggle UI con 3 modos: Toggle / PTT / Continuo
+✅ Detección automática de pausas (2s silencio)
+✅ Segmentación automática de gastos
+✅ Continuación de grabación después de guardar
+✅ Auto-confirm mantiene grabación activa
+```
+- Modo 'continuous' agregado al store
+- Lógica de detección de pausas en useSpeechRecognition
+- UI toggle para cambiar entre modos
+- Flujo completo de segmentación automática
+
+#### 17. **Fix UI: Centrado de Nombre de Establecimiento** 🎨
+```bash
+✅ Nombre del establecimiento centrado en tarjeta
+✅ Spacer para balancear layout visualmente
+✅ Nota también centrada
+✅ Precio permanece alineado a la derecha
+```
+- Mejora visual en SpendCard
+- Layout balanceado entre icono categoría y precio
+
 ---
 
 ## 🔧 Comandos Útiles
@@ -182,11 +209,13 @@ git checkout -b feat/filtros-busqueda
    - 📈 **Trade-off**: 50% ahorro vs 95%+ precisión
    - 🔧 **Ajustar**: Si necesitas más ahorro, modificar `preProcessTranscript.ts`
 
-5. **⏳ PENDIENTE: Modo continuous recording**
-   - Push-to-Talk implementado ✅
-   - Continuous mode: falta implementar
-   - Toggle UI: falta implementar
-   - Segmentación automática por pausas: falta lógica
+5. **✅ RESUELTO: Modo continuous recording** (Nov 2025)
+   - ✅ Push-to-Talk implementado
+   - ✅ Continuous mode implementado
+   - ✅ Toggle UI con 3 modos (Toggle/PTT/Continuous)
+   - ✅ Segmentación automática por pausas (2s silencio)
+   - ✅ Detección de pausas y procesamiento automático
+   - ✅ Continuación de grabación después de guardar gasto
 
 ---
 
@@ -212,7 +241,15 @@ src/application/preProcessTranscript.ts     # Filtrado + regex
 src/application/transcriptCache.ts          # Cache 10s
 ```
 
-### Modificados Hoy (Oct 30) 🆕
+### Modificados Nov 2025 (Continuous Recording + UI Fixes) 🆕
+```
+src/stores/useVoiceStore.ts                 # +modo 'continuous'
+src/hooks/useSpeechRecognition.ts           # Detección pausas + segmentación
+src/components/voice/VoiceRecorder.tsx      # Toggle UI + continuous flow
+src/components/spend/SpendCard.tsx           # Nombre establecimiento centrado
+```
+
+### Modificados Oct 30
 ```
 src/domain/models/Spend.ts                  # +date, ParsedSpendResult
 src/adapters/ai/IAIProvider.ts              # Devuelve ParsedSpendResult
@@ -220,10 +257,8 @@ src/adapters/ai/DeepSeekProvider.ts         # Multi-spend + optimización latenc
 src/adapters/ai/MockAIProvider.ts           # Multi-spend + fechas
 src/application/parseSpend.ts               # Maneja ParsedSpendResult
 src/hooks/useSpendSubmit.ts                 # submitMultipleSpends() + fechas
-src/components/voice/VoiceRecorder.tsx      # Multi-spend flow
 src/components/voice/ConfirmModal.tsx       # Reescrito para múltiples gastos
 PROMPTS.json                                 # Multi-spend + fechas + optimizado
-QUICK-RESUME.md                              # Actualizado con sesión Oct 30
 ```
 
 ### Modificados Recientemente (Oct 29)
@@ -356,19 +391,18 @@ console.log(getOptimizationStats())
 
 ## 📞 Contacto / Notas
 
-**Última sesión**: Oct 30, 2025  
-**Duración**: ~3 horas  
-**Features completadas**: 6 mayores (multi-spend, fechas, sistema agentes)  
-**Commits**: Pendientes de crear (cambios sin commitear)  
-**Estado**: 🔄 Multi-spend funcional, falta modo continuous  
+**Última sesión**: Nov 2025  
+**Duración**: ~2 horas  
+**Features completadas**: Modo continuous recording + fix UI  
+**Commits**: 
+- `8a3cb98` - feat(voice): implement continuous recording mode
+- `69fe192` - fix(ui): center merchant name in spend card
+**Estado**: ✅ Modo continuous funcional y probado  
 
 **Para continuar**: 
-1. Lee este archivo (resumen actualizado)
-2. Testea features de Oct 30 (ver checklist arriba)
-3. Completa modo continuous (1-2h)
-4. Crea tests automatizados
-5. Commit todo junto como `feat(voice): multi-spend + fechas + continuous`
-6. Merge a main cuando esté completo
+1. Testear modo continuous en diferentes escenarios
+2. Considerar merge a main cuando esté validado
+3. Próximos pasos sugeridos: Exportar CSV, Onboarding, o PWA
 
 ---
 
