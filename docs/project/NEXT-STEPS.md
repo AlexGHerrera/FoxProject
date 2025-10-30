@@ -6,7 +6,7 @@
 
 ## 🎉 Estado Actual
 
-**✅ COMPLETADO: Dashboard, flujo de voz y gestión de gastos (Fases 7-8)**
+**✅ COMPLETADO: Dashboard, flujo de voz, gestión de gastos y modo continuous (Fases 7-8 + voz completa)**
 
 **Fase 7 - Dashboard:**
 - ✅ Dashboard con BudgetBar y RecentSpends
@@ -18,6 +18,11 @@
 - ✅ Guardado en Supabase
 - ✅ UI accesible y mobile-friendly
 - ✅ React Router configurado
+- ✅ **Modo Continuous Recording** (Nov 2025):
+  - ✅ Toggle UI con 3 modos (Toggle/PTT/Continuous)
+  - ✅ Detección automática de pausas (2s silencio)
+  - ✅ Segmentación automática de gastos
+  - ✅ Continuación de grabación después de guardar
 
 **Fase 8 - Gestión de Gastos:**
 - ✅ SpendListPage con lista completa
@@ -26,6 +31,7 @@
 - ✅ Editar y eliminar gastos
 - ✅ Navegación bottom entre páginas
 - ✅ Stats dinámicas (filtrados/totales)
+- ✅ **Fix UI: Nombre de establecimiento centrado** (Nov 2025)
 
 **⚠️ PROBLEMA CONOCIDO: Safari micrófono**
 - El indicador de micrófono en Safari puede quedar visible (bug del navegador)
