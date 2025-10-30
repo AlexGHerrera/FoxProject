@@ -30,7 +30,7 @@ export type CreateSpendData = Omit<Spend, 'id' | 'timestamp'> & {
 export type UpdateSpendData = Partial<Omit<Spend, 'id' | 'userId' | 'timestamp'>>
 
 /**
- * Resultado del parseo de IA
+ * Resultado del parseo de IA (un solo gasto)
  */
 export interface ParsedSpend {
   amountEur: number
@@ -39,6 +39,15 @@ export interface ParsedSpend {
   note: string
   paidWith: 'efectivo' | 'tarjeta' | 'transferencia' | null
   confidence: number // 0..1
+  date?: string // Fecha relativa: "ayer", "martes", ISO string, null = hoy
+}
+
+/**
+ * Resultado del parseo de IA (múltiples gastos)
+ */
+export interface ParsedSpendResult {
+  spends: ParsedSpend[]
+  totalConfidence: number // Promedio de confidence de todos los gastos
 }
 
 /**

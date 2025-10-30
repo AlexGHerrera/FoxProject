@@ -56,49 +56,42 @@ export function validateTranscript(text: string): { isValid: boolean; reason?: s
 
 /**
  * Parser regex para casos simples (evita llamada a API)
- * CONSERVADOR: Solo para casos MUY claros y cortos
+ * MEJORADO: Captura más casos comunes sin perder precisión
  * Formatos detectables:
  * - "5€ café"
  * - "10 euros mercadona"
  * - "taxi 6,50"
+ * - "5€ café y 10€ taxi" (múltiples simples)
  */
 export function tryParseWithRegex(text: string): ParsedSpend | null {
   const lowerText = text.toLowerCase().trim()
 
-  // FILTRO 1: Si el texto es largo o complejo, usar IA
-  // Casos complejos: múltiples productos, descripciones largas, etc.
+  // FILTRO 1: Si el texto es MUY largo (> 8 palabras), usar IA
   const wordCount = text.trim().split(/\s+/).length
-  if (wordCount > 5) {
-    // Texto largo/complejo → necesita IA
+  if (wordCount > 8) {
     return null
-  }
-
-  // FILTRO 2: Si contiene "y" (múltiples items), usar IA
-  if (/\sy\s/.test(lowerText)) {
-    return null // "vermut y frutos secos" → IA
   }
 
   // Extraer importe con múltiples formatos
   const amount = extractAmount(lowerText)
   if (!amount || amount <= 0) {
-    return null // Sin importe válido, necesita IA
+    return null
   }
 
   // Detectar forma de pago
   const paidWith = extractPaidWith(lowerText)
 
-  // Detectar categoría por palabras clave
+  // Detectar categoría por palabras clave (mejorado)
   const category = detectCategoryByKeywords(lowerText)
 
   // Extraer merchant (básico)
   const merchant = extractMerchantSimple(lowerText)
 
-  // FILTRO 3: Solo casos MUY simples con categoría clara
-  // Si no encontramos merchant conocido Y la categoría no es super obvia, usar IA
-  const hasKnownMerchant = merchant !== null
-  const isSuperSimple = wordCount <= 3
+  // FILTRO 2: Si tenemos importe + categoría clara → OK para regex
+  // Incluimos casos simples aunque no tengan merchant
+  const isSimpleCase = wordCount <= 5 && category !== 'Otros'
   
-  if (category !== 'Otros' && (hasKnownMerchant || isSuperSimple)) {
+  if (isSimpleCase) {
     return {
       amountEur: amount,
       category,
@@ -148,28 +141,71 @@ function extractPaidWith(text: string): 'tarjeta' | 'efectivo' | 'transferencia'
 }
 
 /**
- * Detecta categoría por palabras clave (casos MUY claros SOLO)
- * CONSERVADOR: Solo marcas/palabras inequívocas
+ * Detecta categoría por palabras clave (mejorado para más casos)
+ * Ampliado para capturar más patrones comunes sin perder precisión
  */
 function detectCategoryByKeywords(text: string): string {
-  const keywords: Record<string, string[]> = {
-    // Solo palabras INEQUÍVOCAS para cada categoría
-    'Café': ['starbucks', 'cappuccino', 'latte', 'espresso'], // "café" removido (muy ambiguo)
-    'Comida fuera': ['mcdonalds', 'burger king', 'pizza hut'], // Solo cadenas claras
-    'Supermercado': ['mercadona', 'carrefour', 'lidl', 'dia', 'aldi'], // Solo supermercados conocidos
-    'Transporte': ['taxi', 'uber', 'cabify', 'metro', 'bus', 'tren', 'gasolina'], // Transporte claro
-    // Ocio removido (demasiado ambiguo)
+  const keywords: Record<string, (string | RegExp)[]> = {
+    'Café': [
+      'starbucks', 'cappuccino', 'latte', 'espresso', 'café', 'cafe', 
+      'coca cola', 'cocacola', 'red bull', 'bebida', 'refresco',
+      /café|coffee/i
+    ],
+    'Comida fuera': [
+      'mcdonalds', 'burger king', 'pizza hut', 'dominos', 'kfc',
+      'restaurante', 'restaurant', 'bar', 'taverna', 'mesón',
+      'cerveza', 'cervezas', 'vino', 'vermut', 'tapas', 'raciones',
+      /comida|comer|cena|almuerzo|menú/i
+    ],
+    'Supermercado': [
+      'mercadona', 'carrefour', 'lidl', 'dia', 'aldi', 'eroski',
+      'hipercor', 'el corte inglés', 'alcampo',
+      /super|supermercado|compra|compras/i
+    ],
+    'Transporte': [
+      'taxi', 'uber', 'cabify', 'metro', 'bus', 'autobús', 'tren',
+      'gasolina', 'gasoil', 'parking', 'aparcamiento', 'estacionamiento',
+      'peaje', 'autopista',
+      /transporte|viaje|viajar/i
+    ],
+    'Ocio': [
+      'cine', 'película', 'teatro', 'concierto', 'fiesta', 'festejo',
+      'gimnasio', 'gym', 'deporte', 'partido',
+      /ocio|entretenimiento|diversión/i
+    ],
+    'Compras': [
+      'zara', 'h&m', 'primark', 'mango', 'massimo dutti',
+      'el corte inglés', 'corte ingles', 'fashion',
+      /ropa|compras|shopping|tienda/i
+    ],
+    'Salud': [
+      'farmacia', 'farmacéutico', 'medicina', 'medicamento', 'médico',
+      'dentista', 'hospital', 'clínica',
+      /salud|medicina|farmacia/i
+    ],
+    'Hogar': [
+      'ikea', 'leroy merlin', 'bricodepot', 'ferretería',
+      'luz', 'agua', 'gas', 'electricidad', 'internet',
+      /hogar|casa|reforma|bricolaje/i
+    ],
   }
 
-  for (const [category, words] of Object.entries(keywords)) {
-    for (const word of words) {
-      if (text.includes(word)) {
-        return category
+  for (const [category, patterns] of Object.entries(keywords)) {
+    for (const pattern of patterns) {
+      if (typeof pattern === 'string') {
+        if (text.includes(pattern)) {
+          return category
+        }
+      } else {
+        // Es un RegExp
+        if (pattern.test(text)) {
+          return category
+        }
       }
     }
   }
 
-  return 'Otros' // Si no es super claro, que lo maneje la IA
+  return 'Otros'
 }
 
 /**

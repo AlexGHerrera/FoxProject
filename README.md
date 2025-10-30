@@ -405,4 +405,49 @@ MIT License - ver `LICENSE` file.
 
 ---
 
+## 🤖 Sistema de Agentes para Desarrollo
+
+Este proyecto utiliza un **sistema de agentes especializados** para facilitar el desarrollo. 
+
+### Documentación de Agentes
+
+- **`AGENTS.md`**: Reglas generales y arquitectura hexagonal
+- **`AGENTS-TEAM.md`**: Equipo de 7 agentes especializados y protocolo de trabajo
+- **`AGENTS-QUICK-REF.md`**: Referencia rápida para seleccionar agentes
+
+### Inicio Rápido con Agentes
+
+Al inicio de cada sesión de desarrollo, escribe:
+
+```
+🎯 Tarea: [Lo que quieres hacer]
+```
+
+**Ejemplos:**
+- `🎯 Tarea: Implementar filtros avanzados`
+- `🎯 Tarea: Optimizar latencia de DeepSeek`
+- `🎯 Tarea: Bug: swipe no funciona en móvil`
+
+El sistema automáticamente:
+1. Lee `QUICK-RESUME.md` para contexto
+2. Selecciona los agentes apropiados
+3. Propone un plan de trabajo detallado
+4. Ejecuta con expertise especializada
+
+### Los 7 Agentes
+
+| Agente | Responsabilidad | Archivos principales |
+|--------|-----------------|----------------------|
+| 🏗️ **Arquitecto** | Arquitectura hexagonal, interfaces | `domain/`, `application/` |
+| 🎨 **UI Engineer** | Componentes, diseño, accesibilidad | `components/`, `pages/` |
+| 🧠 **AI Specialist** | IA, voz, prompts, optimización | `adapters/ai/`, `PROMPTS.json` |
+| 💾 **Backend Engineer** | DB, queries, Supabase | `adapters/db/`, `SCHEMA.sql` |
+| 🔗 **Integration Engineer** | Hooks, stores, orquestación | `hooks/`, `stores/` |
+| 🧪 **QA Engineer** | Tests, cobertura, calidad | `tests/`, `*.test.ts` |
+| 📊 **Performance Engineer** | Bundle, latencia, optimización | `vite.config.ts` |
+
+**Lee más**: `AGENTS-TEAM.md` para detalles completos del sistema.
+
+---
+
 **¿Dudas?** Lee `AGENTS.md` para guías específicas de desarrollo o abre un issue.

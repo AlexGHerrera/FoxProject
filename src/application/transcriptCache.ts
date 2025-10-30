@@ -7,7 +7,7 @@ import type { ParsedSpend } from '@/domain/models'
 
 interface CacheEntry {
   transcript: string
-  parsed: ParsedSpend
+  parsedArray: ParsedSpend[]
   timestamp: number
 }
 
@@ -31,7 +31,7 @@ class TranscriptCache {
   /**
    * Busca en cache
    */
-  get(transcript: string): ParsedSpend | null {
+  get(transcript: string): ParsedSpend[] | null {
     const key = this.normalize(transcript)
     const entry = this.cache.get(key)
 
@@ -44,13 +44,13 @@ class TranscriptCache {
     }
 
     console.log('[TranscriptCache] ✅ Cache HIT (API call avoided)', { transcript })
-    return entry.parsed
+    return entry.parsedArray
   }
 
   /**
    * Guarda en cache
    */
-  set(transcript: string, parsed: ParsedSpend): void {
+  set(transcript: string, parsedArray: ParsedSpend[]): void {
     const key = this.normalize(transcript)
 
     // Evitar cache infinito
@@ -61,7 +61,7 @@ class TranscriptCache {
 
     this.cache.set(key, {
       transcript,
-      parsed,
+      parsedArray,
       timestamp: Date.now(),
     })
 
@@ -96,4 +96,8 @@ export const transcriptCache = new TranscriptCache()
 
 // Limpiar cache cada minuto
 setInterval(() => transcriptCache.clean(), 60_000)
+
+
+
+
 

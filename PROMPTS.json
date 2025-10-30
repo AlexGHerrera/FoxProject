@@ -1,135 +1,217 @@
 {
   "parseSpend": {
     "system": "Eres un parser financiero para español (España). Devuelves SIEMPRE JSON válido sin texto extra.",
-    "instruction": "Extrae {amount_eur}, {category}, {merchant}, {note}, {paid_with}, {confidence} de la frase del usuario.\n- Admite formatos: '10,55', '10.55', '10 con 55', '€10', '10 euros'.\n- Si hay varias cantidades, elige la más probable como IMPORTE.\n- Categoriza en una de: ['Café','Comida fuera','Supermercado','Transporte','Ocio','Hogar','Salud','Compras','Otros'].\n- {merchant} es el establecimiento (Zara, Starbucks, etc.).\n- {paid_with} detecta forma de pago: 'tarjeta', 'efectivo', 'transferencia' o null si no se menciona.\n- {note} es el comentario o descripción de los artículos (ej: 'una camiseta', '2 pantalones', 'camiseta y 2 pantalones').\n- {confidence} en 0..1 (≥0.8 auto‑confirm).\n- IMPORTANTE: El usuario puede decir los campos en cualquier orden.\nResponde SOLO con JSON.",
+    "instruction": "Detecta y extrae TODOS los gastos de la frase del usuario. Puede haber uno o múltiples gastos.\n\nPara cada gasto, extrae: {amount_eur}, {category}, {merchant}, {note}, {paid_with}, {date}, {confidence}.\n\n- Admite formatos: '10,55', '10.55', '10 con 55', '€10', '10 euros'.\n- MÚLTIPLES GASTOS: Si detectas frases como 'X euros de Y y Z euros de W', crea UN gasto por cada uno.\n  Ejemplos: '5€ café y 10€ taxi' → 2 gastos | '3€ coca cola, 2€ chicles y 5€ parking' → 3 gastos\n- Categoriza en: ['Café','Comida fuera','Supermercado','Transporte','Ocio','Hogar','Salud','Compras','Otros'].\n  * 'Café': café, bebidas no alcohólicas en cafeterías o bares\n  * 'Comida fuera': comidas, cenas, bebidas alcohólicas (cervezas, vinos, vermut, gin-tonics, etc.) en restaurantes/bares\n  * 'Ocio': cine, teatro, eventos, actividades recreativas (NO comida/bebida)\n- {merchant} es el establecimiento (Zara, Starbucks, etc.).\n- {paid_with}: 'tarjeta', 'efectivo', 'transferencia' o null.\n- {note}: comentario o descripción (ej: 'una camiseta', '2 cervezas').\n- {date}: extrae fecha si se menciona ('ayer', 'el martes', 'hace 3 días'). Si NO se menciona, usa null.\n- {confidence} en 0..1 (≥0.8 auto‑confirm). Si son múltiples gastos, da confidence individual a cada uno.\n- El usuario puede decir los campos en cualquier orden.\n\nRESPUESTA: Array de gastos [{amount_eur, category, merchant, note, paid_with, date, confidence}, ...].\nSi solo hay 1 gasto, devuelve array de 1 elemento.\nResponde SOLO con JSON (sin markdown, sin texto extra).",
     "schema": {
-      "type": "object",
-      "properties": {
-        "amount_eur": {
-          "type": "number"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "amount_eur": {
+            "type": "number"
+          },
+          "category": {
+            "type": "string"
+          },
+          "merchant": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "paid_with": {
+            "type": "string",
+            "enum": ["tarjeta", "efectivo", "transferencia", null]
+          },
+          "date": {
+            "type": "string",
+            "description": "Fecha relativa: 'ayer', 'el martes', 'hace 3 días', null si no se menciona"
+          },
+          "confidence": {
+            "type": "number"
+          }
         },
-        "category": {
-          "type": "string"
-        },
-        "merchant": {
-          "type": "string"
-        },
-        "note": {
-          "type": "string"
-        },
-        "paid_with": {
-          "type": "string",
-          "enum": ["tarjeta", "efectivo", "transferencia", null]
-        },
-        "confidence": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "amount_eur",
-        "category",
-        "confidence"
-      ]
+        "required": [
+          "amount_eur",
+          "category",
+          "confidence"
+        ]
+      }
     },
     "examples": [
       {
         "input": "3€ una camiseta en zara con tarjeta",
-        "output": {
+        "output": [{
           "amount_eur": 3.0,
           "category": "Compras",
           "merchant": "Zara",
           "note": "una camiseta",
           "paid_with": "tarjeta",
+          "date": null,
           "confidence": 0.95
-        }
+        }]
       },
       {
         "input": "3€ con tarjeta en zara una camiseta y 2 pantalones",
-        "output": {
+        "output": [{
           "amount_eur": 3.0,
           "category": "Compras",
           "merchant": "Zara",
           "note": "una camiseta y 2 pantalones",
           "paid_with": "tarjeta",
+          "date": null,
           "confidence": 0.95
-        }
+        }]
       },
       {
-        "input": "Café 1 con 80 en el bar de abajo",
-        "output": {
-          "amount_eur": 1.8,
-          "category": "Café",
-          "merchant": "bar de abajo",
-          "note": "",
-          "paid_with": null,
-          "confidence": 0.93
-        }
+        "input": "5€ de café y 10€ de taxi",
+        "output": [
+          {
+            "amount_eur": 5.0,
+            "category": "Café",
+            "merchant": "",
+            "note": "",
+            "paid_with": null,
+            "date": null,
+            "confidence": 0.92
+          },
+          {
+            "amount_eur": 10.0,
+            "category": "Transporte",
+            "merchant": "Taxi",
+            "note": "",
+            "paid_with": null,
+            "date": null,
+            "confidence": 0.93
+          }
+        ]
       },
       {
-        "input": "10 euros camiseta el corte inglés en efectivo",
-        "output": {
+        "input": "Ayer 6€ vermut y frutos secos en la bohem con tarjeta",
+        "output": [{
+          "amount_eur": 6.0,
+          "category": "Comida fuera",
+          "merchant": "La Bohem",
+          "note": "vermut y frutos secos",
+          "paid_with": "tarjeta",
+          "date": "ayer",
+          "confidence": 0.90
+        }]
+      },
+      {
+        "input": "10 euros camiseta el corte inglés en efectivo hace 3 días",
+        "output": [{
           "amount_eur": 10.0,
           "category": "Compras",
           "merchant": "El Corte Inglés",
           "note": "camiseta",
           "paid_with": "efectivo",
+          "date": "hace 3 días",
           "confidence": 0.92
-        }
+        }]
       },
       {
-        "input": "Taxi 6€",
-        "output": {
-          "amount_eur": 6.0,
-          "category": "Transporte",
-          "merchant": "Taxi",
-          "note": "",
-          "paid_with": null,
-          "confidence": 0.95
-        }
+        "input": "Taxi 6€ y parking 3€ con tarjeta el martes",
+        "output": [
+          {
+            "amount_eur": 6.0,
+            "category": "Transporte",
+            "merchant": "Taxi",
+            "note": "",
+            "paid_with": "tarjeta",
+            "date": "el martes",
+            "confidence": 0.91
+          },
+          {
+            "amount_eur": 3.0,
+            "category": "Transporte",
+            "merchant": "Parking",
+            "note": "",
+            "paid_with": "tarjeta",
+            "date": "el martes",
+            "confidence": 0.90
+          }
+        ]
       },
       {
         "input": "Super 35,70 con tarjeta",
-        "output": {
+        "output": [{
           "amount_eur": 35.7,
           "category": "Supermercado",
           "merchant": "",
           "note": "",
           "paid_with": "tarjeta",
+          "date": null,
           "confidence": 0.92
-        }
+        }]
       },
       {
         "input": "10 con 50 céntimos de coca cola en efectivo",
-        "output": {
+        "output": [{
           "amount_eur": 10.5,
           "category": "Café",
           "merchant": "",
           "note": "coca cola",
           "paid_with": "efectivo",
+          "date": null,
           "confidence": 0.88
-        }
-      },
-      {
-        "input": "parking 2 horas 3€ transferencia",
-        "output": {
-          "amount_eur": 3.0,
-          "category": "Transporte",
-          "merchant": "Parking",
-          "note": "2 horas",
-          "paid_with": "transferencia",
-          "confidence": 0.91
-        }
+        }]
       },
       {
         "input": "en starbucks un cappuccino 4,50 con tarjeta",
-        "output": {
+        "output": [{
           "amount_eur": 4.5,
           "category": "Café",
           "merchant": "Starbucks",
           "note": "un cappuccino",
           "paid_with": "tarjeta",
+          "date": null,
           "confidence": 0.94
-        }
+        }]
+      },
+      {
+        "input": "12 euros cervezas y tapas en el bar",
+        "output": [{
+          "amount_eur": 12.0,
+          "category": "Comida fuera",
+          "merchant": "el bar",
+          "note": "cervezas y tapas",
+          "paid_with": null,
+          "date": null,
+          "confidence": 0.92
+        }]
+      },
+      {
+        "input": "3€ coca cola, 2€ chicles y 5€ parking en efectivo",
+        "output": [
+          {
+            "amount_eur": 3.0,
+            "category": "Café",
+            "merchant": "",
+            "note": "coca cola",
+            "paid_with": "efectivo",
+            "date": null,
+            "confidence": 0.88
+          },
+          {
+            "amount_eur": 2.0,
+            "category": "Compras",
+            "merchant": "",
+            "note": "chicles",
+            "paid_with": "efectivo",
+            "date": null,
+            "confidence": 0.87
+          },
+          {
+            "amount_eur": 5.0,
+            "category": "Transporte",
+            "merchant": "Parking",
+            "note": "",
+            "paid_with": "efectivo",
+            "date": null,
+            "confidence": 0.90
+          }
+        ]
       }
     ]
   },

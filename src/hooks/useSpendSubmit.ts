@@ -7,6 +7,7 @@
 import { useState, useCallback } from 'react'
 import { parseSpend } from '../application/parseSpend'
 import { saveSpend } from '../application/saveSpend'
+import { parseDateExpression } from '../application/parseDateExpression'
 import { DeepSeekProvider } from '../adapters/ai/DeepSeekProvider'
 import { MockAIProvider } from '../adapters/ai/MockAIProvider'
 import { SupabaseSpendRepository } from '../adapters/db/SupabaseSpendRepository'
@@ -16,7 +17,7 @@ import { useVoiceStore } from '../stores/useVoiceStore'
 import { useUIStore } from '../stores/useUIStore'
 import { env } from '../config/env'
 import { DEMO_USER_ID } from '../config/constants'
-import type { ParsedSpend } from '../adapters/ai/IAIProvider'
+import type { ParsedSpend, ParsedSpendResult } from '../domain/models'
 
 // Initialize providers (only once)
 // Si no hay API key de DeepSeek, usar MockAIProvider
@@ -32,7 +33,7 @@ console.log('[useSpendSubmit] AI Provider:', hasDeepSeekKey ? 'DeepSeek' : 'Mock
 
 export function useSpendSubmit() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [parsedSpend, setParsedSpend] = useState<ParsedSpend | null>(null)
+  const [parsedResult, setParsedResult] = useState<ParsedSpendResult | null>(null)
   
   const { addSpend } = useSpendStore()
   const { setState: setVoiceState, reset: resetVoice } = useVoiceStore()
@@ -40,8 +41,9 @@ export function useSpendSubmit() {
 
   /**
    * Parse transcript usando IA con fallback automático
+   * RETORNA: ParsedSpendResult con array de 1 o más gastos
    */
-  const parseTranscript = useCallback(async (transcript: string) => {
+  const parseTranscript = useCallback(async (transcript: string): Promise<ParsedSpendResult | null> => {
     if (!transcript || transcript.length < 3) {
       showError('El texto es demasiado corto')
       return null
@@ -54,16 +56,16 @@ export function useSpendSubmit() {
       const startTime = performance.now()
       
       // Intentar con el provider principal
-      let parsed: ParsedSpend | null = null
+      let result: ParsedSpendResult | null = null
       try {
-        parsed = await parseSpend(transcript, aiProvider)
+        result = await parseSpend(transcript, aiProvider)
       } catch (primaryError) {
         console.warn('[useSpendSubmit] Primary AI provider failed, trying fallback...', primaryError)
         
         // Si DeepSeek falla, usar MockAIProvider como fallback
         if (hasDeepSeekKey) {
           const fallbackProvider = new MockAIProvider()
-          parsed = await parseSpend(transcript, fallbackProvider)
+          result = await parseSpend(transcript, fallbackProvider)
           showError('DeepSeek falló, usando parser local básico')
         } else {
           throw primaryError
@@ -73,12 +75,14 @@ export function useSpendSubmit() {
       const latency = Math.round(performance.now() - startTime)
 
       console.log('[useSpendSubmit] Parsed:', {
-        parsed,
+        spendCount: result.spends.length,
+        totalConfidence: result.totalConfidence,
         latency: `${latency}ms`,
+        result,
       })
 
-      setParsedSpend(parsed)
-      return parsed
+      setParsedResult(result)
+      return result
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error al procesar'
       console.error('[useSpendSubmit] Parse error:', errorMessage)
@@ -91,43 +95,73 @@ export function useSpendSubmit() {
   }, [setVoiceState, showError])
 
   /**
-   * Guardar gasto (después de confirmar)
+   * Guardar UN gasto (después de confirmar)
    */
   const submitSpend = useCallback(
     async (parsed: ParsedSpend) => {
       try {
         setIsSubmitting(true)
 
-        // TODO: obtener userId real de auth cuando implementemos login
-        // Por ahora usamos un UUID fijo para testing
         const userId = DEMO_USER_ID
+
+        // Parsear fecha si existe
+        const timestamp = parsed.date
+          ? parseDateExpression(parsed.date) || new Date()
+          : new Date()
 
         const spend = await saveSpend(
           userId,
           parsed,
           spendRepository,
           {
-            paidWith: null, // TODO: extraer del transcript si se menciona
+            paidWith: parsed.paidWith,
+            timestamp,
           }
         )
 
         // Añadir al store local
         addSpend(spend)
 
-        // Success state
-        setVoiceState('success')
-        showSuccess('Gasto guardado correctamente')
-        
-        // Reset después de 2s
-        setTimeout(() => {
-          resetVoice()
-          setParsedSpend(null)
-        }, 2000)
-
         return spend
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Error al guardar'
         console.error('[useSpendSubmit] Save error:', errorMessage)
+        showError(errorMessage)
+        throw error
+      } finally {
+        setIsSubmitting(false)
+      }
+    },
+    [addSpend, showError]
+  )
+
+  /**
+   * Guardar MÚLTIPLES gastos
+   */
+  const submitMultipleSpends = useCallback(
+    async (spends: ParsedSpend[]) => {
+      try {
+        setIsSubmitting(true)
+
+        const savedSpends = await Promise.all(
+          spends.map(spend => submitSpend(spend))
+        )
+
+        // Success state
+        setVoiceState('success')
+        const count = savedSpends.length
+        showSuccess(`${count} gasto${count > 1 ? 's' : ''} guardado${count > 1 ? 's' : ''} correctamente`)
+        
+        // Reset después de 2s
+        setTimeout(() => {
+          resetVoice()
+          setParsedResult(null)
+        }, 2000)
+
+        return savedSpends
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Error al guardar'
+        console.error('[useSpendSubmit] Save multiple error:', errorMessage)
         showError(errorMessage)
         setVoiceState('error')
         return null
@@ -135,34 +169,41 @@ export function useSpendSubmit() {
         setIsSubmitting(false)
       }
     },
-    [addSpend, setVoiceState, showSuccess, showError, resetVoice]
+    [submitSpend, setVoiceState, showSuccess, showError, resetVoice]
   )
 
   /**
-   * Flujo completo: parse + auto-submit si confidence >= 0.8
+   * Flujo completo: parse + auto-submit si confidence alta
    */
   const handleTranscript = useCallback(
     async (transcript: string, autoConfirm = true) => {
-      const parsed = await parseTranscript(transcript)
+      const result = await parseTranscript(transcript)
       
-      if (!parsed) return null
+      if (!result || result.spends.length === 0) return null
 
-      // Auto-confirm si confidence >= 0.8
-      if (autoConfirm && parsed.confidence >= 0.8) {
-        return await submitSpend(parsed)
+      // Auto-confirm si confidence >= 0.95 (muy conservador para múltiples gastos)
+      const shouldAutoConfirm = autoConfirm && result.totalConfidence >= 0.95
+      
+      if (shouldAutoConfirm) {
+        console.log('[useSpendSubmit] Auto-confirming (high confidence)', {
+          count: result.spends.length,
+          confidence: result.totalConfidence,
+        })
+        return await submitMultipleSpends(result.spends)
       }
 
       // Sino, esperar confirmación manual
-      return parsed
+      return result
     },
-    [parseTranscript, submitSpend]
+    [parseTranscript, submitMultipleSpends]
   )
 
   return {
     isSubmitting,
-    parsedSpend,
+    parsedResult,
     parseTranscript,
     submitSpend,
+    submitMultipleSpends,
     handleTranscript,
   }
 }

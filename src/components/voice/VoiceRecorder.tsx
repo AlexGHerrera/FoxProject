@@ -4,7 +4,7 @@
  * Integra: MicButton, TranscriptDisplay, ConfirmModal
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useVoiceStore } from '../../stores/useVoiceStore'
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition'
 import { useSpendSubmit } from '../../hooks/useSpendSubmit'
@@ -13,7 +13,7 @@ import { env } from '../../config/env'
 import { MicButton } from './MicButton'
 import { TranscriptDisplay } from './TranscriptDisplay'
 import { ConfirmModal } from './ConfirmModal'
-import type { ParsedSpend } from '../../adapters/ai/IAIProvider'
+import type { ParsedSpend, ParsedSpendResult } from '../../domain/models'
 
 interface VoiceRecorderProps {
   onClose?: () => void
@@ -22,22 +22,14 @@ interface VoiceRecorderProps {
 export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
   const { transcript, state } = useVoiceStore()
   const { isRecording } = useSpeechRecognition()
-  const { parseTranscript, submitSpend, parsedSpend } = useSpendSubmit()
+  const { parseTranscript, submitMultipleSpends, parsedResult } = useSpendSubmit()
   
   const [showConfirmModal, setShowConfirmModal] = useState(false)
-  const [pendingSpend, setPendingSpend] = useState<ParsedSpend | null>(null)
+  const [pendingResult, setPendingResult] = useState<ParsedSpendResult | null>(null)
   
   const isUsingMock = !env.deepseek?.apiKey || env.deepseek.apiKey.length === 0
 
-  // Auto-parse cuando el estado cambia a 'processing'
-  useEffect(() => {
-    if (state === 'processing' && transcript && transcript.length > 3) {
-      console.log('[VoiceRecorder] Auto-parsing transcript (state=processing):', transcript)
-      handleParse()
-    }
-  }, [state, transcript])
-
-  const handleParse = async () => {
+  const handleParse = useCallback(async () => {
     if (!transcript) {
       console.warn('[VoiceRecorder] handleParse called without transcript')
       return
@@ -46,48 +38,57 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
     console.log('[VoiceRecorder] Starting parse for:', transcript)
 
     try {
-      const parsed = await parseTranscript(transcript)
+      const result = await parseTranscript(transcript)
       
-      console.log('[VoiceRecorder] Parse result:', parsed)
+      console.log('[VoiceRecorder] Parse result:', result)
       
-      if (!parsed) {
-        console.warn('[VoiceRecorder] Parse returned null')
+      if (!result || result.spends.length === 0) {
+        console.warn('[VoiceRecorder] Parse returned no spends')
         return
       }
 
       // Auto-confirm si confidence >= 0.95 (muy restrictivo para evitar errores)
-      if (parsed.confidence >= 0.95) {
+      if (result.totalConfidence >= 0.95) {
         console.log('[VoiceRecorder] Auto-confirming (confidence >= 0.95)')
-        const spend = await submitSpend(parsed)
+        const spends = await submitMultipleSpends(result.spends)
         // Cerrar modal inmediatamente después de guardar
-        if (spend && onClose) {
+        if (spends && onClose) {
           onClose()
         }
       } else {
         // Mostrar modal de confirmación
-        console.log('[VoiceRecorder] Showing confirm modal (confidence < 0.95)')
-        setPendingSpend(parsed)
+        const count = result.spends.length
+        console.log(`[VoiceRecorder] Showing confirm modal for ${count} spend(s) (confidence < 0.95)`)
+        setPendingResult(result)
         setShowConfirmModal(true)
       }
     } catch (error) {
       console.error('[VoiceRecorder] Error in handleParse:', error)
     }
-  }
+  }, [transcript, parseTranscript, submitMultipleSpends, onClose])
 
-  const handleConfirm = async (spend: ParsedSpend) => {
-    const savedSpend = await submitSpend(spend)
+  // Auto-parse cuando el estado cambia a 'processing'
+  useEffect(() => {
+    if (state === 'processing' && transcript && transcript.length > 3) {
+      console.log('[VoiceRecorder] Auto-parsing transcript (state=processing):', transcript)
+      handleParse()
+    }
+  }, [state, transcript, handleParse])
+
+  const handleConfirm = async (spends: ParsedSpend[]) => {
+    const savedSpends = await submitMultipleSpends(spends)
     setShowConfirmModal(false)
-    setPendingSpend(null)
+    setPendingResult(null)
     
     // Cerrar el modal principal inmediatamente
-    if (onClose && savedSpend) {
+    if (onClose && savedSpends) {
       onClose()
     }
   }
 
   const handleCancel = () => {
     setShowConfirmModal(false)
-    setPendingSpend(null)
+    setPendingResult(null)
   }
 
   return (
@@ -140,12 +141,13 @@ export function VoiceRecorder({ onClose }: VoiceRecorderProps = {}) {
         )}
       </div>
 
-      {/* Confirm Modal */}
-      {pendingSpend && (
+      {/* Confirm Modal - ahora soporta múltiples gastos */}
+      {pendingResult && pendingResult.spends.length > 0 && (
         <ConfirmModal
           isOpen={showConfirmModal}
           onClose={() => setShowConfirmModal(false)}
-          parsedSpend={pendingSpend}
+          parsedSpends={pendingResult.spends}
+          totalConfidence={pendingResult.totalConfidence}
           onConfirm={handleConfirm}
           onCancel={handleCancel}
         />
