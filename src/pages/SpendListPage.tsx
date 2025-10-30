@@ -27,12 +27,36 @@ export function SpendListPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showBulkEdit, setShowBulkEdit] = useState(false);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  const [bottomNavHeight, setBottomNavHeight] = useState(200); // Altura inicial estimada
   const currentIndex = ROUTES.indexOf(location.pathname as typeof ROUTES[number]);
 
   // Sync selection mode with UI store
   useEffect(() => {
     setSelectionModeActive(selectionMode);
   }, [selectionMode, setSelectionModeActive]);
+
+  // Measure BottomNavSelection height when it's visible
+  // Note: Since BottomNavSelection uses Portal, we can't measure it directly
+  // Using estimated height based on breakpoints: ~200px mobile, ~240px desktop
+  useEffect(() => {
+    if (!selectionMode) return;
+    
+    const updateHeight = () => {
+      // Estimar altura basada en viewport width
+      const width = window.innerWidth;
+      // Móvil: 3 botones h-12 (48px) + 2 gaps (8px) + padding + counter ≈ 200px
+      // Desktop: 3 botones h-14 (56px) + 2 gaps (12px) + padding + counter ≈ 240px
+      const estimatedHeight = width < 640 ? 200 : 240;
+      setBottomNavHeight(estimatedHeight);
+    };
+
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, [selectionMode]);
 
   // Filters and search
   const {
@@ -111,6 +135,8 @@ export function SpendListPage() {
   const handleCancelSelection = () => {
     setSelectionMode(false);
     setSelectedIds(new Set());
+    // Force close any open swipe cards by triggering a re-render
+    // This is handled by SpendCard's useEffect that closes on external interactions
   };
 
   const handleBulkEdit = () => {
@@ -221,7 +247,10 @@ export function SpendListPage() {
       </header>
 
       {/* Main Content */}
-      <main className={`max-w-4xl mx-auto px-4 py-6 ${selectionMode ? 'pb-44 sm:pb-44' : 'pb-28'}`}>
+      <main 
+        className={`max-w-4xl mx-auto px-4 py-6 ${selectionMode ? 'pb-28' : 'pb-28'}`}
+        style={selectionMode ? { paddingBottom: `${bottomNavHeight + 16}px` } : undefined}
+      >
         {/* Search Bar */}
         <div className="mb-4">
           <SearchBar
@@ -284,7 +313,7 @@ export function SpendListPage() {
         />
       </main>
 
-      {/* Selection Mode Bottom Nav */}
+      {/* Selection Mode Bottom Nav - Renderizado via Portal en BottomNavSelection */}
       {selectionMode && (
         <BottomNavSelection
           count={selectedIds.size}

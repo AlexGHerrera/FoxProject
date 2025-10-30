@@ -62,6 +62,17 @@ export function SpendCard({
     };
   }, []);
 
+  // Close card when entering selection mode and reset position when exiting
+  useEffect(() => {
+    if (selectionMode) {
+      setIsOpen(false);
+    } else {
+      // Reset card position when exiting selection mode
+      setIsOpen(false);
+      x.set(0);
+    }
+  }, [selectionMode, x]);
+
   // Close card on any external interaction (scroll, click outside, etc.)
   useEffect(() => {
     if (!isOpen) return;
@@ -226,8 +237,8 @@ export function SpendCard({
           'rounded-lg p-4 shadow-sm border relative',
           selectionMode 
             ? isSelected 
-              ? 'bg-brand-cyan/10 border-brand-cyan cursor-pointer' 
-              : 'bg-card border-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800'
+              ? 'bg-brand-cyan/10 border-brand-cyan cursor-pointer backdrop-blur-md' 
+              : 'bg-card border-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 backdrop-blur-md'
             : 'bg-card border-border cursor-grab active:cursor-grabbing'
         )}
         onClick={selectionMode && onToggleSelect ? () => onToggleSelect(spend) : undefined}
