@@ -122,10 +122,10 @@ Wizard de bienvenida para nuevos usuarios.
 ## 📚 Recursos Útiles
 
 ### Documentación Interna
-- `SPEC.md`: Especificación funcional completa
-- `ROADMAP.md`: Fases de desarrollo
-- `DESIGN-SPEC.md`: Especificaciones de diseño y UI
-- `AGENTS.md`: Reglas de arquitectura hexagonal
+- `docs/project/SPEC.md`: Especificación funcional completa
+- `docs/project/ROADMAP.md`: Fases de desarrollo
+- `docs/features/DESIGN-SPEC.md`: Especificaciones de diseño y UI
+- `docs/development/AGENTS.md`: Reglas de arquitectura hexagonal
 - `PROGRESS.md`: Estado actual del proyecto
 
 ### Código Clave
@@ -188,9 +188,9 @@ Razones:
 ## 💬 ¿Necesitas Ayuda?
 
 Si tienes dudas sobre:
-- Arquitectura hexagonal → Lee `AGENTS.md`
-- Especificaciones funcionales → Lee `SPEC.md`
-- Diseño y UI → Lee `DESIGN-SPEC.md` y revisa mockups en `public/mockups/`
+- Arquitectura hexagonal → Lee `docs/development/AGENTS.md`
+- Especificaciones funcionales → Lee `docs/project/SPEC.md`
+- Diseño y UI → Lee `docs/features/DESIGN-SPEC.md` y revisa mockups en `public/mockups/`
 - Estado del proyecto → Lee `PROGRESS.md`
 
 ---

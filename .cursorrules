@@ -4,7 +4,7 @@
 
 Cuando el usuario escribe **"Tarea: [descripción]"**:
 
-1. **Leer contexto**: `QUICK-RESUME.md` (2 líneas de resumen)
+1. **Leer contexto**: `docs/project/QUICK-RESUME.md` (2 líneas de resumen)
 2. **Asignar agente(s)** según matriz abajo
 3. **Proponer plan** (3-5 pasos concretos)
 4. **Ejecutar** tras confirmación
@@ -23,8 +23,8 @@ Cuando el usuario escribe **"Tarea: [descripción]"**:
 |-------|--------|------------------|----------|
 | 🏗️ | **Arquitecto** | arquitectura, refactor, interface, separación | `domain/`, `application/`, `I*.ts` |
 | 🎨 | **UI Engineer** | componente, modal, botón, UI, diseño, accesibilidad | `components/`, `pages/`, CSS |
-| 🧠 | **AI Specialist** | voz, speech, prompt, IA, DeepSeek, parsing, confidence | `adapters/ai/`, `adapters/voice/`, `PROMPTS.json` |
-| 💾 | **Backend** | query, Supabase, DB, tabla, migración, RLS | `adapters/db/`, `SCHEMA.sql` |
+| 🧠 | **AI Specialist** | voz, speech, prompt, IA, DeepSeek, parsing, confidence | `adapters/ai/`, `adapters/voice/`, `config/PROMPTS.json` |
+| 💾 | **Backend** | query, Supabase, DB, tabla, migración, RLS | `adapters/db/`, `database/SCHEMA.sql` |
 | 🔗 | **Integration** | hook, store, estado, Zustand, orquestación | `hooks/`, `stores/` |
 | 🧪 | **QA** | test, bug, error, linter, fix | `*.test.ts`, tests |
 | 📊 | **Performance** | lento, optimizar, latencia, bundle, tokens, costes | config, optimizaciones |
@@ -199,11 +199,11 @@ Co-authored-by: AI Agent <agent@foxy.app>
 
 | Área | Archivo |
 |------|---------|
-| Estado actual | `QUICK-RESUME.md` |
-| Prompts IA | `PROMPTS.json` |
-| Tokens diseño | `DESIGN-TOKENS.json` |
-| Schema DB | `SCHEMA.sql` |
-| Spec funcional | `SPEC.md` |
+| Estado actual | `docs/project/QUICK-RESUME.md` |
+| Prompts IA | `config/PROMPTS.json` |
+| Tokens diseño | `config/DESIGN-TOKENS.json` |
+| Schema DB | `database/SCHEMA.sql` |
+| Spec funcional | `docs/project/SPEC.md` |
 
 ---
 

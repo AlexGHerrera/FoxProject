@@ -342,7 +342,7 @@ Después de completar estos tests:
    - Continuar con modo continuous (TODO pendiente)
 
 2. **Si hay FAILS**:
-   - 🔧 Anotar bugs en GitHub Issues o QUICK-RESUME.md
+   - 🔧 Anotar bugs en GitHub Issues o docs/project/QUICK-RESUME.md
    - Priorizar fixes antes de continuar
 
 3. **Latencia > 2s**:

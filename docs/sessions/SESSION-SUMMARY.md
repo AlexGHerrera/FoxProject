@@ -307,10 +307,10 @@ PROMPTS.json                                # Prompt mejorado + ejemplos
 ## 🎓 Referencias
 
 ### Documentación Proyecto
-- `SPEC.md`: Especificación funcional
-- `ROADMAP.md`: Fases desarrollo
-- `AGENTS.md`: Reglas arquitectura hexagonal
-- `PROMPTS.json`: Prompts IA versionados
+- `docs/project/SPEC.md`: Especificación funcional
+- `docs/project/ROADMAP.md`: Fases desarrollo
+- `docs/development/AGENTS.md`: Reglas arquitectura hexagonal
+- `config/PROMPTS.json`: Prompts IA versionados
 
 ### External
 - [Framer Motion Gestures](https://www.framer.com/motion/gestures/)

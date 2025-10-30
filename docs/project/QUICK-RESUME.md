@@ -396,7 +396,7 @@ Tarea: [Lo que quieres hacer]
 
 ### Docs:
 - `.cursorrules` - Protocolo y matriz de asignación
-- `AGENTS.md` - Reglas arquitectura y convenciones
+- `docs/development/AGENTS.md` - Reglas arquitectura y convenciones
 
 ### Optimización de Tokens:
 - **60% menos tokens** vs v1.0

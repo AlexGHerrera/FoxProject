@@ -9,13 +9,13 @@
 ### Fase 0: Setup Inicial
 - [x] Proyecto creado con Vite + React 18 + TypeScript
 - [x] Dependencias instaladas: Zustand, Supabase, Tailwind CSS, Zod, date-fns, Vitest
-- [x] Tailwind configurado con design tokens de `DESIGN-TOKENS.json`
+- [x] Tailwind configurado con design tokens de `config/DESIGN-TOKENS.json`
 - [x] Path aliases configurados (`@/domain`, `@/application`, etc.)
 - [x] Vitest + React Testing Library configurados
 - [x] `.gitignore` y `.env.local` creados
 
 ### Fase 1: Supabase y Esquema
-- [x] `SCHEMA.sql` mejorado con:
+- [x] `database/SCHEMA.sql` mejorado con:
   - Índice compuesto `idx_spends_composite` para queries optimizadas
   - Tabla `api_usage` para monitoreo de costes IA
   - Campo `tz` en `settings` para timezone
@@ -102,7 +102,7 @@
   - ✅ Campos en cualquier orden ("3€ con tarjeta en zara una camiseta")
   - ✅ Detección automática forma de pago (tarjeta/efectivo/transferencia)
   - ✅ Descripciones complejas ("camiseta y 2 pantalones")
-  - ✅ 9 ejemplos en PROMPTS.json
+  - ✅ 9 ejemplos en config/PROMPTS.json
 - [x] **Optimización Costes** (Oct 29, 2025):
   - ✅ Pre-validación (filtra basura)
   - ✅ Parser regex conservador (~50% casos simples sin API)
@@ -291,7 +291,7 @@ UI (VoiceRecorder)
 - Agregar Whisper: Crear `WhisperRecognizer` e inyectar
 
 ### Design Tokens
-Todos los colores, espaciados, y tipografía vienen de `DESIGN-TOKENS.json`, garantizando consistencia.
+Todos los colores, espaciados, y tipografía vienen de `config/DESIGN-TOKENS.json`, garantizando consistencia.
 
 ---
 

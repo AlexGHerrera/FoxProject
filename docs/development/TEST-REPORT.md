@@ -192,7 +192,7 @@ if (typeof parsed.amount_eur === 'number') {
    - Énfasis en bebidas alcohólicas = Comida fuera
    - Aclaración de Ocio (NO comida/bebida)
 
-### En `PROMPTS.json`:
+### En `config/PROMPTS.json`:
 
 1. **Nuevos ejemplos**
    - "6€ vermut y frutos secos" → Comida fuera

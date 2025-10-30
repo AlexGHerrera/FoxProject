@@ -19,7 +19,7 @@
 ### 🚧 Próximos Pasos
 
 1. **Crear proyecto en Supabase**
-   - Ejecutar `SCHEMA.sql`
+   - Ejecutar `database/SCHEMA.sql`
    - Configurar RLS policies
    - Crear edge function para `parse-spend`
    - Obtener credenciales (URL + anon key)
@@ -191,7 +191,7 @@ npm run test budgetCalculator
 
 ### 2. Ejecutar Schema
 
-Copiar y pegar el contenido de `SCHEMA.sql` en el SQL Editor y ejecutar.
+Copiar y pegar el contenido de `database/SCHEMA.sql` en el SQL Editor y ejecutar.
 
 Esto creará:
 - Tabla `spends` (gastos)
@@ -234,7 +234,7 @@ DEEPSEEK_API_KEY=sk-xxx...
 
 ## 🎨 Design Tokens
 
-Los tokens de diseño están en `DESIGN-TOKENS.json` y se reflejan en:
+Los tokens de diseño están en `config/DESIGN-TOKENS.json` y se reflejan en:
 
 - `tailwind.config.js` (colores, espaciados, radios)
 - `src/index.css` (CSS variables para temas)
@@ -263,7 +263,7 @@ Todos los componentes UI base usan los tokens:
 | Safari macOS/iOS | ⚠️ Funcional con bug cosmético* |
 | Firefox | ⚠️ Limitado |
 
-**\*Bug conocido de Safari**: El indicador de micrófono en la barra del navegador puede permanecer visible incluso después de cerrar el reconocimiento. Este es un **bug cosmético de WebKit** — el micrófono está realmente cerrado y no está grabando. Ver `SAFARI-MIC-ISSUE.md` para más detalles.
+**\*Bug conocido de Safari**: El indicador de micrófono en la barra del navegador puede permanecer visible incluso después de cerrar el reconocimiento. Este es un **bug cosmético de WebKit** — el micrófono está realmente cerrado y no está grabando. Ver `docs/issues/SAFARI-MIC-ISSUE.md` para más detalles.
 
 ### Fallback
 
@@ -294,7 +294,7 @@ Si la Web Speech API no está disponible o el usuario deniega permisos:
 2. Usar entrada manual (sin micrófono)
 3. Usar Chrome/Edge en macOS
 
-**Detalles técnicos**: Ver `SAFARI-MIC-ISSUE.md`
+**Detalles técnicos**: Ver `docs/issues/SAFARI-MIC-ISSUE.md`
 
 ---
 
@@ -366,7 +366,7 @@ npm run build
 
 ## 📝 Próximas Funcionalidades
 
-Ver `ROADMAP.md` para el plan completo. Highlights:
+Ver `docs/project/ROADMAP.md` para el plan completo. Highlights:
 
 - [ ] PWA con service worker
 - [ ] Modo offline con sync
@@ -411,9 +411,9 @@ Este proyecto utiliza un **sistema de agentes especializados** para facilitar el
 
 ### Documentación de Agentes
 
-- **`AGENTS.md`**: Reglas generales y arquitectura hexagonal
-- **`AGENTS-TEAM.md`**: Equipo de 7 agentes especializados y protocolo de trabajo
-- **`AGENTS-QUICK-REF.md`**: Referencia rápida para seleccionar agentes
+- **`docs/development/AGENTS.md`**: Reglas generales y arquitectura hexagonal
+- **`docs/development/AGENT-SYSTEM-EXAMPLE.md`**: Ejemplos del sistema de agentes
+- **`docs/development/AGENT-SYSTEM-V2-CHANGES.md`**: Cambios de la versión 2.0 del sistema
 
 ### Inicio Rápido con Agentes
 
@@ -429,7 +429,7 @@ Al inicio de cada sesión de desarrollo, escribe:
 - `🎯 Tarea: Bug: swipe no funciona en móvil`
 
 El sistema automáticamente:
-1. Lee `QUICK-RESUME.md` para contexto
+1. Lee `docs/project/QUICK-RESUME.md` para contexto
 2. Selecciona los agentes apropiados
 3. Propone un plan de trabajo detallado
 4. Ejecuta con expertise especializada
@@ -440,14 +440,14 @@ El sistema automáticamente:
 |--------|-----------------|----------------------|
 | 🏗️ **Arquitecto** | Arquitectura hexagonal, interfaces | `domain/`, `application/` |
 | 🎨 **UI Engineer** | Componentes, diseño, accesibilidad | `components/`, `pages/` |
-| 🧠 **AI Specialist** | IA, voz, prompts, optimización | `adapters/ai/`, `PROMPTS.json` |
-| 💾 **Backend Engineer** | DB, queries, Supabase | `adapters/db/`, `SCHEMA.sql` |
+| 🧠 **AI Specialist** | IA, voz, prompts, optimización | `adapters/ai/`, `config/PROMPTS.json` |
+| 💾 **Backend Engineer** | DB, queries, Supabase | `adapters/db/`, `database/SCHEMA.sql` |
 | 🔗 **Integration Engineer** | Hooks, stores, orquestación | `hooks/`, `stores/` |
 | 🧪 **QA Engineer** | Tests, cobertura, calidad | `tests/`, `*.test.ts` |
 | 📊 **Performance Engineer** | Bundle, latencia, optimización | `vite.config.ts` |
 
-**Lee más**: `AGENTS-TEAM.md` para detalles completos del sistema.
+**Lee más**: `docs/development/AGENT-SYSTEM-EXAMPLE.md` para detalles completos del sistema.
 
 ---
 
-**¿Dudas?** Lee `AGENTS.md` para guías específicas de desarrollo o abre un issue.
+**¿Dudas?** Lee `docs/development/AGENTS.md` para guías específicas de desarrollo o abre un issue.

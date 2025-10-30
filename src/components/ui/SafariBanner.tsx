@@ -35,7 +35,7 @@ export function SafariBanner() {
             El indicador de micrófono puede quedar visible por un bug de Safari. 
             <strong> Tu privacidad está protegida</strong> — el micrófono está realmente cerrado.{' '}
             <a 
-              href="https://github.com/tu-repo/foxy-app/blob/main/SAFARI-MIC-ISSUE.md" 
+              href="https://github.com/tu-repo/foxy-app/blob/main/docs/issues/SAFARI-MIC-ISSUE.md" 
               target="_blank" 
               rel="noopener noreferrer"
               className="underline hover:no-underline"

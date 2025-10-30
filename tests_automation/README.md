@@ -198,8 +198,8 @@ jobs:
 
 - [Entorno conda](../environment.yml)
 - [DeepSeek API Docs](https://platform.deepseek.com/api-docs/)
-- [Prompts](../PROMPTS.json)
-- [Arquitectura Hexagonal](../AGENTS.md)
+- [Prompts](../config/PROMPTS.json)
+- [Arquitectura Hexagonal](../docs/development/AGENTS.md)
 
 ---
 

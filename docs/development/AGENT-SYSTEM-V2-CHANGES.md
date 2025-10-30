@@ -166,7 +166,7 @@ TOTAL: ~200 tokens de protocolo (75% ahorro)
 
 ### Para IA Assistant
 1. Detectar "Tarea:" al inicio del mensaje del usuario
-2. Leer `QUICK-RESUME.md` (solo primera vez en sesión)
+2. Leer `docs/project/QUICK-RESUME.md` (solo primera vez en sesión)
 3. Asignar agente(s) según matriz
 4. Proponer: plan + rama Git
 5. Ejecutar tras confirmación
@@ -238,8 +238,8 @@ rm AGENTS-IMPLEMENTATION.md
 
 Estos ya están cubiertos en:
 - `.cursorrules` (protocolo)
-- `AGENT-SYSTEM-EXAMPLE.md` (ejemplo de uso)
-- `AGENTS.md` (referencia técnica)
+- `docs/development/AGENT-SYSTEM-EXAMPLE.md` (ejemplo de uso)
+- `docs/development/AGENTS.md` (referencia técnica)
 
 ---
 
@@ -263,7 +263,7 @@ Palabras clave priorizadas por:
 ### Contexto Persistente
 Implementado mediante:
 1. Flag interno "sesión activa"
-2. Cache de `QUICK-RESUME.md` en memoria
+2. Cache de `docs/project/QUICK-RESUME.md` en memoria
 3. Reset automático en nueva "Tarea:"
 
 ### Git Automation

@@ -89,8 +89,8 @@ Sistema: [continúa automáticamente]
 |-------|--------|-------|
 | 🏗️ | Arquitecto | domain/, application/, interfaces |
 | 🎨 | UI Engineer | components/, pages/, CSS |
-| 🧠 | AI Specialist | adapters/ai/, PROMPTS.json |
-| 💾 | Backend | adapters/db/, SCHEMA.sql |
+| 🧠 | AI Specialist | adapters/ai/, config/PROMPTS.json |
+| 💾 | Backend | adapters/db/, database/SCHEMA.sql |
 | 🔗 | Integration | hooks/, stores/ |
 | 🧪 | QA | tests, validación |
 | 📊 | Performance | optimización tokens, latencia |
@@ -155,7 +155,7 @@ Tarea: Agregar filtros por categoría en página de gastos
 ```
 
 El sistema agéntico se activará automáticamente y:
-1. Leerá `QUICK-RESUME.md` para contexto
+1. Leerá `docs/project/QUICK-RESUME.md` para contexto
 2. Asignará agentes apropiados
 3. Propondrá plan + rama Git
 4. Ejecutará profesionalmente
@@ -185,9 +185,9 @@ El sistema agéntico se activará automáticamente y:
 
 ### Para Desarrolladores
 - **`.cursorrules`** - Protocolo del sistema agéntico v2.0
-- **`AGENTS.md`** - Reglas de arquitectura y convenciones
-- **`QUICK-RESUME.md`** - Estado actual y última sesión
-- **`AGENT-SYSTEM-EXAMPLE.md`** - Ejemplo completo de uso
+- **`docs/development/AGENTS.md`** - Reglas de arquitectura y convenciones
+- **`docs/project/QUICK-RESUME.md`** - Estado actual y última sesión
+- **`docs/development/AGENT-SYSTEM-EXAMPLE.md`** - Ejemplo completo de uso
 
 ### Para Testing
 - **`TESTING-GUIDE-OCT30.md`** - Setup del entorno de testing
@@ -195,9 +195,9 @@ El sistema agéntico se activará automáticamente y:
 - **`BUG-FIX-OCT30.md`** - Fix de amount_eur como string
 
 ### Técnica
-- **`PROMPTS.json`** - Prompts de IA versionados
-- **`SCHEMA.sql`** - Schema de base de datos
-- **`SPEC.md`** - Especificación funcional
+- **`config/PROMPTS.json`** - Prompts de IA versionados
+- **`database/SCHEMA.sql`** - Schema de base de datos
+- **`docs/project/SPEC.md`** - Especificación funcional
 
 ---
 

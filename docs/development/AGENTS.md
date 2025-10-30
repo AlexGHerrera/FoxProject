@@ -58,7 +58,7 @@ src/
 
 ## 🎨 UI & Accesibilidad
 
-- **Tokens**: `DESIGN-TOKENS.json` única fuente de verdad
+- **Tokens**: `config/DESIGN-TOKENS.json` única fuente de verdad
 - **Tailwind**: sin valores hardcoded
 - **Tamaño táctil**: mínimo 44×44px
 - **Contraste**: WCAG AA (4.5:1)
@@ -72,7 +72,7 @@ src/
 ### DeepSeek Config
 - Endpoint: `https://api.deepseek.com/v1/chat/completions`
 - Modelo: `deepseek-chat`
-- Prompts: `PROMPTS.json` (versionados)
+- Prompts: `config/PROMPTS.json` (versionados)
 - Timeout: 3s → fallback regex
 
 ### Estrategias de Ahorro
@@ -167,11 +167,11 @@ Co-authored-by: AI Agent <agent@foxy.app>
 
 | Doc | Propósito |
 |-----|-----------|
-| `QUICK-RESUME.md` | Estado actual, última sesión |
-| `PROMPTS.json` | Prompts IA versionados |
-| `DESIGN-TOKENS.json` | Sistema de diseño |
-| `SCHEMA.sql` | Schema DB |
-| `SPEC.md` | Especificación funcional |
+| `docs/project/QUICK-RESUME.md` | Estado actual, última sesión |
+| `config/PROMPTS.json` | Prompts IA versionados |
+| `config/DESIGN-TOKENS.json` | Sistema de diseño |
+| `database/SCHEMA.sql` | Schema DB |
+| `docs/project/SPEC.md` | Especificación funcional |
 | `.cursorrules` | Sistema de agentes |
 
 ---

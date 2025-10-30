@@ -206,9 +206,9 @@ foxy-app/
 ├── PROGRESS.md ✅
 ├── NEXT-STEPS.md ✅
 ├── README.md ✅
-├── SCHEMA.sql ✅ (mejorado)
-├── PROMPTS.json ✅ (mejorado)
-├── DESIGN-TOKENS.json ✅
+├── database/SCHEMA.sql ✅ (mejorado)
+├── config/PROMPTS.json ✅ (mejorado)
+├── config/DESIGN-TOKENS.json ✅
 ├── package.json ✅
 ├── tsconfig.json ✅
 ├── vite.config.ts ✅
@@ -310,16 +310,16 @@ foxy-app/
 
 ### Para Desarrolladores
 
-- `AGENTS.md`: convenciones, arquitectura hexagonal, testing strategy
+- `docs/development/AGENTS.md`: convenciones, arquitectura hexagonal, testing strategy
 - `PROGRESS.md`: tracking detallado de tareas
 - Comentarios inline en el código
 
 ### Referencias
 
-- `SPEC.md`: especificación funcional
-- `ROADMAP.md`: plan completo de fases
-- `DESIGN-TOKENS.json`: sistema de diseño
-- `PROMPTS.json`: prompts de IA
+- `docs/project/SPEC.md`: especificación funcional
+- `docs/project/ROADMAP.md`: plan completo de fases
+- `config/DESIGN-TOKENS.json`: sistema de diseño
+- `config/PROMPTS.json`: prompts de IA
 
 ---
 
@@ -328,7 +328,7 @@ foxy-app/
 ### Inmediatas (Bloqueantes)
 
 1. ✅ **Crear proyecto Supabase** (requiere acción manual del usuario)
-2. ✅ **Ejecutar SCHEMA.sql**
+2. ✅ **Ejecutar database/SCHEMA.sql**
 3. ✅ **Configurar .env.local**
 
 ### Siguiente Fase (Fase 6)
