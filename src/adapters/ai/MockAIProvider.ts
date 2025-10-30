@@ -4,35 +4,99 @@
  * Útil para desarrollo/demo sin necesidad de API key
  */
 
-import type { IAIProvider, ParsedSpend } from './IAIProvider'
+import type { IAIProvider } from './IAIProvider'
+import type { ParsedSpend, ParsedSpendResult } from '@/domain/models'
 import { CATEGORIES } from '../../config/constants'
 
 export class MockAIProvider implements IAIProvider {
-  async parseSpendText(text: string): Promise<ParsedSpend> {
+  async parseSpendText(text: string): Promise<ParsedSpendResult> {
     console.log('[MockAIProvider] Parsing:', text)
     
     // Simular latencia de red (300-800ms)
     await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 500))
 
-    // Extraer importe (varios formatos)
-    const amount = this.extractAmount(text)
+    // Detectar múltiples gastos separados por "y" o ","
+    const segments = this.splitMultipleSpends(text)
     
-    // Extraer categoría
-    const category = this.extractCategory(text)
-    
-    // Extraer merchant
-    const merchant = this.extractMerchant(text)
-    
-    // Calcular confidence básica
-    const confidence = this.calculateConfidence(amount, category, merchant)
+    const spends: ParsedSpend[] = segments.map(segment => {
+      // Extraer importe (varios formatos)
+      const amount = this.extractAmount(segment)
+      
+      // Extraer categoría
+      const category = this.extractCategory(segment)
+      
+      // Extraer merchant
+      const merchant = this.extractMerchant(segment)
+      
+      // Extraer forma de pago
+      const paidWith = this.extractPaidWith(segment)
+      
+      // Extraer fecha
+      const date = this.extractDate(segment)
+      
+      // Calcular confidence básica
+      const confidence = this.calculateConfidence(amount, category, merchant)
+
+      return {
+        amountEur: amount,
+        category,
+        merchant: merchant || '',
+        note: '',
+        paidWith,
+        date,
+        confidence,
+      }
+    })
+
+    // Calcular confidence promedio
+    const totalConfidence = spends.length > 0
+      ? spends.reduce((sum, s) => sum + s.confidence, 0) / spends.length
+      : 0
 
     return {
-      amountEur: amount,
-      category,
-      merchant: merchant || '',
-      note: '',
-      confidence,
+      spends,
+      totalConfidence,
     }
+  }
+
+  private splitMultipleSpends(text: string): string[] {
+    // Detectar patrones como "5€ café y 10€ taxi"
+    // o "3€ coca cola, 2€ chicles y 5€ parking"
+    
+    // Buscar patrones con cantidades seguidas de "y" o ","
+    const multiPattern = /(\d+[€\s,.]?\d*\s*(?:euros?|€)?\s+[^y,]+?)(?:\s+y\s+|\s*,\s*)/gi
+    const matches = text.match(multiPattern)
+    
+    if (matches && matches.length > 0) {
+      // Encontramos múltiples gastos
+      const segments = text.split(/\s+y\s+|\s*,\s+/)
+      return segments.filter(s => s.trim().length > 0)
+    }
+    
+    // Un solo gasto
+    return [text]
+  }
+
+  private extractDate(text: string): string | null {
+    const lowerText = text.toLowerCase()
+    
+    // Patrones comunes
+    if (lowerText.includes('ayer')) return 'ayer'
+    if (lowerText.includes('anteayer')) return 'anteayer'
+    if (lowerText.match(/hace\s+\d+\s+d[ií]as?/)) {
+      const match = lowerText.match(/hace\s+\d+\s+d[ií]as?/)
+      return match ? match[0] : null
+    }
+    
+    // Días de la semana
+    const weekDays = ['lunes', 'martes', 'miércoles', 'miercoles', 'jueves', 'viernes', 'sábado', 'sabado', 'domingo']
+    for (const day of weekDays) {
+      if (lowerText.includes(day)) {
+        return lowerText.includes('pasado') ? `${day} pasado` : `el ${day}`
+      }
+    }
+    
+    return null
   }
 
   private extractAmount(text: string): number {
@@ -155,6 +219,23 @@ export class MockAIProvider implements IAIProvider {
           .map(word => word.charAt(0).toUpperCase() + word.slice(1))
           .join(' ')
       }
+    }
+
+    return null
+  }
+
+  private extractPaidWith(text: string): 'tarjeta' | 'efectivo' | 'transferencia' | null {
+    const lowerText = text.toLowerCase()
+
+    // Detectar forma de pago
+    if (lowerText.includes('tarjeta') || lowerText.includes('con tarjeta') || lowerText.includes('card')) {
+      return 'tarjeta'
+    }
+    if (lowerText.includes('efectivo') || lowerText.includes('cash') || lowerText.includes('en efectivo')) {
+      return 'efectivo'
+    }
+    if (lowerText.includes('transferencia') || lowerText.includes('bizum') || lowerText.includes('transfer')) {
+      return 'transferencia'
     }
 
     return null

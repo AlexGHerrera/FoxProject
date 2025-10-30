@@ -1,47 +1,59 @@
-import { useState } from 'react';
-import { Spend, getCategoryEmoji, centsToEur, UpdateSpendData } from '@/domain/models';
-import { Modal, Button } from '@/components/ui';
-import { PaymentMethodToggle } from './PaymentMethodToggle';
-import { CATEGORIES } from '@/config/constants';
+/**
+ * ParsedSpendEditModal Component
+ * Modal idéntico a SpendEditModal pero para editar ParsedSpend antes de confirmar
+ * Mismo diseño visual: grid de categorías con emojis, toggle de pago, etc.
+ */
 
-interface SpendEditModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  spend: Spend;
-  onSave: (updatedData: UpdateSpendData) => Promise<void>;
+import { useState } from 'react'
+import { Modal, Button } from '../ui'
+import { PaymentMethodToggle } from '../spend/PaymentMethodToggle'
+import { getCategoryEmoji } from '../../domain/models'
+import { CATEGORIES } from '../../config/constants'
+import type { ParsedSpend } from '../../domain/models'
+
+interface ParsedSpendEditModalProps {
+  isOpen: boolean
+  onClose: () => void
+  spend: ParsedSpend
+  onSave: (updatedSpend: ParsedSpend) => void
 }
 
-export function SpendEditModal({ isOpen, onClose, spend, onSave }: SpendEditModalProps) {
+export function ParsedSpendEditModal({
+  isOpen,
+  onClose,
+  spend,
+  onSave,
+}: ParsedSpendEditModalProps) {
   const [formData, setFormData] = useState({
-    amountCents: spend.amountCents,
+    amountEur: spend.amountEur,
     merchant: spend.merchant || '',
     category: spend.category,
-    paidWith: (spend.paidWith || 'tarjeta') as 'efectivo' | 'tarjeta',
-    note: spend.note || ''
-  });
-  const [isSaving, setIsSaving] = useState(false);
+    paidWith: (spend.paidWith || 'tarjeta') as 'efectivo' | 'tarjeta' | 'transferencia' | null,
+    note: spend.note || '',
+  })
+  const [isSaving, setIsSaving] = useState(false)
 
   const handleSave = async () => {
     try {
-      setIsSaving(true);
-      await onSave(formData);
-      onClose();
+      setIsSaving(true)
+      onSave(formData as ParsedSpend)
+      onClose()
     } catch (error) {
-      console.error('Error saving spend:', error);
+      console.error('Error saving spend:', error)
     } finally {
-      setIsSaving(false);
+      setIsSaving(false)
     }
-  };
+  }
 
   const handleAmountChange = (value: string) => {
-    const numValue = parseFloat(value);
+    const numValue = parseFloat(value)
     if (!isNaN(numValue) && numValue >= 0) {
       setFormData({
         ...formData,
-        amountCents: Math.round(numValue * 100)
-      });
+        amountEur: numValue,
+      })
     }
-  };
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -64,8 +76,10 @@ export function SpendEditModal({ isOpen, onClose, spend, onSave }: SpendEditModa
             Método de pago
           </label>
           <PaymentMethodToggle
-            value={formData.paidWith}
-            onChange={(method) => setFormData({ ...formData, paidWith: method })}
+            value={formData.paidWith || 'tarjeta'}
+            onChange={(method) =>
+              setFormData({ ...formData, paidWith: method })
+            }
           />
         </div>
 
@@ -79,7 +93,7 @@ export function SpendEditModal({ isOpen, onClose, spend, onSave }: SpendEditModa
               type="number"
               step="0.01"
               min="0"
-              value={centsToEur(formData.amountCents).toFixed(2)}
+              value={formData.amountEur.toFixed(2)}
               onChange={(e) => handleAmountChange(e.target.value)}
               className="w-full px-4 py-3 rounded-lg border border-border bg-card text-text text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-brand-cyan"
               placeholder="0.00"
@@ -98,7 +112,9 @@ export function SpendEditModal({ isOpen, onClose, spend, onSave }: SpendEditModa
           <input
             type="text"
             value={formData.merchant}
-            onChange={(e) => setFormData({ ...formData, merchant: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, merchant: e.target.value })
+            }
             className="w-full px-4 py-3 rounded-lg border border-border bg-card text-text focus:outline-none focus:ring-2 focus:ring-brand-cyan"
             placeholder="Ej: Mercadona, Starbucks..."
           />
@@ -155,11 +171,6 @@ export function SpendEditModal({ isOpen, onClose, spend, onSave }: SpendEditModa
         </div>
       </div>
     </Modal>
-  );
+  )
 }
-
-
-
-
-
 

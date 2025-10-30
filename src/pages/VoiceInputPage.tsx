@@ -10,7 +10,8 @@ import { useSpeechRecognition } from '@/hooks/useSpeechRecognition'
 import { useSpendSubmit } from '@/hooks/useSpendSubmit'
 import { FoxyAvatar } from '@/components/foxy'
 import { Button } from '@/components/ui'
-import type { ParsedSpend } from '@/adapters/ai/IAIProvider'
+import { QuickConfirmScreen } from '@/components/voice/QuickConfirmScreen'
+import type { ParsedSpend, ParsedSpendResult } from '@/domain/models'
 
 interface VoiceInputPageProps {
   onClose: () => void
@@ -19,10 +20,10 @@ interface VoiceInputPageProps {
 export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
   const { transcript, state, setTranscript, reset: resetVoice } = useVoiceStore()
   const { isRecording, startRecording, stopRecording } = useSpeechRecognition()
-  const { parseTranscript, submitSpend } = useSpendSubmit()
+  const { parseTranscript, submitMultipleSpends } = useSpendSubmit()
   
   const [showConfirm, setShowConfirm] = useState(false)
-  const [parsedSpend, setParsedSpend] = useState<ParsedSpend | null>(null)
+  const [pendingResult, setPendingResult] = useState<ParsedSpendResult | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [originalTranscript, setOriginalTranscript] = useState('')
   const [hasAutoParsed, setHasAutoParsed] = useState(false)
@@ -57,9 +58,20 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
     }
     
     try {
-      const parsed = await parseTranscript(transcript)
-      if (parsed) {
-        setParsedSpend(parsed)
+      const result = await parseTranscript(transcript)
+      if (result && result.spends.length > 0) {
+        // Auto-confirmar si confidence >= 0.95 (muy alta)
+        if (result.totalConfidence >= 0.95) {
+          console.log('[VoiceInputPage] Auto-confirming (confidence >= 0.95)', {
+            count: result.spends.length,
+            confidence: result.totalConfidence,
+          })
+          await handleConfirmAll(result.spends)
+          return
+        }
+        
+        // Mostrar pantalla de confirmación para revisar
+        setPendingResult(result)
         setShowConfirm(true)
       }
     } catch (error) {
@@ -71,17 +83,14 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
     setTranscript(e.target.value)
   }
 
-  const handleConfirm = async () => {
-    if (!parsedSpend) return
-    
+  const handleConfirmAll = async (spends: ParsedSpend[]) => {
+    if (!spends || spends.length === 0) return
     // Detener reconocimiento antes de guardar
     stopRecording()
-    
-    const saved = await submitSpend(parsedSpend)
+    const saved = await submitMultipleSpends(spends)
     if (saved) {
-      // Reset completo del estado de voz
       resetVoice()
-      onClose() // Volver al dashboard
+      onClose()
     }
   }
 
@@ -107,7 +116,7 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
 
   const handleRetry = () => {
     setShowConfirm(false)
-    setParsedSpend(null)
+    setPendingResult(null)
     setIsEditing(false)
     setHasAutoParsed(false)
     setOriginalTranscript('')
@@ -121,28 +130,37 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
     stopRecording()
     resetVoice()
     setShowConfirm(false)
-    setParsedSpend(null)
+    setPendingResult(null)
     setIsEditing(false)
     onClose()
   }
 
   // Pantalla de confirmación o edición
-  if (showConfirm && parsedSpend) {
+  if (showConfirm && pendingResult) {
     if (isEditing) {
-      // Modo edición del gasto reconocido
+      // Modo edición del texto reconocido (estética mejorada)
       return (
-        <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center justify-center p-6">
-          <h1 className="text-2xl font-bold text-text-light dark:text-text-dark mb-6 text-center">
+        <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center justify-center p-6 pb-28">
+          {/* Foxy Avatar - Estado idle */}
+          <div className="mb-6">
+            <FoxyAvatar state="idle" size="lg" />
+          </div>
+
+          <h1 className="text-2xl font-bold text-text-light dark:text-text-dark mb-2 text-center">
             Edita el texto reconocido
           </h1>
+          <p className="text-sm text-muted-light dark:text-muted-dark mb-6 text-center max-w-md">
+            Modifica lo que dijiste y lo reprocesaré
+          </p>
 
           <div className="w-full max-w-md space-y-4 mb-8">
             <textarea
               value={transcript}
               onChange={handleTranscriptChange}
-              className="w-full p-4 rounded-lg border-2 border-brand-cyan dark:border-brand-cyan-dark bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark text-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand-cyan"
-              rows={4}
+              className="w-full p-4 rounded-xl border-2 border-brand-cyan dark:border-brand-cyan-dark bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark text-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand-cyan shadow-sm"
+              rows={5}
               placeholder="Ej: 5 euros de café en Starbucks"
+              autoFocus
             />
           </div>
 
@@ -150,14 +168,14 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
             <Button
               variant="primary"
               onClick={handleSaveEdit}
-              className="w-full text-lg py-4"
+              className="w-full text-lg py-4 font-semibold shadow-lg hover:shadow-xl transition-all"
             >
-              Volver a procesar
+              ✨ Reprocesar con IA
             </Button>
             <Button
               variant="ghost"
               onClick={handleCancelEdit}
-              className="w-full"
+              className="w-full text-sm py-3"
             >
               Cancelar edición
             </Button>
@@ -166,59 +184,14 @@ export function VoiceInputPage({ onClose }: VoiceInputPageProps) {
       )
     }
 
-    // Pantalla de confirmación normal
+    // Pantalla de confirmación rápida (nueva interfaz bonita)
     return (
-      <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex flex-col items-center justify-center p-6">
-        {/* Título */}
-        <h1 className="text-3xl font-bold text-text-light dark:text-text-dark mb-2 text-center">
-          He anotado un {parsedSpend.category.toLowerCase()} de
-        </h1>
-        <p className="text-5xl font-bold text-brand-cyan dark:text-brand-cyan-dark mb-4">
-          {parsedSpend.amountEur.toFixed(2)} €
-        </p>
-        <p className="text-xl text-muted-light dark:text-muted-dark mb-8">
-          ¿Confirmo?
-        </p>
-
-        {/* Foxy Avatar - Estado feliz */}
-        <div className="mb-12">
-          <FoxyAvatar state="happy" size="lg" />
-        </div>
-
-        {/* Botones */}
-        <div className="w-full max-w-md space-y-3">
-          <Button
-            variant="primary"
-            onClick={handleConfirm}
-            className="w-full text-lg py-4"
-          >
-            ✓ Confirmar
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={handleRetry}
-            className="w-full text-base py-3"
-          >
-            🔄 Reintentar por voz
-          </Button>
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              variant="secondary"
-              onClick={handleEdit}
-              className="w-full text-sm py-3"
-            >
-              ✏️ Editar
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={handleCancel}
-              className="w-full text-sm py-3"
-            >
-              ✕ Cancelar
-            </Button>
-          </div>
-        </div>
-      </div>
+      <QuickConfirmScreen
+        result={pendingResult}
+        onConfirm={handleConfirmAll}
+        onEditText={handleEdit}
+        onCancel={handleCancel}
+      />
     )
   }
 

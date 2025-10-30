@@ -3,13 +3,14 @@
  * Contrato para proveedores de IA (DeepSeek, OpenAI, etc.)
  */
 
-import type { ParsedSpend } from '@/domain/models'
+import type { ParsedSpend, ParsedSpendResult } from '@/domain/models'
 
 export interface IAIProvider {
   /**
-   * Parsea texto libre a gasto estructurado
+   * Parsea texto libre a gasto(s) estructurado(s)
+   * Retorna ParsedSpendResult con array de gastos (1 o más)
    */
-  parseSpendText(text: string, locale?: string): Promise<ParsedSpend>
+  parseSpendText(text: string, locale?: string): Promise<ParsedSpendResult>
 
   /**
    * Genera un mensaje de feedback para el usuario

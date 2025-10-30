@@ -13,10 +13,9 @@ interface SpendCardProps {
   onToggleSelect?: (spend: Spend) => void;
 }
 
-const SWIPE_THRESHOLD = -80; // Minimum swipe distance to reveal actions
+const SWIPE_THRESHOLD = -10; // Minimum swipe distance to reveal actions (reduced for better UX)
 const BUTTON_GAP = 8; // Gap between buttons
 const ACTIONS_PADDING = 8; // Right padding
-const AUTO_CLOSE_DELAY = 3000; // Auto-close after 3 seconds
 
 export function SpendCard({ 
   spend, 
@@ -32,7 +31,6 @@ export function SpendCard({
   const [actionsWidth, setActionsWidth] = useState(200); // Default width
   const x = useMotionValue(0);
   const cardRef = useRef<HTMLDivElement>(null);
-  const closeTimeoutRef = useRef<number | null>(null);
 
   // Measure card height and calculate actions width dynamically
   useLayoutEffect(() => {
@@ -42,47 +40,71 @@ export function SpendCard({
       const calculatedWidth = (cardHeight * 3) + (BUTTON_GAP * 2) + ACTIONS_PADDING;
       setActionsWidth(calculatedWidth);
     }
-  }, [spend.note]); // Recalculate when note changes (affects height)
+  }, [spend.note, spend.category, spend.merchant]); // Recalculate when content changes (affects height)
 
-  // Auto-close after 3 seconds of inactivity
-  useEffect(() => {
-    if (isOpen) {
-      // Clear any existing timeout
-      if (closeTimeoutRef.current) {
-        clearTimeout(closeTimeoutRef.current);
+  // Use ResizeObserver to handle dynamic height changes
+  useLayoutEffect(() => {
+    if (!cardRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const cardHeight = entry.contentRect.height;
+        const calculatedWidth = (cardHeight * 3) + (BUTTON_GAP * 2) + ACTIONS_PADDING;
+        setActionsWidth(calculatedWidth);
       }
-      
-      // Set new timeout to close after 3 seconds
-      closeTimeoutRef.current = window.setTimeout(() => {
-        setIsOpen(false);
-        x.set(0);
-      }, AUTO_CLOSE_DELAY);
-    }
+    });
 
-    // Cleanup timeout on unmount or when isOpen changes
+    resizeObserver.observe(cardRef.current);
+
     return () => {
-      if (closeTimeoutRef.current) {
-        clearTimeout(closeTimeoutRef.current);
-      }
+      resizeObserver.disconnect();
     };
-  }, [isOpen, x]);
+  }, []);
+
+  // Close card on any external interaction (scroll, click outside, etc.)
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleInteraction = (e: Event) => {
+      // Don't close if clicking on the card itself or its action buttons
+      if (cardRef.current && (cardRef.current.contains(e.target as Node) || 
+          (e.target as HTMLElement).closest('.swipe-actions'))) {
+        return;
+      }
+      setIsOpen(false);
+    };
+
+    // Close on scroll
+    const handleScroll = () => {
+      setIsOpen(false);
+    };
+
+    // Listen to various events
+    window.addEventListener('scroll', handleScroll, true); // capture phase for nested scrolls
+    document.addEventListener('click', handleInteraction);
+    document.addEventListener('touchstart', handleInteraction);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+    };
+  }, [isOpen]);
 
   // Transform for action buttons opacity (fade in as card slides)
   const actionsOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
 
   const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const offset = info.offset.x;
+    const velocity = info.velocity.x;
     
-    // If swiped left enough, open
-    if (offset < SWIPE_THRESHOLD) {
-      setIsOpen(true);
-      x.set(-actionsWidth);
-    } 
-    // If swiped right or not enough, close
-    else {
-      setIsOpen(false);
-      x.set(0);
-    }
+    // Consider velocity for better feel
+    // If swiping fast to the left, open even if not past threshold
+    const shouldOpen = offset < SWIPE_THRESHOLD || (velocity < -10 && offset < -15);
+    
+    // Always set a definitive state (open or closed)
+    // This ensures the card always animates to a final position
+    setIsOpen(shouldOpen);
   };
 
   const handleEdit = () => {
@@ -90,7 +112,6 @@ export function SpendCard({
       onEdit(spend);
       // Close after action
       setIsOpen(false);
-      x.set(0);
     }
   };
 
@@ -104,7 +125,6 @@ export function SpendCard({
     }
     // Close swipe after deletion
     setIsOpen(false);
-    x.set(0);
   };
 
   const handleSelect = () => {
@@ -112,7 +132,6 @@ export function SpendCard({
       onSelect(spend);
       // Close after action
       setIsOpen(false);
-      x.set(0);
     }
   };
 
@@ -129,7 +148,7 @@ export function SpendCard({
     <div className="relative overflow-hidden rounded-lg" ref={cardRef}>
       {/* Action Buttons (behind the card) */}
       <motion.div
-        className="absolute right-0 top-0 h-full flex items-stretch pr-2"
+        className="swipe-actions absolute right-0 top-0 h-full flex items-stretch pr-2"
         style={{ 
           width: actionsWidth,
           opacity: actionsOpacity,
@@ -187,15 +206,20 @@ export function SpendCard({
         drag={selectionMode ? false : "x"}
         dragConstraints={{ left: -actionsWidth, right: 0 }}
         dragElastic={0.1}
+        dragMomentum={false}
+        dragTransition={{
+          bounceStiffness: 500,
+          bounceDamping: 35,
+        }}
         onDragEnd={handleDragEnd}
         style={{ x: selectionMode ? 0 : x }}
         animate={isOpen && !selectionMode ? { x: -actionsWidth } : { x: 0 }}
         transition={{
           type: 'spring',
-          stiffness: 400,
-          damping: 30,
+          stiffness: 500,
+          damping: 35,
         }}
-        className={`rounded-lg p-4 shadow-sm border transition-all relative z-10 ${
+        className={`rounded-lg p-4 shadow-sm border relative z-10 ${
           selectionMode 
             ? isSelected 
               ? 'bg-brand-cyan/10 border-brand-cyan cursor-pointer' 
@@ -205,27 +229,32 @@ export function SpendCard({
         onClick={selectionMode && onToggleSelect ? () => onToggleSelect(spend) : undefined}
       >
         <div className="flex gap-4 items-start h-full">
-          {/* Category Icon */}
-          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-cyan/10 flex items-center justify-center text-2xl">
-            {getCategoryEmoji(spend.category)}
+          {/* Category Icon and Name */}
+          <div className="flex-shrink-0 flex flex-col items-center gap-1 w-16">
+            <div className="w-12 h-12 rounded-xl bg-brand-cyan/10 flex items-center justify-center text-2xl">
+              {getCategoryEmoji(spend.category)}
+            </div>
+            <p className="text-xs text-muted text-center leading-tight w-full break-words">
+              {spend.category}
+            </p>
           </div>
 
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-text truncate leading-tight">
-                  {spend.merchant || 'Sin establecimiento'}
-                </h3>
-                {spend.note && (
-                  <p className="text-sm text-muted truncate line-clamp-1 mt-0.5">{spend.note}</p>
-                )}
-                <div className="flex items-center gap-1.5 mt-1">
-                  {/* Payment method icon */}
-                  <span className="text-base" title={spend.paidWith || 'tarjeta'}>
+              <div className="flex-1 min-w-0 flex flex-col items-center">
+                {/* Merchant name with payment method icon - centered */}
+                <div className="flex items-center gap-1.5 justify-center w-full">
+                  <h3 className="font-semibold text-text leading-tight text-center">
+                    {spend.merchant || 'Sin establecimiento'}
+                  </h3>
+                  <span className="text-base flex-shrink-0" title={spend.paidWith || 'tarjeta'}>
                     {spend.paidWith === 'efectivo' ? '💵' : '💳'}
                   </span>
                 </div>
+                {spend.note && (
+                  <p className="text-sm text-muted truncate line-clamp-1 mt-0.5 w-full text-center">{spend.note}</p>
+                )}
               </div>
 
               {/* Amount */}

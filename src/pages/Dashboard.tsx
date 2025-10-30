@@ -8,11 +8,14 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useLoadSpends } from '@/hooks'
 import { useBudgetProgress } from '@/hooks/useBudgetProgress'
 import { useSpendStore } from '@/stores/useSpendStore'
+import { useUIStore } from '@/stores/useUIStore'
 import { BudgetBar, RecentSpends } from '@/components/dashboard'
 import { FoxyAvatar } from '@/components/foxy'
 import { PageIndicator } from '@/components/ui'
+import { SpendEditModal } from '@/components/spend'
 import { VoiceInputPage } from './VoiceInputPage'
 import { ManualInputPage } from './ManualInputPage'
+import type { Spend, UpdateSpendData } from '@/domain/models'
 
 // TODO: obtener el límite mensual de settings cuando implementemos esa funcionalidad
 const MONTHLY_LIMIT_CENTS = 100000 // 1000€ por defecto
@@ -24,17 +27,48 @@ export function Dashboard() {
   const location = useLocation()
   const [showVoiceInput, setShowVoiceInput] = useState(false)
   const [showManualInput, setShowManualInput] = useState(false)
+  const [editingSpend, setEditingSpend] = useState<Spend | null>(null)
   const currentIndex = ROUTES.indexOf(location.pathname as typeof ROUTES[number])
   
   // Cargar gastos al montar
   useLoadSpends()
   
   // Obtener estado
-  const { spends, isLoading } = useSpendStore()
+  const { spends, isLoading, deleteSpend } = useSpendStore()
+  const { showToast } = useUIStore()
   const budgetProgress = useBudgetProgress(MONTHLY_LIMIT_CENTS)
 
   // Determinar estado de Foxy según presupuesto
   const foxyState = budgetProgress.status === 'alert' ? 'alert' : 'idle'
+
+  // Handlers para editar y eliminar
+  const handleEdit = (spend: Spend) => {
+    setEditingSpend(spend)
+  }
+
+  const handleSaveEdit = async (updatedData: UpdateSpendData) => {
+    if (!editingSpend) return
+    
+    try {
+      await useSpendStore.getState().updateSpend(editingSpend.id, updatedData)
+      showToast('Gasto actualizado correctamente', 'success')
+      setEditingSpend(null)
+    } catch (error) {
+      console.error('Error updating spend:', error)
+      showToast('Error al actualizar el gasto', 'error')
+      throw error
+    }
+  }
+
+  const handleDelete = async (spend: Spend) => {
+    try {
+      await deleteSpend(spend.id)
+      showToast('Gasto eliminado correctamente', 'success')
+    } catch (error) {
+      console.error('Error deleting spend:', error)
+      showToast('Error al eliminar el gasto', 'error')
+    }
+  }
 
   if (isLoading) {
     return (
@@ -150,9 +184,21 @@ export function Dashboard() {
             spends={spends}
             limit={5}
             onViewAll={() => navigate('/spends')}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         </section>
       </div>
+
+      {/* Edit Spend Modal */}
+      {editingSpend && (
+        <SpendEditModal
+          isOpen={!!editingSpend}
+          spend={editingSpend}
+          onClose={() => setEditingSpend(null)}
+          onSave={handleSaveEdit}
+        />
+      )}
     </div>
   )
 }

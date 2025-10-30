@@ -15,7 +15,7 @@ export async function saveSpend(
   parsedSpend: ParsedSpend,
   repository: ISpendRepository,
   options: {
-    paidWith?: 'efectivo' | 'tarjeta'
+    paidWith?: 'efectivo' | 'tarjeta' | 'transferencia'
     customTimestamp?: Date
   } = {}
 ): Promise<Spend> {
@@ -26,7 +26,8 @@ export async function saveSpend(
     category: parsedSpend.category,
     merchant: parsedSpend.merchant || null,
     note: parsedSpend.note || null,
-    paidWith: options.paidWith || null,
+    // Prioridad: parsed.paidWith > options.paidWith > null
+    paidWith: parsedSpend.paidWith || options.paidWith || null,
     timestamp: options.customTimestamp,
   }
 

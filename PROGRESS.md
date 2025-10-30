@@ -98,6 +98,22 @@
   - Muestra gasto parseado para confirmación
   - Edición inline de campos
   - Auto-confirm cuando confidence >= 0.8
+- [x] **Reconocimiento Mejorado** (Oct 29, 2025):
+  - ✅ Campos en cualquier orden ("3€ con tarjeta en zara una camiseta")
+  - ✅ Detección automática forma de pago (tarjeta/efectivo/transferencia)
+  - ✅ Descripciones complejas ("camiseta y 2 pantalones")
+  - ✅ 9 ejemplos en PROMPTS.json
+- [x] **Optimización Costes** (Oct 29, 2025):
+  - ✅ Pre-validación (filtra basura)
+  - ✅ Parser regex conservador (~50% casos simples sin API)
+  - ✅ Cache 10s (evita duplicados)
+  - ✅ Ahorro estimado: 60-80% llamadas API
+  - ✅ Métricas en consola: "X/Y API calls avoided"
+- [x] **Error Handling Robusto** (Oct 29, 2025):
+  - ✅ Fallback automático a MockAI si DeepSeek falla
+  - ✅ Parsing JSON robusto (maneja markdown, texto extra)
+  - ✅ Validación campos requeridos
+  - ✅ Logs detallados para debugging
 - [x] `VoiceRecorder` component:
   - Orquesta flujo completo de voz
   - Banner de "Modo Demo" cuando no hay API key
@@ -130,6 +146,16 @@
 - [x] FAB (Floating Action Button) para registrar gastos
 - [x] Modal de VoiceRecorder en Dashboard
 - [x] Estadísticas adicionales (promedio diario, días restantes)
+- [x] **Swipe-to-Reveal Actions** (Oct 29, 2025):
+  - ✅ RecentSpends: Editar + Eliminar
+  - ✅ Botones dinámicos con ResizeObserver
+  - ✅ Cierre inteligente (scroll/tap fuera)
+  - ✅ Modal confirmación para eliminar
+  - ✅ Animaciones fluidas (Framer Motion)
+- [x] **Layout Mejorado** (Oct 29, 2025):
+  - ✅ Categorías completas visibles (sin truncar)
+  - ✅ Establecimiento centrado con icono de pago
+  - ✅ Diseño balanceado y profesional
 
 ---
 
@@ -142,7 +168,10 @@
 ## 📋 Pendiente
 
 ### Fase 8: Gestión de Gastos
-- [ ] Implementar `SpendCard` y `SpendList`
+- [x] Implementar `SpendCard` y `SpendList` ✅
+- [x] **Swipe-to-Reveal** (Oct 29, 2025):
+  - ✅ Seleccionar + Editar + Eliminar
+  - ✅ ResizeObserver para adaptación dinámica
 - [ ] Implementar filtros (rango, categorías, método pago)
 - [ ] Implementar búsqueda
 - [ ] Implementar paginación/infinite scroll

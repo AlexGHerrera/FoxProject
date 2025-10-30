@@ -34,7 +34,7 @@ export const MIN_TRANSCRIPT_LENGTH = 15 // mínimo de caracteres para llamar IA
 // IA: thresholds
 export const AUTO_CONFIRM_CONFIDENCE_THRESHOLD = 0.8
 export const MIN_CONFIDENCE_FOR_PARSE = 0.5
-export const AI_TIMEOUT_MS = 3000
+export const AI_TIMEOUT_MS = 2500 // Balance entre velocidad y estabilidad (era 3000ms)
 
 // UI: Undo toast
 export const UNDO_TIMEOUT_MS = 5000 // 5 segundos para deshacer

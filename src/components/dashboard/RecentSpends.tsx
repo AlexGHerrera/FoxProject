@@ -1,19 +1,23 @@
 /**
  * RecentSpends Component
- * Muestra los últimos gastos registrados
+ * Muestra los últimos gastos registrados con swipe-to-reveal para editar/eliminar
  */
 
-import { useMemo } from 'react'
+import { useState, useMemo, useRef, useLayoutEffect, useEffect } from 'react'
+import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion'
 import type { Spend } from '@/domain/models'
 import { centsToEur, getCategoryEmoji } from '@/domain/models'
+import { ConfirmDialog } from '@/components/ui'
 
 interface RecentSpendsProps {
   spends: Spend[]
   limit?: number // número de gastos a mostrar
   onViewAll?: () => void
+  onEdit?: (spend: Spend) => void
+  onDelete?: (spend: Spend) => void
 }
 
-export function RecentSpends({ spends, limit = 5, onViewAll }: RecentSpendsProps) {
+export function RecentSpends({ spends, limit = 5, onViewAll, onEdit, onDelete }: RecentSpendsProps) {
   // Ordenar por timestamp más reciente y limitar
   const recentSpends = useMemo(() => {
     return [...spends]
@@ -51,10 +55,15 @@ export function RecentSpends({ spends, limit = 5, onViewAll }: RecentSpendsProps
         )}
       </div>
 
-      {/* Lista de gastos */}
+      {/* Lista de gastos con swipe */}
       <div className="space-y-2">
         {recentSpends.map((spend) => (
-          <SpendCard key={spend.id} spend={spend} />
+          <SwipeableSpendCard 
+            key={spend.id} 
+            spend={spend}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
         ))}
       </div>
     </div>
@@ -62,13 +71,25 @@ export function RecentSpends({ spends, limit = 5, onViewAll }: RecentSpendsProps
 }
 
 /**
- * SpendCard - Tarjeta individual de gasto
+ * SwipeableSpendCard - Tarjeta individual de gasto con swipe-to-reveal
  */
-interface SpendCardProps {
+interface SwipeableSpendCardProps {
   spend: Spend
+  onEdit?: (spend: Spend) => void
+  onDelete?: (spend: Spend) => void
 }
 
-function SpendCard({ spend }: SpendCardProps) {
+const SWIPE_THRESHOLD = -10 // Minimum swipe distance to reveal actions (reduced for better UX)
+const BUTTON_GAP = 8 // Gap between buttons
+const ACTIONS_PADDING = 8 // Right padding
+
+function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [actionsWidth, setActionsWidth] = useState(150) // Default width for 2 buttons
+  const x = useMotionValue(0)
+  const cardRef = useRef<HTMLDivElement>(null)
+
   const amountEur = useMemo(() => centsToEur(spend.amountCents), [spend.amountCents])
   const emoji = getCategoryEmoji(spend.category)
 
@@ -87,36 +108,196 @@ function SpendCard({ spend }: SpendCardProps) {
     return `Hace ${days}d`
   }, [spend.timestamp])
 
+  // Measure card height and calculate actions width dynamically
+  useLayoutEffect(() => {
+    if (cardRef.current) {
+      const cardHeight = cardRef.current.offsetHeight
+      // Calculate: 2 square buttons (height = width) + 1 gap + padding
+      const calculatedWidth = (cardHeight * 2) + BUTTON_GAP + ACTIONS_PADDING
+      setActionsWidth(calculatedWidth)
+    }
+  }, [spend.merchant, spend.category]) // Recalculate when content changes (affects height)
+
+  // Use ResizeObserver to handle dynamic height changes
+  useLayoutEffect(() => {
+    if (!cardRef.current) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const cardHeight = entry.contentRect.height
+        const calculatedWidth = (cardHeight * 2) + BUTTON_GAP + ACTIONS_PADDING
+        setActionsWidth(calculatedWidth)
+      }
+    })
+
+    resizeObserver.observe(cardRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
+
+  // Close card on any external interaction (scroll, click outside, etc.)
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleInteraction = (e: Event) => {
+      // Don't close if clicking on the card itself or its action buttons
+      if (cardRef.current && (cardRef.current.contains(e.target as Node) || 
+          (e.target as HTMLElement).closest('.swipe-actions'))) {
+        return
+      }
+      setIsOpen(false)
+    }
+
+    // Close on scroll
+    const handleScroll = () => {
+      setIsOpen(false)
+    }
+
+    // Listen to various events
+    window.addEventListener('scroll', handleScroll, true) // capture phase for nested scrolls
+    document.addEventListener('click', handleInteraction)
+    document.addEventListener('touchstart', handleInteraction)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true)
+      document.removeEventListener('click', handleInteraction)
+      document.removeEventListener('touchstart', handleInteraction)
+    }
+  }, [isOpen])
+
+  // Transform for action buttons opacity (fade in as card slides)
+  const actionsOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1])
+
+  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const offset = info.offset.x
+    const velocity = info.velocity.x
+    
+    // Consider velocity for better feel
+    // If swiping fast to the left, open even if not past threshold
+    const shouldOpen = offset < SWIPE_THRESHOLD || (velocity < -10 && offset < -15)
+    
+    // Always set a definitive state (open or closed)
+    // This ensures the card always animates to a final position
+    setIsOpen(shouldOpen)
+  }
+
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit(spend)
+      // Close after action
+      setIsOpen(false)
+    }
+  }
+
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (onDelete) {
+      onDelete(spend)
+    }
+    // Close swipe after deletion
+    setIsOpen(false)
+  }
+
   return (
-    <div className="flex items-center gap-3 p-3 bg-surface-light dark:bg-surface-dark rounded-xl hover:bg-chip-bg-light dark:hover:bg-chip-bg-dark transition-colors">
-      {/* Emoji de categoría */}
-      <div className="text-2xl" aria-hidden="true">
-        {emoji}
-      </div>
-
-      {/* Info del gasto */}
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-text-light dark:text-text-dark truncate">
-          {spend.merchant || spend.category}
-        </p>
-        <div className="flex items-center gap-2 text-xs text-muted-light dark:text-muted-dark">
-          <span>{spend.category}</span>
-          <span>•</span>
-          <span>{timeAgo}</span>
-        </div>
-      </div>
-
-      {/* Monto */}
-      <div className="text-right">
-        <p className="text-base font-bold text-text-light dark:text-text-dark">
-          {amountEur.toFixed(2)}€
-        </p>
-        {spend.paidWith && (
-          <p className="text-xs text-muted-light dark:text-muted-dark">
-            {spend.paidWith}
-          </p>
+    <div className="relative overflow-hidden rounded-xl" ref={cardRef}>
+      {/* Action Buttons (behind the card) */}
+      <motion.div
+        className="swipe-actions absolute right-0 top-0 h-full flex items-stretch pr-2"
+        style={{ 
+          width: actionsWidth,
+          opacity: actionsOpacity,
+          gap: `${BUTTON_GAP}px`
+        }}
+      >
+        {/* Edit Button */}
+        {onEdit && (
+          <button
+            onClick={handleEdit}
+            className="aspect-square h-full bg-gray-400 text-gray-900 font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            aria-label="Editar"
+          >
+            <span className="text-2xl">✏️</span>
+          </button>
         )}
-      </div>
+
+        {/* Delete Button */}
+        {onDelete && (
+          <button
+            onClick={handleDeleteClick}
+            className="aspect-square h-full bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            aria-label="Eliminar"
+          >
+            <span className="text-2xl">✕</span>
+          </button>
+        )}
+      </motion.div>
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteConfirm}
+        title="¿Eliminar este gasto?"
+        message={`Se eliminará el gasto de ${amountEur.toFixed(2)} € en ${spend.merchant || spend.category}. Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        confirmVariant="danger"
+      />
+
+      {/* Card (draggable) */}
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: -actionsWidth, right: 0 }}
+        dragElastic={0.1}
+        dragMomentum={false}
+        dragTransition={{
+          bounceStiffness: 500,
+          bounceDamping: 35,
+        }}
+        onDragEnd={handleDragEnd}
+        style={{ x }}
+        animate={isOpen ? { x: -actionsWidth } : { x: 0 }}
+        transition={{
+          type: 'spring',
+          stiffness: 500,
+          damping: 35,
+        }}
+        className="flex items-center gap-3 p-3 bg-surface-light dark:bg-surface-dark rounded-xl cursor-grab active:cursor-grabbing relative z-10"
+      >
+        {/* Emoji de categoría */}
+        <div className="text-2xl flex-shrink-0" aria-hidden="true">
+          {emoji}
+        </div>
+
+        {/* Info del gasto */}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-text-light dark:text-text-dark truncate">
+            {spend.merchant || spend.category}
+          </p>
+          <div className="flex items-center gap-2 text-xs text-muted-light dark:text-muted-dark">
+            <span>{spend.category}</span>
+            <span>•</span>
+            <span>{timeAgo}</span>
+          </div>
+        </div>
+
+        {/* Monto */}
+        <div className="text-right flex-shrink-0">
+          <p className="text-base font-bold text-text-light dark:text-text-dark">
+            {amountEur.toFixed(2)}€
+          </p>
+          {spend.paidWith && (
+            <p className="text-xs text-muted-light dark:text-muted-dark">
+              {spend.paidWith === 'efectivo' ? '💵' : '💳'}
+            </p>
+          )}
+        </div>
+      </motion.div>
     </div>
   )
 }
