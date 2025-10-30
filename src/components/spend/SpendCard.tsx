@@ -242,31 +242,32 @@ export function SpendCard({
           </div>
 
           {/* Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                {/* Merchant name with payment method icon */}
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-semibold text-text leading-tight">
-                    {spend.merchant || 'Sin establecimiento'}
-                  </h3>
-                  <span className="text-base flex-shrink-0" title={spend.paidWith || 'tarjeta'}>
-                    {spend.paidWith === 'efectivo' ? '💵' : '💳'}
-                  </span>
-                </div>
-                {spend.note && (
-                  <p className="text-sm text-muted truncate line-clamp-1 mt-0.5">{spend.note}</p>
-                )}
+          <div className="flex-1 min-w-0 flex flex-col justify-center">
+            <div className="flex items-center justify-between gap-4 relative">
+              {/* Spacer para balancear el layout (igual ancho que el icono de categoría) */}
+              <div className="flex-shrink-0 w-16"></div>
+              
+              {/* Merchant name with payment method icon - centered */}
+              <div className="flex-1 flex items-center justify-center gap-1.5">
+                <h3 className="font-semibold text-text leading-tight text-center">
+                  {spend.merchant || 'Sin establecimiento'}
+                </h3>
+                <span className="text-base flex-shrink-0" title={spend.paidWith || 'tarjeta'}>
+                  {spend.paidWith === 'efectivo' ? '💵' : '💳'}
+                </span>
               </div>
 
               {/* Amount */}
-              <div className="flex-shrink-0 text-right">
+              <div className="flex-shrink-0 text-right w-20">
                 <p className="font-bold text-lg text-text leading-tight">
                   {centsToEur(spend.amountCents).toFixed(2)} €
                 </p>
                 <p className="text-xs text-muted mt-1">{formattedDate}</p>
               </div>
             </div>
+            {spend.note && (
+              <p className="text-sm text-muted truncate line-clamp-1 mt-0.5 text-center">{spend.note}</p>
+            )}
           </div>
         </div>
       </motion.div>
