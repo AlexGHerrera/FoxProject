@@ -1,7 +1,8 @@
 import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
-import { Spend, getCategoryEmoji, centsToEur } from '@/domain/models';
-import { ConfirmDialog } from '@/components/ui';
+import { Check, Pencil, Trash2 } from 'lucide-react';
+import { Spend, centsToEur } from '@/domain/models';
+import { ConfirmDialog, CategoryIcon } from '@/components/ui';
 import { cn } from '@/utils/cn';
 
 interface SpendCardProps {
@@ -172,10 +173,10 @@ export function SpendCard({
         {onSelect && (
           <button
             onClick={handleSelect}
-            className="aspect-square h-full bg-brand-cyan text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="aspect-square h-full bg-brand-cyan hover:bg-brand-cyan/90 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-all duration-150"
             aria-label="Seleccionar"
           >
-            <span className="text-3xl">✓</span>
+            <Check size={24} strokeWidth={2.5} />
           </button>
         )}
 
@@ -183,10 +184,10 @@ export function SpendCard({
         {onEdit && (
           <button
             onClick={handleEdit}
-            className="aspect-square h-full bg-gray-400 text-gray-900 font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="aspect-square h-full bg-gray-400 hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-all duration-150"
             aria-label="Editar"
           >
-            <span className="text-3xl">✏️</span>
+            <Pencil size={20} strokeWidth={2.5} />
           </button>
         )}
 
@@ -194,10 +195,10 @@ export function SpendCard({
         {onDelete && (
           <button
             onClick={handleDeleteClick}
-            className="aspect-square h-full bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="aspect-square h-full bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-all duration-150"
             aria-label="Eliminar"
           >
-            <span className="text-3xl">✕</span>
+            <Trash2 size={20} strokeWidth={2.5} />
           </button>
         )}
       </motion.div>
@@ -234,22 +235,20 @@ export function SpendCard({
           damping: 35,
         }}
         className={cn(
-          'rounded-lg p-4 shadow-sm border relative',
+          'rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 border relative',
           selectionMode 
             ? isSelected 
-              ? 'bg-brand-cyan/10 border-brand-cyan cursor-pointer backdrop-blur-md' 
-              : 'bg-card border-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 backdrop-blur-md'
-            : 'bg-card border-border cursor-grab active:cursor-grabbing'
+              ? 'bg-brand-cyan/10 border-brand-cyan cursor-pointer backdrop-blur-md scale-[0.98]' 
+              : 'bg-card border-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 hover:scale-[1.01] backdrop-blur-md'
+            : 'bg-card border-border cursor-grab active:cursor-grabbing hover:scale-[1.01]'
         )}
         onClick={selectionMode && onToggleSelect ? () => onToggleSelect(spend) : undefined}
       >
         <div className="flex gap-4 items-start h-full">
           {/* Category Icon and Name */}
           <div className="flex-shrink-0 flex flex-col items-center gap-1 w-16">
-            <div className="w-12 h-12 rounded-xl bg-brand-cyan/10 flex items-center justify-center text-2xl">
-              {getCategoryEmoji(spend.category)}
-            </div>
-            <p className="text-xs text-muted text-center leading-tight w-full break-words">
+            <CategoryIcon category={spend.category} size="md" />
+            <p className="text-xs text-muted text-center leading-tight w-full break-words font-medium">
               {spend.category}
             </p>
           </div>
@@ -262,7 +261,7 @@ export function SpendCard({
               
               {/* Merchant name with payment method icon - centered */}
               <div className="flex-1 flex items-center justify-center gap-1.5">
-                <h3 className="font-semibold text-text leading-tight text-center">
+                <h3 className="font-bold text-lg text-text leading-tight text-center">
                   {spend.merchant || 'Sin establecimiento'}
                 </h3>
                 <span className="text-base flex-shrink-0" title={spend.paidWith || 'tarjeta'}>

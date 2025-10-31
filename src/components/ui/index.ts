@@ -20,3 +20,7 @@ export { BottomNavSelection } from './BottomNavSelection'
 export { PageIndicator } from './PageIndicator'
 
 export { ConfirmDialog } from './ConfirmDialog'
+
+export { CategoryIcon } from './CategoryIcon'
+
+export { FilterChip } from './FilterChip'

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Spend, getCategoryEmoji, centsToEur, UpdateSpendData } from '@/domain/models';
-import { Modal, Button } from '@/components/ui';
+import { Spend, centsToEur, UpdateSpendData } from '@/domain/models';
+import { Modal, Button, CategoryIcon } from '@/components/ui';
 import { PaymentMethodToggle } from './PaymentMethodToggle';
 import { CATEGORIES } from '@/config/constants';
 
@@ -115,16 +115,16 @@ export function SpendEditModal({ isOpen, onClose, spend, onSave }: SpendEditModa
                 key={cat}
                 type="button"
                 onClick={() => setFormData({ ...formData, category: cat })}
-                className={`p-3 rounded-lg text-3xl transition-all ${
+                className={`p-2 rounded-lg transition-all flex items-center justify-center ${
                   formData.category === cat
-                    ? 'bg-brand-cyan/20 ring-2 ring-brand-cyan scale-110'
+                    ? 'bg-brand-cyan/20 ring-2 ring-brand-cyan scale-105'
                     : 'bg-card hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
                 title={cat}
                 aria-label={cat}
                 aria-pressed={formData.category === cat}
               >
-                {getCategoryEmoji(cat)}
+                <CategoryIcon category={cat} size="md" />
               </button>
             ))}
           </div>

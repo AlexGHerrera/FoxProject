@@ -6,6 +6,7 @@
 
 import { useState, useRef, useLayoutEffect, useEffect } from 'react'
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion'
+import { Pencil, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '../ui'
 import { cn } from '@/utils/cn'
 import type { ParsedSpend } from '../../domain/models'
@@ -140,7 +141,7 @@ export function ConfirmSpendCard({
           className="aspect-square h-full bg-gray-400 dark:bg-gray-600 text-gray-900 dark:text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
           aria-label="Editar gasto"
         >
-          <span className="text-3xl">✏️</span>
+          <Pencil size={20} strokeWidth={2.5} />
         </button>
 
         {/* Botón Eliminar */}
@@ -149,7 +150,7 @@ export function ConfirmSpendCard({
           className="aspect-square h-full bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
           aria-label="Eliminar gasto"
         >
-          <span className="text-3xl">✕</span>
+          <Trash2 size={20} strokeWidth={2.5} />
         </button>
       </motion.div>
 

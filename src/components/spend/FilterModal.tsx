@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Modal, Button } from '@/components/ui'
+import { Banknote, CreditCard, Smartphone } from 'lucide-react'
+import { Modal, Button, CategoryIcon, FilterChip } from '@/components/ui'
 import { CATEGORIES } from '@/config/constants'
-import { getCategoryEmoji } from '@/domain/models'
 import type { SpendFilters } from './types'
 import type { Category } from '@/domain/models'
 
@@ -68,7 +68,7 @@ export function FilterModal({ isOpen, onClose, currentFilters, onApply }: Filter
                   key={category}
                   onClick={() => handleCategoryToggle(category)}
                   className={`
-                    px-3 py-2 rounded-lg text-sm font-medium transition-all
+                    flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all
                     ${
                       isSelected
                         ? 'bg-brand-cyan text-white shadow-md'
@@ -76,8 +76,10 @@ export function FilterModal({ isOpen, onClose, currentFilters, onApply }: Filter
                     }
                   `}
                 >
-                  <span className="mr-2">{getCategoryEmoji(category)}</span>
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                  <div className="flex-shrink-0 scale-75">
+                    <CategoryIcon category={category} size="sm" />
+                  </div>
+                  <span className="truncate">{category}</span>
                 </button>
               )
             })}
@@ -91,22 +93,14 @@ export function FilterModal({ isOpen, onClose, currentFilters, onApply }: Filter
             {DATE_RANGES.map((range) => {
               const isSelected = localFilters.dateRange === range.value
               return (
-                <button
+                <FilterChip
                   key={range.value}
+                  label={range.label}
+                  selected={isSelected}
                   onClick={() =>
                     setLocalFilters((prev) => ({ ...prev, dateRange: range.value }))
                   }
-                  className={`
-                    px-4 py-2 rounded-full text-sm font-medium transition-all
-                    ${
-                      isSelected
-                        ? 'bg-brand-cyan text-white shadow-md'
-                        : 'bg-card text-text border border-border hover:border-brand-cyan'
-                    }
-                  `}
-                >
-                  {range.label}
-                </button>
+                />
               )
             })}
           </div>
@@ -118,23 +112,31 @@ export function FilterModal({ isOpen, onClose, currentFilters, onApply }: Filter
           <div className="flex flex-wrap gap-2">
             {PAYMENT_METHODS.map((method) => {
               const isSelected = localFilters.paymentMethod === method.value
+              
+              // Get icon based on payment method
+              const getIcon = () => {
+                switch (method.value) {
+                  case 'cash':
+                    return <Banknote size={16} strokeWidth={2.5} />
+                  case 'card':
+                    return <CreditCard size={16} strokeWidth={2.5} />
+                  case 'transfer':
+                    return <Smartphone size={16} strokeWidth={2.5} />
+                  default:
+                    return undefined
+                }
+              }
+              
               return (
-                <button
+                <FilterChip
                   key={method.value}
+                  label={method.label}
+                  icon={getIcon()}
+                  selected={isSelected}
                   onClick={() =>
                     setLocalFilters((prev) => ({ ...prev, paymentMethod: method.value }))
                   }
-                  className={`
-                    px-4 py-2 rounded-full text-sm font-medium transition-all
-                    ${
-                      isSelected
-                        ? 'bg-brand-cyan text-white shadow-md'
-                        : 'bg-card text-text border border-border hover:border-brand-cyan'
-                    }
-                  `}
-                >
-                  {method.label}
-                </button>
+                />
               )
             })}
           </div>

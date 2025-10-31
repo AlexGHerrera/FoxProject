@@ -5,9 +5,10 @@
 
 import { useState, useMemo, useRef, useLayoutEffect, useEffect } from 'react'
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion'
+import { Pencil, Trash2 } from 'lucide-react'
 import type { Spend } from '@/domain/models'
-import { centsToEur, getCategoryEmoji } from '@/domain/models'
-import { ConfirmDialog } from '@/components/ui'
+import { centsToEur } from '@/domain/models'
+import { ConfirmDialog, CategoryIcon } from '@/components/ui'
 
 interface RecentSpendsProps {
   spends: Spend[]
@@ -91,7 +92,6 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
   const cardRef = useRef<HTMLDivElement>(null)
 
   const amountEur = useMemo(() => centsToEur(spend.amountCents), [spend.amountCents])
-  const emoji = getCategoryEmoji(spend.category)
 
   // Formatear timestamp relativo (ej: "hace 2h")
   const timeAgo = useMemo(() => {
@@ -218,10 +218,10 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
         {onEdit && (
           <button
             onClick={handleEdit}
-            className="aspect-square h-full bg-gray-400 text-gray-900 font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="aspect-square h-full bg-gray-400 dark:bg-gray-600 text-gray-900 dark:text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Editar"
           >
-            <span className="text-2xl">✏️</span>
+            <Pencil size={18} strokeWidth={2.5} />
           </button>
         )}
 
@@ -232,7 +232,7 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
             className="aspect-square h-full bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Eliminar"
           >
-            <span className="text-2xl">✕</span>
+            <Trash2 size={18} strokeWidth={2.5} />
           </button>
         )}
       </motion.div>
@@ -269,9 +269,9 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
         }}
         className="flex items-center gap-3 p-3 bg-surface rounded-xl cursor-grab active:cursor-grabbing relative z-10"
       >
-        {/* Emoji de categoría */}
-        <div className="text-2xl flex-shrink-0" aria-hidden="true">
-          {emoji}
+        {/* Icono de categoría */}
+        <div className="flex-shrink-0">
+          <CategoryIcon category={spend.category} size="sm" />
         </div>
 
         {/* Info del gasto */}
