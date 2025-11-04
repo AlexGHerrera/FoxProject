@@ -5,4 +5,5 @@
 export * from './Spend'
 export * from './Settings'
 export * from './Category'
+export * from './NotificationSettings'
 

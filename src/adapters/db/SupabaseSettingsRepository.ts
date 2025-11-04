@@ -5,7 +5,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { ISettingsRepository } from './ISettingsRepository'
-import type { Settings, UpdateSettingsData } from '@/domain/models'
+import type { Settings, UpdateSettingsData, NotificationSettings } from '@/domain/models'
 import { RepositoryError } from './ISpendRepository'
 import type { Database } from '@/config/supabase'
 
@@ -51,6 +51,9 @@ export class SupabaseSettingsRepository implements ISettingsRepository {
       if (data.plan !== undefined) {
         upsertData.plan = data.plan
       }
+      if (data.notifications !== undefined) {
+        upsertData.notifications = data.notifications as any
+      }
 
       console.log('[SupabaseSettingsRepository] Upsert data:', upsertData)
 
@@ -93,6 +96,7 @@ export class SupabaseSettingsRepository implements ISettingsRepository {
       monthlyLimitCents: row.monthly_limit_cents,
       plan: row.plan as any, // validated by DB constraint
       timezone: row.tz,
+      notifications: row.notifications ? (row.notifications as NotificationSettings) : undefined,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
     }

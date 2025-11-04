@@ -5,21 +5,15 @@
  */
 
 import { useLocation } from 'react-router-dom'
-import { ChevronRight, Bell, Sparkles, BarChart3, Shield } from 'lucide-react'
+import { ChevronRight, Sparkles, BarChart3, Shield } from 'lucide-react'
 import { PageIndicator } from '@/components/ui'
 import { FoxyAvatar } from '@/components/foxy'
-import { BudgetSection, ThemeSection } from '@/components/settings'
+import { BudgetSection, ThemeSection, NotificationSection } from '@/components/settings'
 
 const ROUTES = ['/', '/spends', '/settings'] as const
 
 // Opciones de configuración pendientes con iconos Lucide
 const SETTINGS_OPTIONS = [
-  {
-    icon: Bell,
-    label: 'Notificaciones',
-    subtitle: 'Alertas y recordatorios',
-    disabled: true,
-  },
   {
     icon: Sparkles,
     label: 'Personalizar Foxy',
@@ -80,6 +74,9 @@ export function SettingsPage() {
 
           {/* Sección de Tema y Apariencia */}
           <ThemeSection />
+
+          {/* Sección de Notificaciones */}
+          <NotificationSection />
         </div>
 
         {/* Otras opciones - Próximamente */}
