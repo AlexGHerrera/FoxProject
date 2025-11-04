@@ -4,4 +4,6 @@
 
 export { BudgetSection } from './BudgetSection'
 export { BudgetModal } from './BudgetModal'
+export { ThemeSection } from './ThemeSection'
+export { ThemeModal } from './ThemeModal'
 

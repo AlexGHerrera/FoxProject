@@ -13,3 +13,5 @@ export { useUIStore } from './useUIStore'
 
 export { useSettingsStore } from './useSettingsStore'
 
+export { useThemeStore } from './useThemeStore'
+

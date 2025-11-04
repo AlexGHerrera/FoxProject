@@ -19,8 +19,26 @@
   --chip-bg: #EEF2FF;
 }
 
+/* Dark mode usando clase (para Tailwind darkMode: 'class') */
+.dark {
+  --bg: #0F111A;
+  --surface: #12141F;
+  --text: #F3F4F6;
+  --muted: #94A3B8;
+  --brand-cyan: #00D3FF;
+  --brand-cyan-neon: #35FFFF;
+  --brand-orange: #FFB84C;
+  --success: #34D399;
+  --warning: #F59E0B;
+  --danger: #F87171;
+  --divider: #1F2430;
+  --card: #141826;
+  --chip-bg: #1B2030;
+}
+
+/* Fallback para modo automático del sistema */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light) {
     --bg: #0F111A;
     --surface: #12141F;
     --text: #F3F4F6;

@@ -7,7 +7,9 @@ import { Dashboard, SpendListPage, SettingsPage } from './pages'
 import './App.css'
 
 function App() {
-  const { theme } = useTheme()
+  // Inicializar y escuchar cambios de tema (necesario para que se aplique)
+  useTheme()
+  
   const { toasts, removeToast, isSelectionModeActive } = useUIStore()
 
   return (

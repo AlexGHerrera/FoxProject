@@ -5,21 +5,15 @@
  */
 
 import { useLocation } from 'react-router-dom'
-import { ChevronRight, Palette, Bell, Sparkles, BarChart3, Shield } from 'lucide-react'
+import { ChevronRight, Bell, Sparkles, BarChart3, Shield } from 'lucide-react'
 import { PageIndicator } from '@/components/ui'
 import { FoxyAvatar } from '@/components/foxy'
-import { BudgetSection } from '@/components/settings'
+import { BudgetSection, ThemeSection } from '@/components/settings'
 
 const ROUTES = ['/', '/spends', '/settings'] as const
 
-// Opciones de configuración con iconos Lucide
+// Opciones de configuración pendientes con iconos Lucide
 const SETTINGS_OPTIONS = [
-  {
-    icon: Palette,
-    label: 'Tema y apariencia',
-    subtitle: 'Light, dark o automático',
-    disabled: true,
-  },
   {
     icon: Bell,
     label: 'Notificaciones',
@@ -80,8 +74,13 @@ export function SettingsPage() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-6 pb-28">
-        {/* Sección de Presupuesto Mensual - Activa */}
-        <BudgetSection />
+        <div className="space-y-3">
+          {/* Sección de Presupuesto Mensual */}
+          <BudgetSection />
+
+          {/* Sección de Tema y Apariencia */}
+          <ThemeSection />
+        </div>
 
         {/* Otras opciones - Próximamente */}
         <div className="space-y-3 mt-6">
