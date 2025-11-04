@@ -5,7 +5,7 @@
 
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useLoadSpends } from '@/hooks'
+import { useLoadSpends, useSettings } from '@/hooks'
 import { useBudgetProgress } from '@/hooks/useBudgetProgress'
 import { useSpendStore } from '@/stores/useSpendStore'
 import { useUIStore } from '@/stores/useUIStore'
@@ -17,9 +17,6 @@ import { VoiceInputPage } from './VoiceInputPage'
 import { ManualInputPage } from './ManualInputPage'
 import type { Spend, UpdateSpendData } from '@/domain/models'
 
-// TODO: obtener el límite mensual de settings cuando implementemos esa funcionalidad
-const MONTHLY_LIMIT_CENTS = 100000 // 1000€ por defecto
-
 const ROUTES = ['/', '/spends', '/settings'] as const
 
 export function Dashboard() {
@@ -30,13 +27,17 @@ export function Dashboard() {
   const [editingSpend, setEditingSpend] = useState<Spend | null>(null)
   const currentIndex = ROUTES.indexOf(location.pathname as typeof ROUTES[number])
   
-  // Cargar gastos al montar
+  // Cargar datos al montar
   useLoadSpends()
+  const { settings } = useSettings()
   
   // Obtener estado
   const { spends, isLoading, deleteSpend } = useSpendStore()
   const { showToast } = useUIStore()
-  const budgetProgress = useBudgetProgress(MONTHLY_LIMIT_CENTS)
+  
+  // Usar el límite mensual de settings, o 100000 (1000€) por defecto
+  const monthlyLimitCents = settings?.monthlyLimitCents ?? 100000
+  const budgetProgress = useBudgetProgress(monthlyLimitCents)
 
   // Determinar estado de Foxy según presupuesto
   const foxyState = budgetProgress.status === 'alert' ? 'alert' : 'idle'

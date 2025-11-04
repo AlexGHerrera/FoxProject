@@ -3,4 +3,5 @@
  */
 
 export { BudgetSection } from './BudgetSection'
+export { BudgetModal } from './BudgetModal'
 

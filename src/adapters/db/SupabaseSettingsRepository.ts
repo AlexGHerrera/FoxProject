@@ -35,30 +35,41 @@ export class SupabaseSettingsRepository implements ISettingsRepository {
 
   async upsert(userId: string, data: UpdateSettingsData): Promise<Settings> {
     try {
+      // Mapear campos de dominio a campos de DB
       const upsertData: Partial<SettingsRow> = {
         user_id: userId,
-        ...data,
         updated_at: new Date().toISOString(),
       }
 
+      // Mapear solo los campos que vienen en data
       if (data.monthlyLimitCents !== undefined) {
         upsertData.monthly_limit_cents = data.monthlyLimitCents
       }
       if (data.timezone !== undefined) {
         upsertData.tz = data.timezone
       }
+      if (data.plan !== undefined) {
+        upsertData.plan = data.plan
+      }
+
+      console.log('[SupabaseSettingsRepository] Upsert data:', upsertData)
 
       const { data: row, error } = await this.supabase
         .from('settings')
-        .upsert(upsertData as any, { onConflict: 'user_id' })
+        .upsert(upsertData, { onConflict: 'user_id' })
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.error('[SupabaseSettingsRepository] Upsert error:', error)
+        throw error
+      }
       if (!row) throw new Error('No data returned from upsert')
 
+      console.log('[SupabaseSettingsRepository] Upsert success:', row)
       return this.mapRowToSettings(row)
     } catch (error) {
+      console.error('[SupabaseSettingsRepository] Upsert failed:', error)
       throw new RepositoryError('Failed to upsert settings', 'upsert', error)
     }
   }

@@ -1,27 +1,30 @@
 /**
  * useSettings Hook
  * Carga y actualiza configuración del usuario desde Supabase
+ * Usa Zustand store para estado global
  */
 
 import { useState, useEffect, useCallback } from 'react'
 import { SupabaseSettingsRepository } from '../adapters/db/SupabaseSettingsRepository'
 import { supabase } from '../config/supabase'
 import { useUIStore } from '../stores/useUIStore'
+import { useSettingsStore } from '../stores/useSettingsStore'
 import { DEMO_USER_ID } from '../config/constants'
 import { updateSettings } from '../application/updateSettings'
-import type { Settings, UpdateSettingsData } from '../domain/models'
+import type { UpdateSettingsData } from '../domain/models'
 
 const settingsRepository = new SupabaseSettingsRepository(supabase)
 
 export function useSettings() {
-  const [settings, setSettings] = useState<Settings | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const { showSuccess, showError } = useUIStore()
+  
+  // Usar store global de Zustand
+  const { settings, isLoading, setSettings, setLoading } = useSettingsStore()
 
   const loadSettings = useCallback(async () => {
     try {
-      setIsLoading(true)
+      setLoading(true)
       setError(null)
 
       // TODO: obtener userId real de auth cuando implementemos login
@@ -36,21 +39,21 @@ export function useSettings() {
       setError(errorMessage)
       showError('No se pudo cargar la configuración')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
-  }, [showError])
+  }, [showError, setSettings, setLoading])
 
   const updateSettingsData = useCallback(
     async (data: UpdateSettingsData) => {
       try {
-        setIsLoading(true)
+        setLoading(true)
         setError(null)
 
         // TODO: obtener userId real de auth cuando implementemos login
         const userId = DEMO_USER_ID
 
         const updated = await updateSettings(userId, data, settingsRepository)
-        setSettings(updated)
+        setSettings(updated) // Actualiza el store global
         showSuccess('Configuración guardada correctamente')
       } catch (err) {
         const errorMessage =
@@ -60,15 +63,19 @@ export function useSettings() {
         showError(errorMessage)
         throw err // Re-throw para que el componente pueda manejar el error
       } finally {
-        setIsLoading(false)
+        setLoading(false)
       }
     },
-    [showSuccess, showError]
+    [showSuccess, showError, setSettings, setLoading]
   )
 
   useEffect(() => {
-    loadSettings()
-  }, [loadSettings])
+    // Cargar settings al montar si no están ya cargados
+    if (!settings) {
+      loadSettings()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return {
     settings,
