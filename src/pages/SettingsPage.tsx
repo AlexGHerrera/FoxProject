@@ -6,6 +6,7 @@
 import { useLocation } from 'react-router-dom'
 import { PageIndicator } from '@/components/ui'
 import { FoxyAvatar } from '@/components/foxy'
+import { BudgetSection } from '@/components/settings'
 
 const ROUTES = ['/', '/spends', '/settings'] as const
 
@@ -43,21 +44,12 @@ export function SettingsPage() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-6 pb-28">
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">⚙️</div>
-          <h2 className="text-xl font-semibold text-text mb-2">
-            Próximamente
-          </h2>
-          <p className="text-muted max-w-md mx-auto">
-            La página de ajustes está en desarrollo. Aquí podrás configurar tu presupuesto mensual, 
-            preferencias de notificaciones, tema y mucho más.
-          </p>
-        </div>
+        {/* Sección de Presupuesto Mensual */}
+        <BudgetSection />
 
         {/* Placeholder de futuras opciones */}
         <div className="space-y-3 mt-8">
           {[
-            { icon: '💰', label: 'Presupuesto mensual', subtitle: 'Configura tu límite de gastos' },
             { icon: '🎨', label: 'Tema y apariencia', subtitle: 'Light, dark o automático' },
             { icon: '🔔', label: 'Notificaciones', subtitle: 'Alertas y recordatorios' },
             { icon: '🦊', label: 'Personalizar Foxy', subtitle: 'Ajusta la mascota a tu gusto' },

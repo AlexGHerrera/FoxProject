@@ -229,3 +229,85 @@ R: Cache, regex parser, prompts concisos, temp baja.
 **Versión**: 2.0 (Optimizada)  
 
 🦊 Para trabajar: escribe `Tarea: [descripción]` y el sistema agéntico se activa.
+
+---
+
+## 🤖 Roles de Agentes (orquestación Cursor)
+
+### Planner / Architect
+- **Objetivo**: partir “Tarea:” en subtareas atómicas, definir contratos y criterios de aceptación.
+- **Entregables**: `docs/project/SPEC.md` actualizado, `schema.md` (si cambia contrato), plan de branches/worktrees y checklist.
+- **No toca** UI ni lógica; solo contrato, plan y revisiones.
+
+### Backend
+- **Objetivo**: casos de uso (`application/**`), adaptadores (`adapters/**`), persistencia Supabase y endpoints si aplica.
+- **Entregables**: código + tests (Vitest) de domain/application/adapters; migraciones si aplica; commits convencionales.
+- **Respeta** la arquitectura hexagonal: domain no depende de adapters.
+
+### Frontend
+- **Objetivo**: páginas (`pages/**`), componentes (`components/**`), hooks orquestadores (`hooks/**`), stores (`stores/**`).
+- **Entregables**: UI accesible (WCAG AA), estados vacíos/errores, pruebas de componentes (React Testing Library).
+- **Respetar** design tokens de `config/DESIGN-TOKENS.json`.
+
+### Tester (QA)
+- **Objetivo**: ejecutar `npm run lint`, `npm run type-check`, unit y components; preparar smoke E2E (Playwright cuando esté).
+- **Entregables**: informe con cobertura y logs, badge de estado, lista de issues bloqueantes.
+
+### Docs
+- **Objetivo**: actualizar `README.md`, `CHANGELOG.md`, ejemplos de uso, snippets de comandos.
+- **Entregables**: diff docs y sección “Cómo probar esta feature”.
+
+---
+
+## 🧭 Routing de Tareas (guía para el Planner)
+
+- Cambios en **domain/** o **application/** → Backend (+ QA)
+- Cambios en **adapters/** (IA, DB, voz, storage) → Backend
+- Cambios en **hooks/**, **components/**, **pages/**, **stores/** → Frontend
+- Cambios de contrato (DTO, payloads, eventos) → Planner/Architect (+ actualizar `schema.md`)
+- Cambios en **docs/** y `AGENTS.md` → Docs
+- Siempre que una tarea cree/exponga API interna, **Planner** debe generar/actualizar `schema.md`.
+
+---
+
+## 🛑 Review Gates (pausas antes de merge)
+
+1) **Gate A — Diseño/Contrato**
+   - Planner presenta plan, criterios de aceptación y (si aplica) `schema.md`.
+   - Aprobación humana requerida.
+
+2) **Gate B — Implementación**
+   - Backend/Frontend muestran **diffs**, logs de `lint`, `type-check`, y **tests unitarios** en verde.
+   - Aprobación humana requerida.
+
+3) **Gate C — QA**
+   - Tester ejecuta suite y comparte informe (cobertura target: Domain 100% / Application >80% / Adapters >70% / Components >60%).
+   - Aprobación humana requerida.
+
+4) **Gate D — Docs**
+   - Docs actualiza `README` + `CHANGELOG` + ejemplos.
+   - Merge manual a `main` (protegida).
+
+---
+
+## 🌿 Branching / Worktrees por Agente
+
+- Un **agente = un branch/worktree** (aislamiento total).
+- Naming: `feat/<área>-<tarea>` (p.ej. `feat/voice-quick-add`), `fix/...`, `docs/...`.
+- Commits: Conventional Commits con viñetas por agente si colaboran.
+
+---
+
+## 🧪 Scripts de Calidad (usados por QA)
+
+- `npm run lint`
+- `npm run type-check`
+- `npm run test`
+- (Opcional) `npm run test:components`
+- **Objetivo**: Domain 100%, Application >80%, Adapters >70%, Components >60% (ya definidos arriba).
+
+---
+
+## 📑 Prompt maestro (pegar en Agents → New Plan)
+
+Usa este prompt con **Parallel Agents** activado y modelo Composer: Lee .cursorrules,QUICK-RESUME.md y AGENTS.md, asigna roles, ejecuta y detente en cada Gate hasta aprobación.
