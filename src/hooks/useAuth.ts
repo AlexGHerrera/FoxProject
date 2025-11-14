@@ -14,7 +14,7 @@ const authProvider = new SupabaseAuthProvider()
 
 export function useAuth() {
   const navigate = useNavigate()
-  const { user, isAuthenticated, isLoading, setUser, setIsLoading, setUserRole, logout: logoutStore } = useAuthStore()
+  const { user, isAuthenticated, isLoading } = useAuthStore()
   const { showSuccess, showError } = useUIStore()
   const [isCheckingRole, setIsCheckingRole] = useState(false)
 
@@ -34,84 +34,118 @@ export function useAuth() {
       }
 
       if (data) {
-        setUserRole(data.role as 'user' | 'admin')
+        useAuthStore.getState().setUserRole(data.role as 'user' | 'admin')
       } else {
-        setUserRole('user') // Default role
+        useAuthStore.getState().setUserRole('user') // Default role
       }
     } catch (error) {
       console.error('[useAuth] Error loading user role:', error)
     } finally {
       setIsCheckingRole(false)
     }
-  }, [setUserRole])
+  }, [])
 
-  // Inicializar autenticación al montar
+  // Inicializar autenticación al montar (SOLO UNA VEZ)
   useEffect(() => {
-    setIsLoading(true)
+    let mounted = true
     
-    // Obtener usuario actual
-    authProvider.getCurrentUser().then((currentUser) => {
-      setUser(currentUser)
-      if (currentUser) {
-        loadUserRole(currentUser.id)
+    const initialize = async () => {
+      try {
+        useAuthStore.getState().setIsLoading(true)
+        
+        // Obtener usuario actual con timeout de seguridad
+        const currentUser = await Promise.race([
+          authProvider.getCurrentUser(),
+          new Promise<null>((resolve) => 
+            setTimeout(() => resolve(null), 5000)
+          )
+        ])
+        
+        if (!mounted) return
+        
+        useAuthStore.getState().setUser(currentUser)
+        
+        if (currentUser) {
+          await loadUserRole(currentUser.id)
+        }
+      } catch (error) {
+        console.error('[useAuth] Error initializing auth:', error)
+        if (mounted) {
+          useAuthStore.getState().setUser(null)
+          useAuthStore.getState().setIsLoading(false)
+        }
+      } finally {
+        // Asegurar que isLoading se establezca a false incluso si hay errores
+        if (mounted) {
+          const currentState = useAuthStore.getState()
+          if (currentState.isLoading && !currentState.user) {
+            useAuthStore.getState().setIsLoading(false)
+          }
+        }
       }
-    })
+    }
+    
+    initialize()
 
     // Escuchar cambios de autenticación
     const unsubscribe = authProvider.onAuthStateChange(async (user) => {
-      setUser(user)
+      if (!mounted) return
+      
+      useAuthStore.getState().setUser(user)
       if (user) {
         await loadUserRole(user.id)
       } else {
-        setUserRole(null)
+        useAuthStore.getState().setUserRole(null)
       }
     })
 
     return () => {
+      mounted = false
       unsubscribe()
     }
-  }, [setUser, setIsLoading, loadUserRole, setUserRole])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Solo ejecutar al montar, loadUserRole es estable
 
   const signUp = useCallback(async (email: string, password: string) => {
     try {
-      setIsLoading(true)
+      useAuthStore.getState().setIsLoading(true)
       const { user, error } = await authProvider.signUp(email, password)
       
       if (error) {
-        showError(error.message || 'Error al registrarse')
+        useUIStore.getState().showError(error.message || 'Error al registrarse')
         return { success: false, error }
       }
 
       if (user) {
-        showSuccess('Registro exitoso. Revisa tu email para confirmar tu cuenta.')
+        useUIStore.getState().showSuccess('Registro exitoso. Revisa tu email para confirmar tu cuenta.')
         return { success: true, user }
       }
 
       // Si no hay usuario pero tampoco error, significa que necesita confirmar email
-      showSuccess('Revisa tu email para confirmar tu cuenta antes de iniciar sesión.')
+      useUIStore.getState().showSuccess('Revisa tu email para confirmar tu cuenta antes de iniciar sesión.')
       return { success: true, user: null }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error al registrarse'
-      showError(message)
+      useUIStore.getState().showError(message)
       return { success: false, error }
     } finally {
-      setIsLoading(false)
+      useAuthStore.getState().setIsLoading(false)
     }
-  }, [showError, showSuccess, setIsLoading])
+  }, [])
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
-      setIsLoading(true)
+      useAuthStore.getState().setIsLoading(true)
       const { user, error } = await authProvider.signIn(email, password)
       
       if (error) {
-        showError(error.message || 'Error al iniciar sesión')
+        useUIStore.getState().showError(error.message || 'Error al iniciar sesión')
         return { success: false, error }
       }
 
       if (user) {
         await loadUserRole(user.id)
-        showSuccess('Sesión iniciada correctamente')
+        useUIStore.getState().showSuccess('Sesión iniciada correctamente')
         navigate('/')
         return { success: true, user }
       }
@@ -119,56 +153,56 @@ export function useAuth() {
       return { success: false, error: null }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error al iniciar sesión'
-      showError(message)
+      useUIStore.getState().showError(message)
       return { success: false, error }
     } finally {
-      setIsLoading(false)
+      useAuthStore.getState().setIsLoading(false)
     }
-  }, [showError, showSuccess, setIsLoading, navigate, loadUserRole])
+  }, [navigate, loadUserRole])
 
   const signOut = useCallback(async () => {
     try {
-      setIsLoading(true)
+      useAuthStore.getState().setIsLoading(true)
       const { error } = await authProvider.signOut()
       
       if (error) {
-        showError(error.message || 'Error al cerrar sesión')
+        useUIStore.getState().showError(error.message || 'Error al cerrar sesión')
         return { success: false, error }
       }
 
-      logoutStore()
-      showSuccess('Sesión cerrada correctamente')
+      useAuthStore.getState().logout()
+      useUIStore.getState().showSuccess('Sesión cerrada correctamente')
       navigate('/login')
       return { success: true }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error al cerrar sesión'
-      showError(message)
+      useUIStore.getState().showError(message)
       return { success: false, error }
     } finally {
-      setIsLoading(false)
+      useAuthStore.getState().setIsLoading(false)
     }
-  }, [showError, showSuccess, setIsLoading, navigate, logoutStore])
+  }, [navigate])
 
   const resetPassword = useCallback(async (email: string) => {
     try {
-      setIsLoading(true)
+      useAuthStore.getState().setIsLoading(true)
       const { error } = await authProvider.resetPassword(email)
       
       if (error) {
-        showError(error.message || 'Error al enviar email de recuperación')
+        useUIStore.getState().showError(error.message || 'Error al enviar email de recuperación')
         return { success: false, error }
       }
 
-      showSuccess('Revisa tu email para restablecer tu contraseña')
+      useUIStore.getState().showSuccess('Revisa tu email para restablecer tu contraseña')
       return { success: true }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error al enviar email de recuperación'
-      showError(message)
+      useUIStore.getState().showError(message)
       return { success: false, error }
     } finally {
-      setIsLoading(false)
+      useAuthStore.getState().setIsLoading(false)
     }
-  }, [showError, showSuccess, setIsLoading])
+  }, [])
 
   return {
     user,

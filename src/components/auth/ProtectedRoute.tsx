@@ -14,6 +14,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuthStore()
 
+  // Mostrar loading mientras se inicializa la autenticación
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -22,10 +23,12 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     )
   }
 
+  // Redirigir a login si no está autenticado
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 
+  // Renderizar contenido protegido
   return <>{children}</>
 }
 

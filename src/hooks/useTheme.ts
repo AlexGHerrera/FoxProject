@@ -4,7 +4,7 @@
  * Usa Zustand store para estado global
  */
 
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import { useThemeStore } from '@/stores/useThemeStore'
 
 type Theme = 'light' | 'dark' | 'auto'
@@ -15,13 +15,14 @@ const THEME_KEY = 'foxy-theme'
 export function useTheme() {
   const { theme, resolvedTheme, setTheme: setThemeStore, setResolvedTheme } = useThemeStore()
 
-  // Inicializar tema desde localStorage al montar
+  // Inicializar tema desde localStorage al montar (solo una vez)
   useEffect(() => {
     const stored = localStorage.getItem(THEME_KEY)
     if (stored && (stored === 'light' || stored === 'dark' || stored === 'auto')) {
       setThemeStore(stored as Theme)
     }
-  }, [setThemeStore])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Solo ejecutar al montar
 
   // Aplicar tema cuando cambie
   useEffect(() => {
@@ -36,7 +37,6 @@ export function useTheme() {
 
     const applyTheme = () => {
       const resolved = resolveTheme()
-      console.log('[useTheme] Aplicando tema:', theme, '→ resolved:', resolved)
       setResolvedTheme(resolved)
       
       // Aplicar/remover clases en el elemento html
@@ -60,22 +60,20 @@ export function useTheme() {
       mediaQuery.addEventListener('change', handler)
       return () => mediaQuery.removeEventListener('change', handler)
     }
-  }, [theme, setResolvedTheme])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme]) // Solo depende de theme, no de setResolvedTheme
 
-  const setTheme = (newTheme: Theme, saveToStorage = true) => {
-    console.log('[useTheme] setTheme llamado con:', newTheme, 'saveToStorage:', saveToStorage)
+  const setTheme = useCallback((newTheme: Theme, saveToStorage = true) => {
     if (saveToStorage) {
       localStorage.setItem(THEME_KEY, newTheme)
-      console.log('[useTheme] Guardado en localStorage:', newTheme)
     }
     setThemeStore(newTheme)
-  }
+  }, [setThemeStore])
 
   // Solo para preview (no guarda en localStorage)
-  const previewTheme = (newTheme: Theme) => {
-    console.log('[useTheme] previewTheme llamado con:', newTheme)
+  const previewTheme = useCallback((newTheme: Theme) => {
     setThemeStore(newTheme)
-  }
+  }, [setThemeStore])
 
   return { theme, setTheme, resolvedTheme, previewTheme }
 }

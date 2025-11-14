@@ -605,18 +605,49 @@ console.log(getOptimizationStats())
 
 ---
 
+### Sesión Nov 2025 (Fix Loops Infinitos de Render) 🆕:
+
+#### 29. **Fix Loops Infinitos de Render** 🔧
+```bash
+✅ Eliminada inicialización duplicada de auth en ProtectedRoute
+✅ Fix dependencias circulares en useTheme hook
+✅ Eliminada ruta por defecto que causaba loop infinito
+✅ Inicialización correcta de useAuth en App.tsx
+✅ Timeout de seguridad en inicialización de auth (5s)
+✅ Mejor manejo de errores con bloque finally
+```
+- **Problema**: App no cargaba, página en blanco por loops infinitos
+- **Causas identificadas**:
+  - `ProtectedRoute` inicializaba auth independientemente de `useAuth`
+  - `useTheme` tenía dependencias circulares (`setThemeStore`, `setResolvedTheme`)
+  - Ruta por defecto `/` → `/` causaba loop infinito
+- **Solución**: 
+  - `ProtectedRoute` ahora solo verifica estado, confía en `useAuth`
+  - `useTheme` con dependencias optimizadas (solo `theme` en efecto de aplicación)
+  - Eliminada ruta problemática, `/*` maneja todas las rutas
+  - `useAuth` inicializado en `AppContent` dentro del Router
+- **Archivos modificados**:
+  - `src/App.tsx` - Separado en App/AppContent, agregado useAuth()
+  - `src/components/auth/ProtectedRoute.tsx` - Simplificado, solo verifica estado
+  - `src/hooks/useTheme.ts` - Fix dependencias circulares
+  - `src/hooks/useAuth.ts` - Timeout de seguridad y mejor manejo de errores
+
+---
+
 ## 📞 Contacto / Notas
 
 **Última sesión**: Nov 2025  
-**Duración**: ~1 hora  
-**Features completadas**: Mejoras UI navegación, Dashboard simplificado, notificaciones mejoradas  
-**Estado**: ✅ Implementación completa, merged a main, pushed  
+**Duración**: ~30 minutos  
+**Features completadas**: Fix loops infinitos de render, app ahora carga correctamente  
+**Estado**: ✅ Fixes completados, app renderiza correctamente, pendiente pruebas manuales  
 
 **Para continuar**: 
-1. Fase 2: Ilustraciones de Foxy (cuando se tengan SVGs del diseñador)
-2. Fase 3: Voice UI enhancements (animaciones, glassmorphism)
-3. Fase 4: Dashboard redesign (charts, estadísticas visuales)
-4. Otras opciones: Exportar CSV, Onboarding, PWA Setup
+1. Pruebas manuales de todas las funcionalidades
+2. Verificar que autenticación funciona correctamente
+3. Verificar que tema light/dark funciona sin loops
+4. Fase 2: Ilustraciones de Foxy (cuando se tengan SVGs del diseñador)
+5. Fase 3: Voice UI enhancements (animaciones, glassmorphism)
+6. Fase 4: Dashboard redesign (charts, estadísticas visuales)
 
 ---
 
