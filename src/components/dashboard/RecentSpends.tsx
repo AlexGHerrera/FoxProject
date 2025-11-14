@@ -3,8 +3,8 @@
  * Muestra los últimos gastos registrados con swipe-to-reveal para editar/eliminar
  */
 
-import { useState, useMemo, useRef, useLayoutEffect, useEffect } from 'react'
-import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion'
+import { useState, useMemo, useRef, useEffect } from 'react'
+import { motion, PanInfo, useMotionValue } from 'framer-motion'
 import { Pencil, Trash2 } from 'lucide-react'
 import type { Spend } from '@/domain/models'
 import { centsToEur } from '@/domain/models'
@@ -80,14 +80,18 @@ interface SwipeableSpendCardProps {
   onDelete?: (spend: Spend) => void
 }
 
-const SWIPE_THRESHOLD = -10 // Minimum swipe distance to reveal actions (reduced for better UX)
+const SWIPE_THRESHOLD = -30 // Minimum swipe distance to reveal actions (aumentado para mejor animación)
+const BUTTON_SIZE = 48 // Fixed button size in pixels (48×48px - minimum touch target)
 const BUTTON_GAP = 8 // Gap between buttons
 const ACTIONS_PADDING = 8 // Right padding
+// Calculate fixed width: 2 buttons (Edit + Delete) + 1 gap + padding
+const ACTIONS_WIDTH = (BUTTON_SIZE * 2) + BUTTON_GAP + ACTIONS_PADDING // 112px
 
 function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [actionsWidth, setActionsWidth] = useState(150) // Default width for 2 buttons
+  const [isDragging, setIsDragging] = useState(false)
+  const [targetX, setTargetX] = useState<number | undefined>(undefined)
   const x = useMotionValue(0)
   const cardRef = useRef<HTMLDivElement>(null)
 
@@ -108,35 +112,6 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
     return `Hace ${days}d`
   }, [spend.timestamp])
 
-  // Measure card height and calculate actions width dynamically
-  useLayoutEffect(() => {
-    if (cardRef.current) {
-      const cardHeight = cardRef.current.offsetHeight
-      // Calculate: 2 square buttons (height = width) + 1 gap + padding
-      const calculatedWidth = (cardHeight * 2) + BUTTON_GAP + ACTIONS_PADDING
-      setActionsWidth(calculatedWidth)
-    }
-  }, [spend.merchant, spend.category]) // Recalculate when content changes (affects height)
-
-  // Use ResizeObserver to handle dynamic height changes
-  useLayoutEffect(() => {
-    if (!cardRef.current) return
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const cardHeight = entry.contentRect.height
-        const calculatedWidth = (cardHeight * 2) + BUTTON_GAP + ACTIONS_PADDING
-        setActionsWidth(calculatedWidth)
-      }
-    })
-
-    resizeObserver.observe(cardRef.current)
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [])
-
   // Close card on any external interaction (scroll, click outside, etc.)
   useEffect(() => {
     if (!isOpen) return
@@ -148,11 +123,13 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
         return
       }
       setIsOpen(false)
+      setTargetX(0)
     }
 
     // Close on scroll
     const handleScroll = () => {
       setIsOpen(false)
+      setTargetX(0)
     }
 
     // Listen to various events
@@ -167,20 +144,22 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
     }
   }, [isOpen])
 
-  // Transform for action buttons opacity (fade in as card slides)
-  const actionsOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1])
+  const handleDragStart = () => {
+    setIsDragging(true)
+  }
 
   const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    setIsDragging(false)
     const offset = info.offset.x
     const velocity = info.velocity.x
     
-    // Consider velocity for better feel
-    // If swiping fast to the left, open even if not past threshold
-    const shouldOpen = offset < SWIPE_THRESHOLD || (velocity < -10 && offset < -15)
-    
-    // Always set a definitive state (open or closed)
-    // This ensures the card always animates to a final position
+    // Determinar estado final basado en posición y velocidad
+    const shouldOpen = offset < SWIPE_THRESHOLD || (velocity < -300 && offset < -20)
     setIsOpen(shouldOpen)
+    
+    // Establecer posición final inmediatamente
+    const finalX = shouldOpen ? -ACTIONS_WIDTH : 0
+    setTargetX(finalX)
   }
 
   const handleEdit = () => {
@@ -188,6 +167,7 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
       onEdit(spend)
       // Close after action
       setIsOpen(false)
+      setTargetX(0)
     }
   }
 
@@ -201,16 +181,17 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
     }
     // Close swipe after deletion
     setIsOpen(false)
+    setTargetX(0)
   }
 
   return (
     <div className="relative overflow-hidden rounded-xl" ref={cardRef}>
       {/* Action Buttons (behind the card) */}
       <motion.div
-        className="swipe-actions absolute right-0 top-0 h-full flex items-stretch pr-2"
+        className="swipe-actions absolute right-0 top-1/2 -translate-y-1/2 flex items-center pr-2"
         style={{ 
-          width: actionsWidth,
-          opacity: actionsOpacity,
+          width: ACTIONS_WIDTH,
+          opacity: 1,
           gap: `${BUTTON_GAP}px`
         }}
       >
@@ -218,10 +199,10 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
         {onEdit && (
           <button
             onClick={handleEdit}
-            className="aspect-square h-full bg-gray-400 dark:bg-gray-600 text-gray-900 dark:text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="w-12 h-12 bg-gray-400 hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2"
             aria-label="Editar"
           >
-            <Pencil size={18} strokeWidth={2.5} />
+            <Pencil size={20} strokeWidth={2.5} />
           </button>
         )}
 
@@ -229,10 +210,10 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
         {onDelete && (
           <button
             onClick={handleDeleteClick}
-            className="aspect-square h-full bg-red-500 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform"
+            className="w-12 h-12 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg flex items-center justify-center active:scale-95 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
             aria-label="Eliminar"
           >
-            <Trash2 size={18} strokeWidth={2.5} />
+            <Trash2 size={20} strokeWidth={2.5} />
           </button>
         )}
       </motion.div>
@@ -252,22 +233,26 @@ function SwipeableSpendCard({ spend, onEdit, onDelete }: SwipeableSpendCardProps
       {/* Card (draggable) */}
       <motion.div
         drag="x"
-        dragConstraints={{ left: -actionsWidth, right: 0 }}
-        dragElastic={0.1}
+        dragConstraints={{ left: -ACTIONS_WIDTH, right: 0 }}
+        dragElastic={0.05}
         dragMomentum={false}
-        dragTransition={{
-          bounceStiffness: 500,
-          bounceDamping: 35,
-        }}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
-        style={{ x }}
-        animate={isOpen ? { x: -actionsWidth } : { x: 0 }}
+        style={{ 
+          x,
+          willChange: 'transform'
+        }}
+        animate={
+          !isDragging && targetX !== undefined
+            ? { x: targetX }
+            : false
+        }
         transition={{
           type: 'spring',
-          stiffness: 500,
-          damping: 35,
+          stiffness: 400,
+          damping: 30,
         }}
-        className="flex items-center gap-3 p-3 bg-surface rounded-xl cursor-grab active:cursor-grabbing relative z-10"
+        className="flex items-center gap-3 p-3 bg-surface rounded-xl cursor-grab active:cursor-grabbing relative z-10 gpu-accelerated"
       >
         {/* Icono de categoría */}
         <div className="flex-shrink-0">

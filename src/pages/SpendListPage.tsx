@@ -218,20 +218,23 @@ export function SpendListPage() {
             <div className="flex-shrink-0 ml-4 flex flex-col items-center gap-1">
               <button
                 onClick={() => setShowFilters(true)}
-                className="relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan rounded-full transition-transform hover:scale-105 active:scale-95"
+                className="relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 group"
                 aria-label="Abrir filtros"
               >
-                {/* Badge de filtros activos */}
-                {(filters.categories.length > 0 ||
-                  filters.paymentMethod !== 'all' ||
-                  filters.dateRange !== 'this-month') && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold z-10">
-                    {filters.categories.length +
-                      (filters.paymentMethod !== 'all' ? 1 : 0) +
-                      (filters.dateRange !== 'this-month' ? 1 : 0)}
-                  </span>
-                )}
-                <FoxyAvatar state="idle" size="sm" />
+                {/* Contenedor con glassmorphism */}
+                <div className="relative rounded-full bg-surface/80 backdrop-blur-md border border-border/50 p-1 group-hover:border-brand-cyan/30 transition-colors duration-200">
+                  {/* Badge de filtros activos */}
+                  {(filters.categories.length > 0 ||
+                    filters.paymentMethod !== 'all' ||
+                    filters.dateRange !== 'this-month') && (
+                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold z-10 shadow-md border-2 border-surface">
+                      {filters.categories.length +
+                        (filters.paymentMethod !== 'all' ? 1 : 0) +
+                        (filters.dateRange !== 'this-month' ? 1 : 0)}
+                    </span>
+                  )}
+                  <FoxyAvatar state="idle" size="sm" />
+                </div>
               </button>
               <span className="text-[10px] text-muted font-medium">Filtros</span>
             </div>

@@ -32,6 +32,13 @@ export type Database = {
           monthly_limit_cents: number
           plan: string
           tz: string
+          notifications: {
+            expense_reminders: { enabled: boolean; time_slots: string[] }
+            budget_alert_70: { enabled: boolean }
+            budget_alert_90: { enabled: boolean }
+            weekly_summary: { enabled: boolean; day: string; time: string }
+            monthly_summary: { enabled: boolean; day: number; time: string }
+          } | null
           created_at: string
           updated_at: string
         }
@@ -40,6 +47,18 @@ export type Database = {
           'created_at' | 'updated_at'
         >
         Update: Partial<Database['public']['Tables']['settings']['Insert']>
+      }
+      notification_logs: {
+        Row: {
+          id: string
+          user_id: string
+          notification_type: 'reminder' | 'budget_70' | 'budget_90' | 'weekly_summary' | 'monthly_summary'
+          time_slot: string | null
+          sent_at: string
+          metadata: Record<string, unknown> | null
+        }
+        Insert: Omit<Database['public']['Tables']['notification_logs']['Row'], 'id' | 'sent_at'>
+        Update: Partial<Database['public']['Tables']['notification_logs']['Insert']>
       }
       training_examples: {
         Row: {

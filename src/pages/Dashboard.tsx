@@ -11,7 +11,7 @@ import { useSpendStore } from '@/stores/useSpendStore'
 import { useUIStore } from '@/stores/useUIStore'
 import { BudgetBar, RecentSpends } from '@/components/dashboard'
 import { FoxyAvatar } from '@/components/foxy'
-import { PageIndicator } from '@/components/ui'
+import { PageIndicator, GlassContainer } from '@/components/ui'
 import { SpendEditModal } from '@/components/spend'
 import { VoiceInputPage } from './VoiceInputPage'
 import { ManualInputPage } from './ManualInputPage'
@@ -148,36 +148,56 @@ export function Dashboard() {
         </section>
 
         {/* Foxy Avatar - PROTAGONISTA para activar voz */}
-        <section className="mb-8 flex flex-col items-center gap-3">
-          {/* Botón de voz GRANDE y prominente */}
-          <button
-            onClick={() => setShowVoiceInput(true)}
-            className="relative focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-cyan rounded-full transition-transform hover:scale-105 active:scale-95"
-            aria-label="Registrar gasto por voz"
-          >
-            {/* Ring animado para llamar la atención */}
-            <div className="absolute inset-0 rounded-full bg-brand-cyan/20 animate-pulse-ring" />
-            <FoxyAvatar state={foxyState} size="lg" />
-          </button>
+        <GlassContainer 
+          variant="medium" 
+          borderGradient 
+          className="mb-8 p-8 relative overflow-hidden"
+        >
+          {/* Gradiente animado de fondo */}
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-cyan/10 via-brand-cyan-neon/5 to-transparent opacity-60 animate-pulse-slow" />
           
-          {/* Call to action claro */}
-          <div className="text-center">
-            <p className="text-lg font-medium text-text mb-1">
-              Toca a Foxy para registrar por voz
-            </p>
-            <p className="text-xs text-muted">
-              Es la forma más rápida
-            </p>
+          <div className="relative flex flex-col items-center gap-4">
+            {/* Botón de voz GRANDE y prominente */}
+            <button
+              onClick={() => setShowVoiceInput(true)}
+              className="relative group focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-cyan focus-visible:ring-offset-4 rounded-full transition-all duration-300 hover:scale-105 active:scale-95"
+              aria-label="Registrar gasto por voz"
+            >
+              {/* Múltiples rings animados para efecto de ondas concéntricas */}
+              <div className="absolute inset-0 rounded-full bg-brand-cyan/20 animate-pulse-ring" />
+              <div className="absolute inset-0 rounded-full bg-brand-cyan-neon/15 animate-pulse-ring-delayed" />
+              
+              {/* Sombra dramática con glow */}
+              <div className="absolute inset-0 rounded-full bg-brand-cyan/30 blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-300" />
+              
+              {/* Contenedor del avatar con brillo en hover */}
+              <div className="relative rounded-full transition-all duration-300 group-hover:brightness-110">
+                <FoxyAvatar state={foxyState} size="lg" />
+              </div>
+              
+              {/* Ripple effect al hacer tap */}
+              <span className="absolute inset-0 rounded-full bg-brand-cyan-neon/30 scale-0 group-active:scale-150 opacity-0 group-active:opacity-100 transition-all duration-500" />
+            </button>
+            
+            {/* Call to action claro */}
+            <div className="text-center space-y-1">
+              <p className="text-xl font-semibold text-text mb-0.5">
+                Toca a Foxy para registrar por voz
+              </p>
+              <p className="text-sm text-muted">
+                Es la forma más rápida
+              </p>
+            </div>
+            
+            {/* Botón manual DISCRETO (solo texto, sin botón visible) */}
+            <button
+              onClick={() => setShowManualInput(true)}
+              className="text-sm text-muted hover:text-brand-cyan transition-colors underline decoration-dashed decoration-1 underline-offset-2"
+            >
+              ✏️ O escribe manualmente
+            </button>
           </div>
-          
-          {/* Botón manual DISCRETO (solo texto, sin botón visible) */}
-          <button
-            onClick={() => setShowManualInput(true)}
-            className="text-xs text-muted hover:text-text transition-colors underline decoration-dashed"
-          >
-            ✏️ O escribe manualmente
-          </button>
-        </section>
+        </GlassContainer>
 
         {/* Recent Spends */}
         <section className="bg-surface rounded-2xl p-6 shadow-md">

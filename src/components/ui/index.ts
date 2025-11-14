@@ -24,3 +24,6 @@ export { ConfirmDialog } from './ConfirmDialog'
 export { CategoryIcon } from './CategoryIcon'
 
 export { FilterChip } from './FilterChip'
+
+export { GlassContainer } from './GlassContainer'
+export type { GlassContainerProps } from './GlassContainer'
