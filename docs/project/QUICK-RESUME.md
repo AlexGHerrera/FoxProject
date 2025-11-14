@@ -6,7 +6,7 @@
 
 ## 📍 Estado Actual
 
-**Rama activa**: `feat/ui-nav-voice-notifications` → `main`  
+**Rama activa**: `main`  
 **Última actualización**: Mejoras UI navegación y Dashboard (Nov 2025)  
 **Estado**: ✅ Navegación reorganizada, Dashboard simplificado, notificaciones mejoradas  
 **Próximo**: Listo para desarrollo continuo
