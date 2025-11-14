@@ -9,16 +9,16 @@ export function BottomNav() {
 
   const navItems = [
     {
-      path: '/',
-      label: 'Inicio',
-      icon: Home,
-      isCentral: true,
-    },
-    {
       path: '/spends',
       label: 'Gastos',
       icon: Receipt,
       isCentral: false,
+    },
+    {
+      path: '/',
+      label: 'Inicio',
+      icon: Home,
+      isCentral: true,
     },
     {
       path: '/settings',
@@ -30,25 +30,22 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card/80 backdrop-blur-md border-t border-border z-50">
-      <div className="max-w-4xl mx-auto px-2 py-2">
-        <div className="flex items-end justify-around relative">
+      <div className="max-w-4xl mx-auto px-2 py-3">
+        <div className="flex items-center justify-around relative">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
             const isCentral = item.isCentral;
 
             if (isCentral) {
-              // Tab central destacado - más grande y elevado
+              // Tab central destacado - cuadrado
               return (
                 <button
                   key={item.path}
                   onClick={() => navigate(item.path)}
                   className={`
                     relative flex flex-col items-center justify-center
-                    ${active 
-                      ? 'h-14 w-20 -mt-2' 
-                      : 'h-10 w-16'
-                    }
+                    w-16 h-16
                     rounded-2xl
                     transition-all duration-300 ease-out
                     ${active
@@ -60,25 +57,26 @@ export function BottomNav() {
                   aria-label={item.label}
                 >
                   <Icon 
-                    size={active ? 24 : 20} 
-                    className="mb-0.5 transition-all duration-300"
+                    size={24} 
+                    className="mb-1 transition-all duration-300"
                     strokeWidth={active ? 2.5 : 2}
                   />
-                  <span className={`text-xs font-medium transition-all duration-300 ${active ? 'opacity-100' : 'opacity-0 h-0'}`}>
+                  <span className={`text-xs font-medium transition-all duration-300 ${active ? 'opacity-100' : 'opacity-70'}`}>
                     {item.label}
                   </span>
                 </button>
               );
             }
 
-            // Tabs laterales - tamaño normal
+            // Tabs laterales - mismo tamaño de iconos
             return (
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
                 className={`
                   flex flex-col items-center justify-center
-                  h-10 px-4 py-2 rounded-lg
+                  min-h-[56px] min-w-[64px]
+                  px-4 py-3 rounded-lg
                   transition-all duration-200
                   flex-1 max-w-[120px]
                   ${active
@@ -90,7 +88,7 @@ export function BottomNav() {
                 aria-label={item.label}
               >
                 <Icon 
-                  size={20} 
+                  size={24} 
                   className="mb-1 transition-all duration-200"
                   strokeWidth={active ? 2.5 : 2}
                 />

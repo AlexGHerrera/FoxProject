@@ -147,36 +147,18 @@ export function Dashboard() {
           </div>
         </section>
 
-        {/* Foxy Avatar - PROTAGONISTA para activar voz */}
-        <GlassContainer 
-          variant="medium" 
-          borderGradient 
-          className="mb-8 p-8 relative overflow-hidden"
-        >
-          {/* Gradiente animado de fondo */}
-          <div className="absolute inset-0 bg-gradient-to-br from-brand-cyan/10 via-brand-cyan-neon/5 to-transparent opacity-60 animate-pulse-slow" />
-          
-          <div className="relative flex flex-col items-center gap-4">
-            {/* Botón de voz GRANDE y prominente */}
+        {/* Foxy Avatar - Sección de voz simplificada */}
+        <section className="mb-8 bg-surface rounded-2xl p-8 shadow-md">
+          <div className="flex flex-col items-center gap-6">
+            {/* Botón de voz con diseño limpio y Foxy más grande */}
             <button
               onClick={() => setShowVoiceInput(true)}
-              className="relative group focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-cyan focus-visible:ring-offset-4 rounded-full transition-all duration-300 hover:scale-105 active:scale-95"
+              className="focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-cyan focus-visible:ring-offset-4 rounded-full transition-all duration-200 hover:scale-105 active:scale-95"
               aria-label="Registrar gasto por voz"
             >
-              {/* Múltiples rings animados para efecto de ondas concéntricas */}
-              <div className="absolute inset-0 rounded-full bg-brand-cyan/20 animate-pulse-ring" />
-              <div className="absolute inset-0 rounded-full bg-brand-cyan-neon/15 animate-pulse-ring-delayed" />
-              
-              {/* Sombra dramática con glow */}
-              <div className="absolute inset-0 rounded-full bg-brand-cyan/30 blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-300" />
-              
-              {/* Contenedor del avatar con brillo en hover */}
-              <div className="relative rounded-full transition-all duration-300 group-hover:brightness-110">
+              <div className="w-40 h-40 flex items-center justify-center">
                 <FoxyAvatar state={foxyState} size="lg" />
               </div>
-              
-              {/* Ripple effect al hacer tap */}
-              <span className="absolute inset-0 rounded-full bg-brand-cyan-neon/30 scale-0 group-active:scale-150 opacity-0 group-active:opacity-100 transition-all duration-500" />
             </button>
             
             {/* Call to action claro */}
@@ -189,15 +171,16 @@ export function Dashboard() {
               </p>
             </div>
             
-            {/* Botón manual DISCRETO (solo texto, sin botón visible) */}
+            {/* Botón manual */}
             <button
               onClick={() => setShowManualInput(true)}
-              className="text-sm text-muted hover:text-brand-cyan transition-colors underline decoration-dashed decoration-1 underline-offset-2"
+              className="text-sm text-muted hover:text-brand-cyan transition-colors underline decoration-dashed decoration-1 underline-offset-2 min-h-[44px] px-2"
+              aria-label="Escribir gasto manualmente"
             >
               ✏️ O escribe manualmente
             </button>
           </div>
-        </GlassContainer>
+        </section>
 
         {/* Recent Spends */}
         <section className="bg-surface rounded-2xl p-6 shadow-md">

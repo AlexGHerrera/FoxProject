@@ -52,7 +52,19 @@ export function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
   const handleSave = async () => {
     try {
       setIsSaving(true)
-      await updateNotificationSettings(localSettings)
+      // Asegurar que si los recordatorios están activados, tengan todos los tramos horarios por defecto
+      const settingsToSave: NotificationSettings = {
+        ...localSettings,
+        expense_reminders: {
+          ...localSettings.expense_reminders,
+          // Si está habilitado y no tiene tramos o está vacío, usar todos los tramos por defecto
+          time_slots: localSettings.expense_reminders.enabled && 
+                      (!localSettings.expense_reminders.time_slots || localSettings.expense_reminders.time_slots.length === 0)
+            ? ['07:00-12:00', '12:00-17:00', '17:00-21:00']
+            : localSettings.expense_reminders.time_slots,
+        },
+      }
+      await updateNotificationSettings(settingsToSave)
       onClose()
     } catch (error) {
       console.error('[NotificationModal] Error saving:', error)
@@ -142,29 +154,6 @@ export function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
               />
             </button>
           </div>
-
-          {/* Tramos horarios */}
-          {localSettings.expense_reminders.enabled && (
-            <div className="pl-8 space-y-2">
-              <p className="text-xs text-muted mb-2">Tramos horarios:</p>
-              <div className="space-y-2">
-                {(['07:00-12:00', '12:00-17:00', '17:00-21:00'] as TimeSlot[]).map((slot) => (
-                  <label
-                    key={slot}
-                    className="flex items-center gap-2 cursor-pointer text-sm text-text"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={localSettings.expense_reminders.time_slots.includes(slot)}
-                      onChange={() => toggleTimeSlot(slot)}
-                      className="w-4 h-4 rounded border-border text-brand-cyan focus:ring-brand-cyan"
-                    />
-                    <span>{slot.replace('-', ' - ')}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Divider */}

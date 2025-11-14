@@ -6,10 +6,10 @@
 
 ## 📍 Estado Actual
 
-**Rama activa**: `main`  
-**Última actualización**: Rediseño visual Fase 1 completado  
-**Estado**: ✅ Sistema de iconos implementado y funcionando  
-**Próximo**: Merge y push completado, listo para desarrollo continuo
+**Rama activa**: `feat/ui-nav-voice-notifications` → `main`  
+**Última actualización**: Mejoras UI navegación y Dashboard (Nov 2025)  
+**Estado**: ✅ Navegación reorganizada, Dashboard simplificado, notificaciones mejoradas  
+**Próximo**: Listo para desarrollo continuo
 
 ---
 
@@ -197,6 +197,42 @@
 - Todos los componentes con iconos profesionales
 - Consistencia visual en toda la app
 
+### Sesión Nov 2025 (Mejoras UI Navegación y Dashboard) 🆕:
+
+#### 23. **Barra de Navegación Reorganizada** 🧭
+```bash
+✅ Orden corregido: Gastos (izq), Inicio (centro), Ajustes (der)
+✅ Botón central "Inicio" ahora es cuadrado (64×64px)
+✅ Todos los iconos del mismo tamaño (24px)
+✅ Área táctil mejorada: mínimo 56×64px
+✅ Padding aumentado para mejor UX móvil
+```
+- BottomNav.tsx completamente refactorizado
+- Mejor accesibilidad y usabilidad táctil
+- Diseño más consistente y profesional
+
+#### 24. **Dashboard Simplificado** 🎨
+```bash
+✅ Sección de voz simplificada (eliminados efectos excesivos)
+✅ Foxy más grande: contenedor 160×160px
+✅ Diseño consistente con resto de cards
+✅ Padding y spacing mejorados
+```
+- Eliminados múltiples rings animados, glow effects, gradientes complejos
+- Diseño limpio y profesional hasta que lleguen SVG personalizados
+- Mejor consistencia visual con sección de presupuesto
+
+#### 25. **Modal de Notificaciones Simplificado** 🔔
+```bash
+✅ Eliminada UI de tramos horarios (detalle interno)
+✅ Solo toggle principal de "Recordatorios de gastos"
+✅ Lógica interna mantiene valores por defecto automáticamente
+✅ UX más simple y directa
+```
+- NotificationModal.tsx simplificado
+- Usuario solo activa/desactiva función, sin microgestión
+- Tramos horarios se configuran automáticamente por defecto
+
 ---
 
 ## 🔧 Comandos Útiles
@@ -316,6 +352,14 @@ src/components/spend/FilterModal.tsx        # FilterChips + iconos payment
 src/components/voice/ConfirmSpendCard.tsx   # Botones con iconos Lucide
 src/components/ui/index.ts                  # Exports CategoryIcon + FilterChip
 package.json                                # +lucide-react dependency
+```
+
+### Modificados Nov 2025 (Mejoras UI Navegación y Dashboard) 🆕
+```
+src/components/ui/BottomNav.tsx             # Reorganizado orden, botón cuadrado, iconos iguales
+src/pages/Dashboard.tsx                     # Sección voz simplificada, Foxy más grande
+src/components/settings/NotificationModal.tsx # Eliminada UI tramos horarios
+docs/project/QUICK-RESUME.md                # Actualizada documentación
 ```
 
 ### Modificados Nov 2025 (Continuous Recording + UI Fixes)
@@ -468,9 +512,9 @@ console.log(getOptimizationStats())
 
 ## 📞 Contacto / Notas
 
-**Última sesión**: Oct 31, 2025  
-**Duración**: ~3 horas  
-**Features completadas**: Visual Redesign Fase 1 - Sistema de Iconos  
+**Última sesión**: Nov 2025  
+**Duración**: ~1 hora  
+**Features completadas**: Mejoras UI navegación, Dashboard simplificado, notificaciones mejoradas  
 **Estado**: ✅ Implementación completa, merged a main, pushed  
 
 **Para continuar**: 
