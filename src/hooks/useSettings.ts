@@ -9,7 +9,7 @@ import { SupabaseSettingsRepository } from '../adapters/db/SupabaseSettingsRepos
 import { supabase } from '../config/supabase'
 import { useUIStore } from '../stores/useUIStore'
 import { useSettingsStore } from '../stores/useSettingsStore'
-import { DEMO_USER_ID } from '../config/constants'
+import { useAuthStore } from '../stores/useAuthStore'
 import { updateSettings } from '../application/updateSettings'
 import type { UpdateSettingsData } from '../domain/models'
 
@@ -18,19 +18,22 @@ const settingsRepository = new SupabaseSettingsRepository(supabase)
 export function useSettings() {
   const [error, setError] = useState<string | null>(null)
   const { showSuccess, showError } = useUIStore()
+  const { user } = useAuthStore()
   
   // Usar store global de Zustand
   const { settings, isLoading, setSettings, setLoading } = useSettingsStore()
 
   const loadSettings = useCallback(async () => {
+    if (!user?.id) {
+      setError('Usuario no autenticado')
+      return
+    }
+
     try {
       setLoading(true)
       setError(null)
 
-      // TODO: obtener userId real de auth cuando implementemos login
-      const userId = DEMO_USER_ID
-
-      const loadedSettings = await settingsRepository.get(userId)
+      const loadedSettings = await settingsRepository.get(user.id)
       setSettings(loadedSettings)
     } catch (err) {
       const errorMessage =
@@ -41,18 +44,19 @@ export function useSettings() {
     } finally {
       setLoading(false)
     }
-  }, [showError, setSettings, setLoading])
+  }, [user, showError, setSettings, setLoading])
 
   const updateSettingsData = useCallback(
     async (data: UpdateSettingsData) => {
+      if (!user?.id) {
+        throw new Error('Usuario no autenticado')
+      }
+
       try {
         setLoading(true)
         setError(null)
 
-        // TODO: obtener userId real de auth cuando implementemos login
-        const userId = DEMO_USER_ID
-
-        const updated = await updateSettings(userId, data, settingsRepository)
+        const updated = await updateSettings(user.id, data, settingsRepository)
         setSettings(updated) // Actualiza el store global
         showSuccess('Configuración guardada correctamente')
       } catch (err) {
@@ -66,7 +70,7 @@ export function useSettings() {
         setLoading(false)
       }
     },
-    [showSuccess, showError, setSettings, setLoading]
+    [user, showSuccess, showError, setSettings, setLoading]
   )
 
   useEffect(() => {

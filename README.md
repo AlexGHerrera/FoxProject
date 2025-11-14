@@ -4,7 +4,7 @@
 
 ## 🎯 Estado del Proyecto
 
-**Fase Actual**: Setup y arquitectura base completada
+**Fase Actual**: ✅ Listo para testers humanos
 
 ### ✅ Completado
 
@@ -15,34 +15,34 @@
 - [x] Casos de uso (parseSpend, saveSpend, calculateBudget, exportSpends)
 - [x] Adapters (DeepSeek, Supabase, Web Speech API, IndexedDB)
 - [x] Tests unitarios básicos
+- [x] **Sistema de autenticación completo** (Signup, Login, Reset Password)
+- [x] **Panel de administración** con métricas, errores, feedback y usuarios
+- [x] **Sistema de feedback** con capturas de pantalla
+- [x] **Wizard de onboarding** para nuevos usuarios
+- [x] **Páginas legales** (Privacidad y Términos)
+- [x] **Reportes semanales automáticos** por email (Cron Job)
+- [x] **Seguridad**: RLS habilitado, protección de rutas, roles de usuario
 
-### 🚧 Próximos Pasos
+### 🚀 Despliegue
 
-1. **Crear proyecto en Supabase**
-   - Ejecutar `database/SCHEMA.sql`
-   - Configurar RLS policies
-   - Crear edge function para `parse-spend`
-   - Obtener credenciales (URL + anon key)
+Para desplegar la aplicación en producción, consulta la [Guía de Despliegue](./docs/DEPLOY.md).
 
-2. **Implementar stores y hooks**
-   - Zustand stores (voice, spends, UI)
-   - Hooks custom (useSpeechRecognition, useSpendSubmit, useBudgetProgress)
+**Resumen rápido**:
+1. Configurar Supabase (migraciones SQL, storage, auth)
+2. Desplegar en Vercel (conectar repo, variables de entorno)
+3. Asignar primer admin
+4. Verificar funcionalidades críticas
 
-3. **Crear componentes UI base**
-   - Button, Modal, Toast
-   - Sistema de temas (light/dark)
-   - Foxy avatar con animaciones CSS
+### 📋 Checklist Pre-Launch
 
-4. **Flujo de voz (core del MVP)**
-   - MicButton con modos PTT y toggle
-   - VoiceRecorder con estados visuales
-   - ConfirmModal con auto-confirm
-   - Toast "Deshacer"
-
-5. **Dashboard**
-   - BudgetBar con colores dinámicos
-   - RecentSpends
-   - Integración Foxy
+- [ ] Ejecutar migraciones SQL en Supabase
+- [ ] Crear bucket de storage para feedback
+- [ ] Configurar variables de entorno en Vercel
+- [ ] Asignar primer administrador
+- [ ] Probar flujo completo de autenticación
+- [ ] Verificar panel admin accesible solo para admin
+- [ ] Probar envío de feedback con captura
+- [ ] Verificar cron job de reportes semanales
 
 ---
 

@@ -93,6 +93,33 @@ export type Database = {
         >
         Update: Partial<Database['public']['Tables']['api_usage']['Insert']>
       }
+      user_roles: {
+        Row: {
+          user_id: string
+          role: 'user' | 'admin'
+          created_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['user_roles']['Row'], 'created_at'>
+        Update: Partial<Database['public']['Tables']['user_roles']['Insert']>
+      }
+      feedback: {
+        Row: {
+          id: string
+          user_id: string
+          type: 'bug' | 'suggestion' | 'question'
+          message: string
+          screenshot_url: string | null
+          status: 'pending' | 'reviewed' | 'resolved'
+          admin_notes: string | null
+          created_at: string
+          reviewed_at: string | null
+        }
+        Insert: Omit<
+          Database['public']['Tables']['feedback']['Row'],
+          'id' | 'created_at' | 'reviewed_at'
+        >
+        Update: Partial<Database['public']['Tables']['feedback']['Insert']>
+      }
     }
   }
 }

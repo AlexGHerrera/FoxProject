@@ -12,9 +12,11 @@ interface AuthStore {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
+  userRole: 'user' | 'admin' | null
   
   // Actions
   setUser: (user: User | null) => void
+  setUserRole: (role: 'user' | 'admin' | null) => void
   setIsLoading: (isLoading: boolean) => void
   logout: () => void
 }
@@ -26,6 +28,7 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       isAuthenticated: false,
       isLoading: true,
+      userRole: null,
 
       // Actions
       setUser: (user) =>
@@ -35,12 +38,15 @@ export const useAuthStore = create<AuthStore>()(
           isLoading: false,
         }),
 
+      setUserRole: (role) => set({ userRole: role }),
+
       setIsLoading: (isLoading) => set({ isLoading }),
 
       logout: () =>
         set({
           user: null,
           isAuthenticated: false,
+          userRole: null,
         }),
     }),
     {

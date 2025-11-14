@@ -27,3 +27,6 @@ export { FilterChip } from './FilterChip'
 
 export { GlassContainer } from './GlassContainer'
 export type { GlassContainerProps } from './GlassContainer'
+
+export { Input } from './Input'
+export type { InputProps } from './Input'

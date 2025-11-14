@@ -15,8 +15,8 @@ import { supabase } from '../config/supabase'
 import { useSpendStore } from '../stores/useSpendStore'
 import { useVoiceStore } from '../stores/useVoiceStore'
 import { useUIStore } from '../stores/useUIStore'
+import { useAuthStore } from '../stores/useAuthStore'
 import { env } from '../config/env'
-import { DEMO_USER_ID } from '../config/constants'
 import type { ParsedSpend, ParsedSpendResult } from '../domain/models'
 
 // Initialize providers (only once)
@@ -38,6 +38,7 @@ export function useSpendSubmit() {
   const { addSpend } = useSpendStore()
   const { setState: setVoiceState, reset: resetVoice } = useVoiceStore()
   const { showSuccess, showError } = useUIStore()
+  const { user } = useAuthStore()
 
   /**
    * Parse transcript usando IA con fallback automático
@@ -99,10 +100,12 @@ export function useSpendSubmit() {
    */
   const submitSpend = useCallback(
     async (parsed: ParsedSpend) => {
+      if (!user?.id) {
+        throw new Error('Usuario no autenticado')
+      }
+
       try {
         setIsSubmitting(true)
-
-        const userId = DEMO_USER_ID
 
         // Parsear fecha si existe
         const timestamp = parsed.date
@@ -110,7 +113,7 @@ export function useSpendSubmit() {
           : new Date()
 
         const spend = await saveSpend(
-          userId,
+          user.id,
           parsed,
           spendRepository,
           {
@@ -132,7 +135,7 @@ export function useSpendSubmit() {
         setIsSubmitting(false)
       }
     },
-    [addSpend, showError]
+    [user, addSpend, showError]
   )
 
   /**

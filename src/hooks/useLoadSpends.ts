@@ -5,28 +5,30 @@
 
 import { useEffect } from 'react'
 import { useSpendStore } from '../stores/useSpendStore'
+import { useAuthStore } from '../stores/useAuthStore'
 import { SupabaseSpendRepository } from '../adapters/db/SupabaseSpendRepository'
 import { supabase } from '../config/supabase'
 import { useUIStore } from '../stores/useUIStore'
-import { DEMO_USER_ID } from '../config/constants'
 
 const spendRepository = new SupabaseSpendRepository(supabase)
 
 export function useLoadSpends() {
   const { setSpends, setIsLoading, setError } = useSpendStore()
   const { showError } = useUIStore()
+  const { user } = useAuthStore()
 
   useEffect(() => {
+    if (!user?.id) {
+      return
+    }
+
     const loadSpends = async () => {
       try {
         setIsLoading(true)
         setError(null)
 
-        // TODO: obtener userId real de auth cuando implementemos login
-        const userId = DEMO_USER_ID
-
         // Cargar últimos 100 gastos
-        const spends = await spendRepository.list(userId)
+        const spends = await spendRepository.list(user.id)
 
         setSpends(spends)
       } catch (error) {
@@ -41,6 +43,6 @@ export function useLoadSpends() {
     }
 
     loadSpends()
-  }, [setSpends, setIsLoading, setError, showError])
+  }, [user, setSpends, setIsLoading, setError, showError])
 }
 

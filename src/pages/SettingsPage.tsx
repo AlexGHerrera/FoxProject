@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom'
 import { ChevronRight, Sparkles, BarChart3, Shield } from 'lucide-react'
 import { PageIndicator } from '@/components/ui'
 import { FoxyAvatar } from '@/components/foxy'
-import { BudgetSection, ThemeSection, NotificationSection } from '@/components/settings'
+import { BudgetSection, ThemeSection, NotificationSection, FeedbackSection } from '@/components/settings'
 
 const ROUTES = ['/', '/spends', '/settings'] as const
 
@@ -77,6 +77,9 @@ export function SettingsPage() {
 
           {/* Sección de Notificaciones */}
           <NotificationSection />
+
+          {/* Sección de Feedback */}
+          <FeedbackSection />
         </div>
 
         {/* Otras opciones - Próximamente */}
