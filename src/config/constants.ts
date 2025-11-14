@@ -57,3 +57,6 @@ export const API_BASE_URL = import.meta.env.VITE_APP_URL || 'http://localhost:51
 
 // Demo User ID (temporal hasta implementar auth real)
 export const DEMO_USER_ID = 'd5e6f7a8-b9c0-1d2e-3f4a-5b6c7d8e9f0a'
+
+// Sugerencias de presupuesto mensual (en cents)
+export const BUDGET_SUGGESTIONS = [50000, 100000, 150000, 200000] as const // 500€, 1000€, 1500€, 2000€

@@ -5,7 +5,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { ISettingsRepository } from './ISettingsRepository'
-import type { Settings, UpdateSettingsData } from '@/domain/models'
+import type { Settings, UpdateSettingsData, NotificationSettings } from '@/domain/models'
 import { RepositoryError } from './ISpendRepository'
 import type { Database } from '@/config/supabase'
 
@@ -35,30 +35,44 @@ export class SupabaseSettingsRepository implements ISettingsRepository {
 
   async upsert(userId: string, data: UpdateSettingsData): Promise<Settings> {
     try {
+      // Mapear campos de dominio a campos de DB
       const upsertData: Partial<SettingsRow> = {
         user_id: userId,
-        ...data,
         updated_at: new Date().toISOString(),
       }
 
+      // Mapear solo los campos que vienen en data
       if (data.monthlyLimitCents !== undefined) {
         upsertData.monthly_limit_cents = data.monthlyLimitCents
       }
       if (data.timezone !== undefined) {
         upsertData.tz = data.timezone
       }
+      if (data.plan !== undefined) {
+        upsertData.plan = data.plan
+      }
+      if (data.notifications !== undefined) {
+        upsertData.notifications = data.notifications as any
+      }
+
+      console.log('[SupabaseSettingsRepository] Upsert data:', upsertData)
 
       const { data: row, error } = await this.supabase
         .from('settings')
-        .upsert(upsertData as any, { onConflict: 'user_id' })
+        .upsert(upsertData, { onConflict: 'user_id' })
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.error('[SupabaseSettingsRepository] Upsert error:', error)
+        throw error
+      }
       if (!row) throw new Error('No data returned from upsert')
 
+      console.log('[SupabaseSettingsRepository] Upsert success:', row)
       return this.mapRowToSettings(row)
     } catch (error) {
+      console.error('[SupabaseSettingsRepository] Upsert failed:', error)
       throw new RepositoryError('Failed to upsert settings', 'upsert', error)
     }
   }
@@ -82,6 +96,7 @@ export class SupabaseSettingsRepository implements ISettingsRepository {
       monthlyLimitCents: row.monthly_limit_cents,
       plan: row.plan as any, // validated by DB constraint
       timezone: row.tz,
+      notifications: row.notifications ? (row.notifications as NotificationSettings) : undefined,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
     }

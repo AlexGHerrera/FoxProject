@@ -1,9 +1,11 @@
 /**
  * Hook para gestión de tema (light/dark)
  * Soporta: auto (system), light, dark
+ * Usa Zustand store para estado global
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { useThemeStore } from '@/stores/useThemeStore'
 
 type Theme = 'light' | 'dark' | 'auto'
 type ResolvedTheme = 'light' | 'dark'
@@ -11,13 +13,17 @@ type ResolvedTheme = 'light' | 'dark'
 const THEME_KEY = 'foxy-theme'
 
 export function useTheme() {
-  const [theme, setThemeState] = useState<Theme>(() => {
+  const { theme, resolvedTheme, setTheme: setThemeStore, setResolvedTheme } = useThemeStore()
+
+  // Inicializar tema desde localStorage al montar
+  useEffect(() => {
     const stored = localStorage.getItem(THEME_KEY)
-    return (stored as Theme) || 'auto'
-  })
+    if (stored && (stored === 'light' || stored === 'dark' || stored === 'auto')) {
+      setThemeStore(stored as Theme)
+    }
+  }, [setThemeStore])
 
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>('light')
-
+  // Aplicar tema cuando cambie
   useEffect(() => {
     const resolveTheme = (): ResolvedTheme => {
       if (theme === 'auto') {
@@ -30,12 +36,18 @@ export function useTheme() {
 
     const applyTheme = () => {
       const resolved = resolveTheme()
+      console.log('[useTheme] Aplicando tema:', theme, '→ resolved:', resolved)
       setResolvedTheme(resolved)
       
+      // Aplicar/remover clases en el elemento html
+      const html = document.documentElement
+      
       if (resolved === 'dark') {
-        document.documentElement.classList.add('dark')
+        html.classList.add('dark')
+        html.classList.remove('light')
       } else {
-        document.documentElement.classList.remove('dark')
+        html.classList.add('light')
+        html.classList.remove('dark')
       }
     }
 
@@ -48,13 +60,23 @@ export function useTheme() {
       mediaQuery.addEventListener('change', handler)
       return () => mediaQuery.removeEventListener('change', handler)
     }
-  }, [theme])
+  }, [theme, setResolvedTheme])
 
-  const setTheme = (newTheme: Theme) => {
-    localStorage.setItem(THEME_KEY, newTheme)
-    setThemeState(newTheme)
+  const setTheme = (newTheme: Theme, saveToStorage = true) => {
+    console.log('[useTheme] setTheme llamado con:', newTheme, 'saveToStorage:', saveToStorage)
+    if (saveToStorage) {
+      localStorage.setItem(THEME_KEY, newTheme)
+      console.log('[useTheme] Guardado en localStorage:', newTheme)
+    }
+    setThemeStore(newTheme)
   }
 
-  return { theme, setTheme, resolvedTheme }
+  // Solo para preview (no guarda en localStorage)
+  const previewTheme = (newTheme: Theme) => {
+    console.log('[useTheme] previewTheme llamado con:', newTheme)
+    setThemeStore(newTheme)
+  }
+
+  return { theme, setTheme, resolvedTheme, previewTheme }
 }
 

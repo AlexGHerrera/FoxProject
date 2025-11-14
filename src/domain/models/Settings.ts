@@ -3,12 +3,14 @@
  */
 
 import type { Plan } from '@/config/constants'
+import type { NotificationSettings } from './NotificationSettings'
 
 export interface Settings {
   userId: string
   monthlyLimitCents: number
   plan: Plan
   timezone: string
+  notifications?: NotificationSettings
   createdAt: Date
   updatedAt: Date
 }
@@ -17,7 +19,7 @@ export interface Settings {
  * Datos para crear/actualizar settings
  */
 export type UpdateSettingsData = Partial<
-  Pick<Settings, 'monthlyLimitCents' | 'plan' | 'timezone'>
+  Pick<Settings, 'monthlyLimitCents' | 'plan' | 'timezone' | 'notifications'>
 >
 
 /**

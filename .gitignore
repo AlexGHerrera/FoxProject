@@ -33,3 +33,8 @@ coverage
 
 # Build
 build
+
+# Cursor worktrees
+.cursor/worktrees.json
+.cursor/worktrees/
+.cursor/mcp.json

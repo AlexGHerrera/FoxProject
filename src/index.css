@@ -19,8 +19,26 @@
   --chip-bg: #EEF2FF;
 }
 
+/* Dark mode usando clase (para Tailwind darkMode: 'class') */
+.dark {
+  --bg: #0F111A;
+  --surface: #12141F;
+  --text: #F3F4F6;
+  --muted: #94A3B8;
+  --brand-cyan: #00D3FF;
+  --brand-cyan-neon: #35FFFF;
+  --brand-orange: #FFB84C;
+  --success: #34D399;
+  --warning: #F59E0B;
+  --danger: #F87171;
+  --divider: #1F2430;
+  --card: #141826;
+  --chip-bg: #1B2030;
+}
+
+/* Fallback para modo automático del sistema */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light) {
     --bg: #0F111A;
     --surface: #12141F;
     --text: #F3F4F6;
@@ -80,6 +98,10 @@ body {
 
 /* Component utilities usando @apply */
 @layer components {
+  /* GPU acceleration for swipe cards */
+  .gpu-accelerated {
+    transform: translateZ(0);
+  }
   .btn-base {
     @apply inline-flex items-center justify-center font-medium transition-all duration-200;
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
@@ -108,4 +130,39 @@ body {
 
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Pulse ring animation for voice button */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-pulse-ring-delayed {
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation-delay: 0.5s;
+}
+
+/* Slow pulse for background gradients */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
